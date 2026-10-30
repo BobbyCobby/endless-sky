@@ -268,16 +268,11 @@ const Swizzle *MapSalesPanel::CompareSpriteSwizzle() const
 
 void MapSalesPanel::DrawSalesKey(Information &info) const
 {
-<<<<<<< HEAD
-	const Sprite *back = GameData::Sprites().Get("ui/sales key");
-	SpriteShader::Draw(back, Screen::TopLeft() + Point(WIDTH + 10, 0) + .5 * Point(back->Width(), back->Height()));
-=======
 	info.SetBar("full", 1.);
 	if(onlyShowSoldHere)
 		info.SetCondition("only sold here");
 	else if(onlyShowStorageHere)
 		info.SetCondition("only stored here");
->>>>>>> upstream/master
 
 	GameData::Interfaces().Get("map: sales key")->Draw(info);
 }
@@ -292,22 +287,7 @@ void MapSalesPanel::DrawPanel() const
 		Point(WIDTH, Screen::Height()),
 		back);
 
-<<<<<<< HEAD
-	const Sprite *edgeSprite = GameData::Sprites().Get("ui/right edge");
-	if(edgeSprite->Height())
-	{
-		int steps = Screen::Height() / edgeSprite->Height();
-		for(int y = -steps; y <= steps; ++y)
-		{
-			Point pos(
-				Screen::Width() * -.5f + WIDTH + .5f * edgeSprite->Width(),
-				y * edgeSprite->Height());
-			SpriteShader::Draw(edgeSprite, pos);
-		}
-	}
-=======
 	Panel::DrawEdgeSprite(SpriteSet::Get("ui/right edge"), Screen::Left() + WIDTH);
->>>>>>> upstream/master
 }
 
 

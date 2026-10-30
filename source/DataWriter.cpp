@@ -139,16 +139,7 @@ void DataWriter::WriteToken(const char *a, bool needsQuoting)
 void DataWriter::WriteToken(const string &a, bool needsQuoting)
 {
 	out << *before;
-<<<<<<< HEAD
-	if(hasQuote)
-		out << '`' << a << '`';
-	else if(needsQuoting || hasSpace || a.empty())
-		out << '"' << a << '"';
-	else
-		out << a;
-=======
 	out << Quote(a);
->>>>>>> upstream/master
 
 	// The next token written will not be the first one on this line, so it only
 	// needs to have a single space before it.
@@ -157,12 +148,6 @@ void DataWriter::WriteToken(const string &a, bool needsQuoting)
 
 
 
-<<<<<<< HEAD
-// Write a token of a bool;
-void DataWriter::WriteToken(bool b)
-{
-	WriteToken(static_cast<int>(b));
-=======
 string DataWriter::Quote(const string &a)
 {
 	// Figure out what kind of quotation marks need to be used for this string.
@@ -178,5 +163,4 @@ string DataWriter::Quote(const string &a)
 		return '"' + a + '"';
 	else
 		return a;
->>>>>>> upstream/master
 }

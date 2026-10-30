@@ -188,24 +188,13 @@ double StellarObject::Distance() const
 
 
 
-<<<<<<< HEAD
-// Find out how fast this object is goin.
-double StellarObject::Speed() const
-{
-	return speed;
-=======
 double StellarObject::Period() const
 {
 	return 360. / speed;
->>>>>>> upstream/master
 }
 
 
 
-<<<<<<< HEAD
-// Find out the offset of this object.
-=======
->>>>>>> upstream/master
 double StellarObject::Offset() const
 {
 	return offset;

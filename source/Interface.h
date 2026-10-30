@@ -271,11 +271,7 @@ private:
 
 
 private:
-<<<<<<< HEAD
-	std::vector<std::shared_ptr<Element>> elements;
-=======
 	std::vector<std::unique_ptr<Element>> elements;
->>>>>>> upstream/master
 	std::map<std::string, Element> points;
 	std::map<std::string, double> values;
 	std::map<std::string, std::vector<double>> lists;

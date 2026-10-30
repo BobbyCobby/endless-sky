@@ -27,12 +27,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 // whether it is looping (ends in '~') or not.
 class Sound {
 public:
-<<<<<<< HEAD:source/Sound.h
-	bool Load(const std::string &path, const std::string &name);
-	void Unload() const;
-=======
 	bool Load(const std::filesystem::path &path, const std::string &name);
->>>>>>> upstream/master:source/audio/Sound.h
 
 	const std::string &Name() const;
 	const std::string &Path() const;
@@ -46,13 +41,7 @@ public:
 
 private:
 	std::string name;
-<<<<<<< HEAD:source/Sound.h
-	std::string path;
-	mutable bool isLoaded = false;
-	unsigned buffer = 0;
-=======
 	std::vector<AudioSupplier::sample_t> buffer;
 	std::vector<AudioSupplier::sample_t> buffer3x;
->>>>>>> upstream/master:source/audio/Sound.h
 	bool isLooped = false;
 };

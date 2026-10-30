@@ -15,11 +15,6 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "Color.h"
 
-<<<<<<< HEAD
-#include <cstring>
-
-=======
->>>>>>> upstream/master
 using namespace std;
 
 

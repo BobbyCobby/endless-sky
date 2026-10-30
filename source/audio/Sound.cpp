@@ -60,9 +60,6 @@ bool Sound::Load(const filesystem::path &path, const string &name)
 	vector<char> data(bytes);
 	in->read(data.data(), bytes);
 
-<<<<<<< HEAD:source/Sound.cpp
-	isLoaded = true;
-=======
 	// Store 16-bit stereo buffer.
 	buf.resize(2 * data.size() / sizeof(AudioSupplier::sample_t));
 	for(size_t i = 0; i < buf.size() / 2; ++i)
@@ -70,7 +67,6 @@ bool Sound::Load(const filesystem::path &path, const string &name)
 		buf[2 * i] = reinterpret_cast<AudioSupplier::sample_t *>(data.data())[i];
 		buf[2 * i + 1] = reinterpret_cast<AudioSupplier::sample_t *>(data.data())[i];
 	}
->>>>>>> upstream/master:source/audio/Sound.cpp
 	return true;
 }
 
@@ -92,18 +88,7 @@ const string &Sound::Name() const
 
 
 
-<<<<<<< HEAD:source/Sound.cpp
-const string &Sound::Path() const
-{
-	return name;
-}
-
-
-
-unsigned Sound::Buffer() const
-=======
 const vector<AudioSupplier::sample_t> &Sound::Buffer() const
->>>>>>> upstream/master:source/audio/Sound.cpp
 {
 	return buffer.empty() ? buffer3x : buffer;
 }

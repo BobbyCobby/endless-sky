@@ -15,12 +15,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 #pragma once
 
-<<<<<<< HEAD:source/Sprite.h
-#include "ImageBuffer.h"
-#include "Point.h"
-=======
 #include "../Point.h"
->>>>>>> upstream/master:source/image/Sprite.h
 
 #include <array>
 #include <cstdint>
@@ -39,10 +34,6 @@ public:
 
 	const std::string &Name() const;
 
-<<<<<<< HEAD:source/Sprite.h
-	// Upload the given frames. The given buffer will be cleared afterwards.
-	void AddFrames(ImageBuffer &buffer, bool is2x, std::vector<std::string> path);
-=======
 	// Record the height and width from the buffer, but don't upload the buffer into memory.
 	// Used for sprites that use deferred loading to allow them to at least know their
 	// size for certain panels that rely on knowing a sprite's size without needing the sprite
@@ -57,7 +48,6 @@ public:
 	void AddSwizzleMaskFrames(ImageBuffer &buffer1x, ImageBuffer &buffer2x, bool noReduction);
 	// Whether the textures for this sprite have been uploaded yet.
 	bool IsLoaded() const;
->>>>>>> upstream/master:source/image/Sprite.h
 	// Free up all textures loaded for this sprite.
 	void Unload();
 	const std::vector<std::string> &Path(bool is2x) const;
@@ -97,11 +87,8 @@ private:
 	float width = 0.f;
 	float height = 0.f;
 	int frames = 0;
-<<<<<<< HEAD:source/Sprite.h
-
-	friend class Editor;
-=======
 	int swizzleMaskFrames = 0;
 	double area = 0.;
->>>>>>> upstream/master:source/image/Sprite.h
+
+	friend class Editor;
 };

@@ -96,11 +96,7 @@ private:
 	FleetCargo cargo;
 
 	Personality personality;
-<<<<<<< HEAD
+	Personality fighterPersonality;
 
 	friend class FleetEditor;
-	friend class ArenaControl;
-=======
-	Personality fighterPersonality;
->>>>>>> upstream/master
 };

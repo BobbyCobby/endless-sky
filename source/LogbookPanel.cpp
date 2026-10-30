@@ -379,21 +379,7 @@ void LogbookPanel::DrawLogbook()
 		Point(1., Screen::Height()),
 		lineColor);
 
-<<<<<<< HEAD
-	const Sprite *edgeSprite = GameData::Sprites().Get("ui/right edge");
-	if(edgeSprite->Height())
-	{
-		// If the screen is high enough, the edge sprite should repeat.
-		double spriteHeight = edgeSprite->Height();
-		Point pos(
-			Screen::Left() + WIDTH + .5 * edgeSprite->Width(),
-			Screen::Top() + .5 * spriteHeight);
-		for( ; pos.Y() - .5 * spriteHeight < Screen::Bottom(); pos.Y() += spriteHeight)
-			SpriteShader::Draw(edgeSprite, pos);
-	}
-=======
 	Panel::DrawEdgeSprite(SpriteSet::Get("ui/right edge"), Screen::Left() + WIDTH);
->>>>>>> upstream/master
 
 	// Colors to be used for drawing the log.
 	const Font &font = FontSet::Get(14);

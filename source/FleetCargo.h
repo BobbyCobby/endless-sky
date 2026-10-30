@@ -36,11 +36,7 @@ private:
 	// The number of different items this object can assign to ships.
 	int cargo = 3;
 	std::vector<std::string> commodities;
-<<<<<<< HEAD
-	std::set<const Sale<Outfit> *> outfitters;
+	std::set<const Shop<Outfit> *> outfitters;
 
 	friend class FleetEditor;
-=======
-	std::set<const Shop<Outfit> *> outfitters;
->>>>>>> upstream/master
 };

@@ -23,10 +23,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #endif
 
 #include "opengl.h"
-<<<<<<< HEAD
-=======
 #include "SDL.h"
->>>>>>> upstream/master
 
 #include <cstring>
 #include <sstream>
@@ -112,11 +109,7 @@ string GameWindow::SDLVersions()
 
 
 
-<<<<<<< HEAD
-bool GameWindow::Init(function<void(SDL_Window *, const SDL_GLContext &)> post)
-=======
 bool GameWindow::Init(bool headless)
->>>>>>> upstream/master
 {
 #ifdef _WIN32
 #ifndef ES_USE_SDL3
@@ -175,19 +168,10 @@ bool GameWindow::Init(bool headless)
 	int maxWidth = mode.w;
 	int maxHeight = mode.h;
 	if(maxWidth < minWidth || maxHeight < minHeight)
-<<<<<<< HEAD
-	{
-#ifndef __EMSCRIPTEN__
-		ExitWithError("Monitor resolution is too small!");
-		return false;
-#endif
-	}
-=======
 		Logger::Log("Monitor resolution is too small! Minimal requirement is "
 			+ to_string(minWidth) + 'x' + to_string(minHeight)
 			+ ", while your resolution is " + to_string(maxWidth) + 'x' + to_string(maxHeight) + '.',
 			Logger::Level::WARNING);
->>>>>>> upstream/master
 
 	int windowWidth = maxWidth - 100;
 	int windowHeight = maxHeight - 100;
@@ -378,35 +362,7 @@ void GameWindow::Step()
 
 
 
-<<<<<<< HEAD
-void GameWindow::SetIcon()
-{
-	if(!mainWindow)
-		return;
-
-	// Load the icon file.
-	ImageBuffer buffer;
-	if(!buffer.Read(Files::Resources() + "icon.png"))
-		return;
-	if(!buffer.Pixels() || !buffer.Width() || !buffer.Height())
-		return;
-
-	// Convert the icon to an SDL surface.
-	SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(buffer.Pixels(), buffer.Width(), buffer.Height(),
-		32, 4 * buffer.Width(), 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
-	if(surface)
-	{
-		SDL_SetWindowIcon(mainWindow, surface);
-		SDL_FreeSurface(surface);
-	}
-}
-
-
-
-void GameWindow::AdjustViewport(int topBar)
-=======
 void GameWindow::AdjustViewport(bool noResizeEvent)
->>>>>>> upstream/master
 {
 	if(!mainWindow)
 		return;

@@ -37,4 +37,6 @@ private:
 	const Fleet *fleet = nullptr;
 	double minAttraction;
 	double maxAttraction;
+
+	friend class GovernmentEditor;
 };

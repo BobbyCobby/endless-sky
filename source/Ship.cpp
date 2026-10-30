@@ -42,16 +42,8 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "Random.h"
 #include "ship/ResourceLevels.h"
 #include "ShipEvent.h"
-<<<<<<< HEAD
-#include "Sound.h"
-#include "SoundSet.h"
-#include "SpriteSet.h"
-#include "Sprite.h"
-#include "SpriteSet.h"
-=======
 #include "audio/Sound.h"
 #include "image/Sprite.h"
->>>>>>> upstream/master
 #include "StellarObject.h"
 #include "Swizzle.h"
 #include "System.h"
@@ -524,13 +516,6 @@ void Ship::Load(const DataNode &node, const ConditionsStore *playerConditions)
 		}
 		if(key == "sprite")
 			LoadSprite(child);
-<<<<<<< HEAD
-		else if(child.Token(0) == "thumbnail" && child.Size() >= 2)
-			thumbnail = GameData::Sprites().Get(child.Token(1));
-		else if(key == "name" && child.Size() >= 2)
-			name = child.Token(1);
-		else if(key == "plural" && child.Size() >= 2)
-=======
 		else if(key == "thumbnail" && hasValue)
 			thumbnail.LoadSprite(child);
 		else if(key == "name" && hasValue)
@@ -538,7 +523,6 @@ void Ship::Load(const DataNode &node, const ConditionsStore *playerConditions)
 		else if(key == "display name" && hasValue)
 			displayModelName = child.Token(1);
 		else if(key == "plural" && hasValue)
->>>>>>> upstream/master
 			pluralModelName = child.Token(1);
 		else if(key == "variant map name" && hasValue)
 			variantMapShopName = child.Token(1);
@@ -557,11 +541,7 @@ void Ship::Load(const DataNode &node, const ConditionsStore *playerConditions)
 			else
 			{
 				addAttributes = true;
-<<<<<<< HEAD
-				addAttributesList.Load(child);
-=======
 				attributes.Load(child, playerConditions);
->>>>>>> upstream/master
 			}
 		}
 		else if((key == "engine" || key == "reverse engine" || key == "steering engine") && child.Size() >= 3)
@@ -1077,12 +1057,8 @@ void Ship::FinishLoading(bool isNewInstance)
 	{
 		// Store attributes from an "add attributes" node in the ship's
 		// baseAttributes so they can be written to the save file.
-<<<<<<< HEAD
-		baseAttributes.Add(addAttributesList);
-=======
 		baseAttributes.Add(attributes);
 		baseAttributes.AddLicenses(attributes);
->>>>>>> upstream/master
 		addAttributes = false;
 		addAttributesList = {};
 	}
@@ -2630,10 +2606,6 @@ int Ship::Scan(const PlayerInfo &player)
 		doScan(outfitScan, outfitSpeed, outfitDistanceSquared, outfitDepth, ShipEvent::SCAN_OUTFITS);
 
 	// Play the scanning sound if the actor or the target is the player's ship.
-<<<<<<< HEAD
-	if(isYours || (target->isYours && activeScanning))
-		Audio::Play("scan", Position());
-=======
 	auto playScanSounds = [](const map<const Sound *, int> &sounds, const Point &position)
 	{
 		if(sounds.empty())
@@ -2653,7 +2625,6 @@ int Ship::Scan(const PlayerInfo &player)
 		if(activeScanning & ShipEvent::SCAN_OUTFITS)
 			playScanSounds(attributes.OutfitScanSounds(), position);
 	}
->>>>>>> upstream/master
 
 	bool isImportant = false;
 	if(target->isYours)
@@ -2672,15 +2643,9 @@ int Ship::Scan(const PlayerInfo &player)
 		{
 			// If this ship has no name, show its model name instead.
 			string tag;
-<<<<<<< HEAD
-			const string &gov = target->GetGovernment()->Name();
-			if(!target->Name().empty())
-				tag = gov + " " + target->Noun() + " \"" + target->Name() + "\": ";
-=======
 			const string &gov = target->GetGovernment()->DisplayName();
 			if(!target->GivenName().empty())
 				tag = gov + " " + target->Noun() + " \"" + target->GivenName() + "\": ";
->>>>>>> upstream/master
 			else
 				tag = target->DisplayModelName() + " (" + gov + "): ";
 			Messages::Add({tag + "Please refrain from scanning us or we will be forced to take action.",
@@ -2688,29 +2653,13 @@ int Ship::Scan(const PlayerInfo &player)
 		}
 	}
 	else if(startedScanning && target->isYours && isImportant)
-<<<<<<< HEAD
-		Messages::Add("The " + government->Name() + " " + Noun() + " \""
-				+ Name() + "\" is attempting to scan your ship \"" + target->Name() + "\".",
-				Messages::Importance::Low);
-=======
 		Messages::Add({"The " + government->DisplayName() + " " + Noun() + " \""
 			+ GivenName() + "\" is attempting to scan your ship \"" + target->GivenName() + "\".",
 			GameData::MessageCategories().Get("low")});
->>>>>>> upstream/master
 
 	if(target->isYours && !isYours && isImportant)
 	{
 		if(result & ShipEvent::SCAN_CARGO)
-<<<<<<< HEAD
-			Messages::Add("The " + government->Name() + " " + Noun() + " \""
-					+ Name() + "\" completed its cargo scan of your ship \"" + target->Name() + "\".",
-					Messages::Importance::High);
-		if(result & ShipEvent::SCAN_OUTFITS)
-			Messages::Add("The " + government->Name() + " " + Noun() + " \""
-					+ Name() + "\" completed its outfit scan of your ship \"" + target->Name()
-					+ (target->Attributes().Get("inscrutable") > 0. ? "\" with no useful results." : "\"."),
-					Messages::Importance::High);
-=======
 			Messages::Add({"The " + government->DisplayName() + " " + Noun() + " \""
 				+ GivenName() + "\" completed its cargo scan of your ship \"" + target->GivenName() + "\".",
 				GameData::MessageCategories().Get("normal")});
@@ -2719,7 +2668,6 @@ int Ship::Scan(const PlayerInfo &player)
 				+ GivenName() + "\" completed its outfit scan of your ship \"" + target->GivenName()
 				+ (target->cache.inscrutable ? "\" with no useful results." : "\"."),
 				GameData::MessageCategories().Get("normal")});
->>>>>>> upstream/master
 	}
 
 	// Some governments are provoked when a scan is completed on one of their ships.

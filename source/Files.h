@@ -71,21 +71,12 @@ public:
 	static bool IsParent(const std::filesystem::path &parent, const std::filesystem::path &child);
 
 	// File IO.
-<<<<<<< HEAD
-	static void CreateNewDirectory(const std::string &path);
-	static FILE *Open(const std::string &path, bool write = false);
-	static std::string Read(const std::string &path);
-	static std::string Read(FILE *file);
-	static void Write(const std::string &path, const std::string &data);
-	static void Write(FILE *file, const std::string &data);
-=======
 	static std::shared_ptr<std::iostream> Open(const std::filesystem::path &path, bool write = false);
 	static std::string Read(const std::filesystem::path &path);
 	static std::string Read(std::shared_ptr<std::iostream> file);
 	static void Write(const std::filesystem::path &path, const std::string &data);
 	static void Write(std::shared_ptr<std::iostream> file, const std::string &data);
 	static void CreateFolder(const std::filesystem::path &path);
->>>>>>> upstream/master
 
 	// Open this user's plugins directory in their native file explorer.
 	static void OpenUserPluginFolder();

@@ -47,12 +47,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "ScanType.h"
 #include "Ship.h"
 #include "ShipEvent.h"
-<<<<<<< HEAD
-#include "SoundSet.h"
-#include "ShipJumpNavigation.h"
-=======
 #include "image/SpriteLoadManager.h"
->>>>>>> upstream/master
 #include "StartConditions.h"
 #include "StellarObject.h"
 #include "System.h"
@@ -1730,14 +1725,9 @@ void PlayerInfo::Land(UI &ui)
 
 	if(!freshlyLoaded)
 	{
-<<<<<<< HEAD
-		Audio::Play("landing");
-		Audio::PlayMusic(planet->MusicName());
-=======
 		// Unlock the pilot if it was locked via permadeath mode being active.
 		pilot->SetLock(false);
 		Audio::Play(Audio::Get("landing"), SoundCategory::ENGINE);
->>>>>>> upstream/master
 	}
 	Audio::PlayMusic(planet->MusicName());
 
@@ -1896,11 +1886,7 @@ bool PlayerInfo::TakeOff(UI &ui, const bool distributeCargo)
 		return false;
 
 	shouldLaunch = false;
-<<<<<<< HEAD
-	Audio::Play("takeoff");
-=======
 	Audio::Play(Audio::Get("takeoff"), SoundCategory::ENGINE);
->>>>>>> upstream/master
 
 	// Jobs are only available when you are landed.
 	availableJobs.clear();
@@ -5325,19 +5311,11 @@ void PlayerInfo::Save(DataWriter &out) const
 
 	// Save a list of systems the player has visited.
 	WriteSorted(visitedSystems,
-<<<<<<< HEAD
-		[](const System *lhs, const System *rhs)
-			{ return lhs->Name() < rhs->Name(); },
-		[&out](const System &system)
-		{
-			out.Write("visited", system.Name());
-=======
 		[](const System *const *lhs, const System *const *rhs)
 			{ return (*lhs)->TrueName() < (*rhs)->TrueName(); },
 		[&out](const System *system)
 		{
 			out.Write("visited", system->TrueName());
->>>>>>> upstream/master
 		});
 
 	// Save a list of planets the player has visited.
@@ -5449,11 +5427,7 @@ void PlayerInfo::Fine(UI &ui)
 				ui.Push(new ConversationPanel(*this, *message.first));
 			else
 			{
-<<<<<<< HEAD
-				message = "Before you can leave your ship, the " + gov->Name()
-=======
 				message.second = "Before you can leave your ship, the " + gov->DisplayName()
->>>>>>> upstream/master
 					+ " authorities show up and begin scanning it. They say, \"Captain "
 					+ LastName()
 					+ ", we detect highly illegal material on your ship.\""

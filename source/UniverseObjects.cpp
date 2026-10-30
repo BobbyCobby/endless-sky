@@ -18,26 +18,12 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "DataFile.h"
 #include "DataNode.h"
 #include "Files.h"
-<<<<<<< HEAD
-#include "text/FontSet.h"
-#include "GameData.h"
-#include "ImageSet.h"
-=======
->>>>>>> upstream/master
 #include "Information.h"
 #include "Logger.h"
 #include "PlayerInfo.h"
-<<<<<<< HEAD
-#include "Politics.h"
-#include "Random.h"
-#include "Sprite.h"
-#include "SpriteSet.h"
-#include "StarField.h"
-=======
 #include "image/Sprite.h"
 #include "image/SpriteSet.h"
 #include "TaskQueue.h"
->>>>>>> upstream/master
 
 #include <algorithm>
 #include <iterator>
@@ -60,56 +46,6 @@ namespace {
 
 
 
-<<<<<<< HEAD
-namespace {
-	// TODO (C++14): make these 3 methods generic lambdas visible only to the CheckReferences method.
-	// Log a warning for an "undefined" class object that was never loaded from disk.
-	void Warn(const string &noun, const string &name)
-	{
-		Logger::LogError("Warning: " + noun + " \"" + name + "\" is referred to, but not fully defined.");
-	}
-	// Class objects with a deferred definition should still get named when content is loaded.
-	template <class Type>
-	bool NameIfDeferred(const set<string> &deferred, pair<const string, Type> &it)
-	{
-		if(deferred.count(it.first))
-			it.second.SetName(it.first);
-		else
-			return false;
-
-		return true;
-	}
-	// Set the name of an "undefined" class object, so that it can be written to the player's save.
-	template <class Type>
-	void NameAndWarn(const string &noun, pair<const string, Type> &it)
-	{
-		it.second.SetName(it.first);
-		Warn(noun, it.first);
-	}
-}
-
-
-
-void UniverseObjects::Load(const vector<string> &sources, bool debugMode)
-{
-	progress = 0.;
-
-	vector<string> files;
-	for(const string &source : sources)
-	{
-		// Iterate through the paths starting with the last directory given. That
-		// is, things in folders near the start of the path have the ability to
-		// override things in folders later in the path.
-		auto list = Files::RecursiveList(source + "data/");
-		files.reserve(files.size() + list.size());
-		files.insert(files.end(),
-				make_move_iterator(list.begin()),
-				make_move_iterator(list.end()));
-	}
-
-	LoadFolder(files, debugMode);
-}
-=======
 shared_future<void> UniverseObjects::Load(TaskQueue &queue, const vector<filesystem::path> &sources,
 	const PlayerInfo &player, const ConditionsStore *globalConditions, bool debugMode)
 {
@@ -137,7 +73,6 @@ shared_future<void> UniverseObjects::Load(TaskQueue &queue, const vector<filesys
 			for(const auto &path : files)
 			{
 				LoadFile(path, player, globalConditions, debugMode);
->>>>>>> upstream/master
 
 
 
@@ -428,37 +363,16 @@ void UniverseObjects::CheckReferences()
 
 
 
-<<<<<<< HEAD
-void UniverseObjects::LoadFolder(const vector<string> &files, bool debugMode)
-{
-	const double step = 1. / (static_cast<int>(files.size()) + 1);
-	for(const auto &path : files)
-	{
-		LoadFile(path, debugMode);
-
-		// Increment the atomic progress by one step.
-		// We use acquire + release to prevent any reordering.
-		auto val = progress.load(memory_order_acquire);
-		progress.store(val + step, memory_order_release);
-	}
-	FinishLoading();
-	progress = 1.;
-=======
 void UniverseObjects::DrawMenuBackground(Panel *panel) const
 {
 	lock_guard<mutex> lock(menuBackgroundMutex);
 	menuBackgroundCache.Draw(Information(), panel);
->>>>>>> upstream/master
 }
 
 
 
-<<<<<<< HEAD
-void UniverseObjects::LoadFile(const string &path, bool debugMode)
-=======
 void UniverseObjects::LoadFile(const filesystem::path &path, const PlayerInfo &player,
 		const ConditionsStore *globalConditions, bool debugMode)
->>>>>>> upstream/master
 {
 	// This is an ordinary file. Check to see if it is an image.
 	if(path.extension() != ".txt")
@@ -668,15 +582,10 @@ void UniverseObjects::LoadFile(const filesystem::path &path, const PlayerInfo &p
 		}
 		else if(key == "system" && hasValue)
 		{
-<<<<<<< HEAD
-			for(const DataNode &child : node)
-				landingMessages[GameData::Sprites().Get(child.Token(0))] = node.Token(1);
-=======
 			System *system = systems.Get(node.Token(1));
 			if(overwrite)
 				*system = System();
 			system->Load(node, planets, playerConditions);
->>>>>>> upstream/master
 		}
 		else if(key == "test" && hasValue)
 		{
@@ -715,23 +624,10 @@ void UniverseObjects::LoadFile(const filesystem::path &path, const PlayerInfo &p
 		}
 		else if(key == "star" && hasValue)
 		{
-<<<<<<< HEAD
-			const Sprite *sprite = GameData::Sprites().Get(node.Token(1));
-			for(const DataNode &child : node)
-			{
-				if(child.Token(0) == "power" && child.Size() >= 2)
-					solarPower[sprite] = child.Value(1);
-				else if(child.Token(0) == "wind" && child.Size() >= 2)
-					solarWind[sprite] = child.Value(1);
-				else
-					child.PrintTrace("Skipping unrecognized attribute:");
-			}
-=======
 			const Sprite *sprite = SpriteSet::Get(node.Token(1));
 			if(overwrite)
 				objectSpriteData.erase(sprite);
 			objectSpriteData[sprite].Load(node);
->>>>>>> upstream/master
 		}
 		else if(key == "news" && hasValue)
 		{

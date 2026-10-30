@@ -57,28 +57,16 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "RenderBuffer.h"
 #include "shader/RingShader.h"
 #include "Ship.h"
-<<<<<<< HEAD
-#include "Sprite.h"
-#include "SpriteSet.h"
-#include "SpriteShader.h"
-#include "StarField.h"
-=======
 #include "image/Sprite.h"
 #include "image/SpriteLoadManager.h"
 #include "shader/SpriteShader.h"
 #include "shader/StarField.h"
->>>>>>> upstream/master
 #include "StartConditions.h"
 #include "StellarObjectSpriteData.h"
 #include "System.h"
 #include "TaskQueue.h"
-<<<<<<< HEAD
-#include "Test.h"
-#include "TestData.h"
-=======
 #include "test/Test.h"
 #include "test/TestData.h"
->>>>>>> upstream/master
 #include "UniverseObjects.h"
 
 #include <algorithm>
@@ -104,10 +92,6 @@ namespace {
 	Set<Person> defaultPersons;
 	TextReplacements defaultSubstitutions;
 
-<<<<<<< HEAD
-	map<string, string> plugins;
-	vector<string> sources;
-=======
 	const Gamerules *activeGamerules = nullptr;
 
 	Politics politics;
@@ -115,7 +99,6 @@ namespace {
 	StarField background;
 
 	vector<filesystem::path> sources;
->>>>>>> upstream/master
 
 	Politics politics;
 	StarField background;
@@ -125,8 +108,6 @@ namespace {
 	map<const System *, map<string, int>> purchases;
 
 	ConditionsStore globalConditions;
-<<<<<<< HEAD
-=======
 
 	void LoadPlugin(TaskQueue &queue, const filesystem::path &path)
 	{
@@ -169,17 +150,12 @@ namespace {
 
 	const char *const FONT_14_NAME = "font/ubuntu14r.png";
 	const char *const FONT_18_NAME = "font/ubuntu18r.png";
->>>>>>> upstream/master
 }
 
 
 
-<<<<<<< HEAD
-future<void> GameData::BeginLoad(int options)
-=======
 shared_future<void> GameData::BeginLoad(TaskQueue &queue, const PlayerInfo &player,
 		bool onlyLoadData, bool debugMode, bool preventUpload)
->>>>>>> upstream/master
 {
 	if(preventUpload)
 		SpriteLoadManager::PreventSpriteUpload();
@@ -188,9 +164,6 @@ shared_future<void> GameData::BeginLoad(TaskQueue &queue, const PlayerInfo &play
 	// Initialize the list of "source" folders based on any active plugins.
 	LoadSources(queue);
 
-<<<<<<< HEAD
-	return assets.Load(sources, options);
-=======
 	if(!onlyLoadData)
 	{
 		queue.Run([&queue] {
@@ -201,7 +174,6 @@ shared_future<void> GameData::BeginLoad(TaskQueue &queue, const PlayerInfo &play
 	}
 
 	return objects.Load(queue, sources, player, &globalConditions, debugMode);
->>>>>>> upstream/master
 }
 
 
@@ -209,18 +181,6 @@ shared_future<void> GameData::BeginLoad(TaskQueue &queue, const PlayerInfo &play
 void GameData::FinishLoading()
 {
 	// Store the current state, to revert back to later.
-<<<<<<< HEAD
-	defaultFleets = assets.objects.fleets;
-	defaultGovernments = assets.objects.governments;
-	defaultPlanets = assets.objects.planets;
-	defaultSystems = assets.objects.systems;
-	defaultGalaxies = assets.objects.galaxies;
-	defaultShipSales = assets.objects.shipSales;
-	defaultOutfitSales = assets.objects.outfitSales;
-	defaultSubstitutions = assets.objects.substitutions;
-	defaultWormholes = assets.objects.wormholes;
-	playerGovernment = assets.objects.governments.Get("Escort");
-=======
 	defaultFleets = objects.fleets;
 	defaultGovernments = objects.governments;
 	defaultPlanets = objects.planets;
@@ -234,7 +194,6 @@ void GameData::FinishLoading()
 
 	activeGamerules = objects.gamerulesPresets.Get("Default");
 	playerGovernment = objects.governments.Get("Escort");
->>>>>>> upstream/master
 
 	politics.Reset();
 	background.FinishLoading();
@@ -322,11 +281,7 @@ void GameData::LoadShaders()
 
 double GameData::GetProgress()
 {
-<<<<<<< HEAD
-	return assets.GetProgress();
-=======
 	return min({SpriteLoadManager::Progress(), Audio::GetProgress(), objects.GetProgress()});
->>>>>>> upstream/master
 }
 
 
@@ -338,22 +293,8 @@ bool GameData::IsLoaded()
 
 
 
-<<<<<<< HEAD
-// Begin loading a sprite that was previously deferred. Currently this is
-// done with all landscapes to speed up the program's startup.
-future<void> GameData::Preload(const Sprite *sprite)
-{
-	return assets.Preload(sprite);
-}
-
-
-
-// Get the list of resource sources (i.e. plugin folders).
-const std::vector<std::string> &GameData::Sources()
-=======
 // Get the list of resource sources (i.e. plugin folders).
 const vector<filesystem::path> &GameData::Sources()
->>>>>>> upstream/master
 {
 	return sources;
 }
@@ -371,18 +312,6 @@ UniverseObjects &GameData::Objects()
 // Revert any changes that have been made to the universe.
 void GameData::Revert()
 {
-<<<<<<< HEAD
-	assets.objects.fleets.Revert(defaultFleets);
-	assets.objects.governments.Revert(defaultGovernments);
-	assets.objects.planets.Revert(defaultPlanets);
-	assets.objects.systems.Revert(defaultSystems);
-	assets.objects.galaxies.Revert(defaultGalaxies);
-	assets.objects.shipSales.Revert(defaultShipSales);
-	assets.objects.outfitSales.Revert(defaultOutfitSales);
-	assets.objects.substitutions.Revert(defaultSubstitutions);
-	assets.objects.wormholes.Revert(defaultWormholes);
-	for(auto &it : assets.objects.persons)
-=======
 	objects.fleets.Revert(defaultFleets);
 	objects.governments.Revert(defaultGovernments);
 	objects.planets.Revert(defaultPlanets);
@@ -397,7 +326,6 @@ void GameData::Revert()
 	activeGamerules = objects.gamerulesPresets.Get("Default");
 
 	for(auto &it : objects.persons)
->>>>>>> upstream/master
 		it.second.Restore();
 
 	politics.Reset();
@@ -438,11 +366,7 @@ void GameData::ReadEconomy(const DataNode &node)
 		}
 		else
 		{
-<<<<<<< HEAD
-			System &system = *assets.objects.systems.Get(child.Token(0));
-=======
 			System &system = *objects.systems.Get(key);
->>>>>>> upstream/master
 
 			int index = 0;
 			for(const string &commodity : headings)
@@ -548,11 +472,7 @@ void GameData::AddPurchase(const System &system, const string &commodity, int to
 // Apply the given change to the universe.
 void GameData::Change(const DataNode &node, PlayerInfo &player)
 {
-<<<<<<< HEAD
-	assets.objects.Change(node);
-=======
 	objects.Change(node, player);
->>>>>>> upstream/master
 }
 
 
@@ -867,44 +787,11 @@ const vector<Trade::Commodity> &GameData::SpecialCommodities()
 
 
 
-<<<<<<< HEAD
-// Custom messages to be shown when trying to land on certain stellar assets.objects.
-bool GameData::HasLandingMessage(const Sprite *sprite)
-{
-	return assets.objects.landingMessages.count(sprite);
-}
-
-
-
-const string &GameData::LandingMessage(const Sprite *sprite)
-{
-	static const string EMPTY;
-	auto it = assets.objects.landingMessages.find(sprite);
-	return (it == assets.objects.landingMessages.end() ? EMPTY : it->second);
-}
-
-
-
-// Get the solar power and wind output of the given stellar object sprite.
-double GameData::SolarPower(const Sprite *sprite)
-{
-	auto it = assets.objects.solarPower.find(sprite);
-	return (it == assets.objects.solarPower.end() ? 0. : it->second);
-}
-
-
-
-double GameData::SolarWind(const Sprite *sprite)
-{
-	auto it = assets.objects.solarWind.find(sprite);
-	return (it == assets.objects.solarWind.end() ? 0. : it->second);
-=======
 const StellarObjectSpriteData &GameData::ObjectSpriteData(const Sprite *sprite)
 {
 	static const StellarObjectSpriteData EMPTY;
 	auto it = objects.objectSpriteData.find(sprite);
 	return (it == objects.objectSpriteData.end() ? EMPTY : it->second);
->>>>>>> upstream/master
 }
 
 
@@ -972,19 +859,11 @@ const string &GameData::Tooltip(const string &label)
 	auto it = assets.objects.tooltips.find(label);
 	// Special case: the "cost" and "sells for" labels include the percentage of
 	// the full price, so they will not match exactly.
-<<<<<<< HEAD
-	if(it == assets.objects.tooltips.end() && !label.compare(0, 4, "cost"))
-		it = assets.objects.tooltips.find("cost:");
-	if(it == assets.objects.tooltips.end() && !label.compare(0, 9, "sells for"))
-		it = assets.objects.tooltips.find("sells for:");
-	return (it == assets.objects.tooltips.end() ? EMPTY : it->second);
-=======
 	if(it == objects.tooltips.end() && label.starts_with("cost"))
 		it = objects.tooltips.find("cost:");
 	if(it == objects.tooltips.end() && label.starts_with("sells for"))
 		it = objects.tooltips.find("sells for:");
 	return (it == objects.tooltips.end() ? EMPTY : it->second);
->>>>>>> upstream/master
 }
 
 
@@ -1048,14 +927,10 @@ GameAssets &GameData::Assets()
 
 const Gamerules &GameData::GetGamerules()
 {
-<<<<<<< HEAD
-	return assets.objects.gamerules;
-=======
 	if(!activeGamerules)
 		activeGamerules = objects.gamerulesPresets.Get("Default");
 
 	return *activeGamerules;
->>>>>>> upstream/master
 }
 
 
@@ -1078,11 +953,6 @@ void GameData::LoadSources(TaskQueue &queue)
 {
 	sources.clear();
 	sources.push_back(Files::Resources());
-<<<<<<< HEAD
-}
-
-
-=======
 
 	vector<filesystem::path> globalPlugins = Files::ListDirectories(Files::GlobalPlugins());
 	for(const auto &path : globalPlugins)
@@ -1132,7 +1002,6 @@ map<string, shared_ptr<ImageSet>> GameData::FindImages()
 
 
 
->>>>>>> upstream/master
 // Thread-safe way to draw the menu background.
 void GameData::DrawMenuBackground(Panel *panel)
 {

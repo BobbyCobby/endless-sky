@@ -15,14 +15,9 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 #pragma once
 
-<<<<<<< HEAD:source/Audio.h
-#include "Set.h"
-
-=======
 #include "SoundCategory.h"
 
 #include <filesystem>
->>>>>>> upstream/master:source/audio/Audio.h
 #include <string>
 #include <vector>
 
@@ -41,14 +36,9 @@ class Sound;
 class Audio {
 public:
 	// Begin loading sounds (in a separate thread).
-<<<<<<< HEAD:source/Audio.h
-	static void Init();
-	static void CheckReferences();
-=======
 	static void Init(const std::vector<std::filesystem::path> &sources);
 	static void LoadSounds(const std::vector<std::filesystem::path> &sources);
 	static void CheckReferences(bool parseOnly = false);
->>>>>>> upstream/master:source/audio/Audio.h
 
 	// Get or set the volume (between 0 and 1).
 	static double Volume(SoundCategory category);
@@ -60,21 +50,11 @@ public:
 	static void Update(const Point &listenerPosition);
 
 	// Play the given sound, at full volume.
-<<<<<<< HEAD:source/Audio.h
-	static void Play(const Sound *sound);
-	static void Play(const std::string &sound);
-
-	// Play the given sound, as if it is at the given distance from the
-	// "listener". This will make it softer and change the left / right balance.
-	static void Play(const Sound *sound, const Point &position);
-	static void Play(const std::string &sound, const Point &position);
-=======
 	static void Play(const Sound *sound, SoundCategory category);
 
 	// Play the given sound, as if it is at the given distance from the
 	// "listener". This will make it softer and change the left / right balance.
 	static void Play(const Sound *sound, const Point &position, SoundCategory category);
->>>>>>> upstream/master:source/audio/Audio.h
 
 	// Play the given music. An empty string means to play nothing.
 	static void PlayMusic(const std::string &name);

@@ -101,25 +101,3 @@ private:
 
 	friend class ShipEditor;
 };
-<<<<<<< HEAD
-
-
-
-
-inline bool operator==(const Armament &lhs, const Armament &rhs)
-{
-	return lhs.hardpoints == rhs.hardpoints;
-}
-
-
-
-inline bool operator!=(const Armament &lhs, const Armament &rhs)
-{
-	return !(lhs == rhs);
-}
-
-
-
-#endif
-=======
->>>>>>> upstream/master

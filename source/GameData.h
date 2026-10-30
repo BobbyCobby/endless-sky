@@ -62,11 +62,7 @@ class Point;
 class Politics;
 class Shader;
 class Ship;
-<<<<<<< HEAD
-class SoundSet;
-=======
 class ShipEvent;
->>>>>>> upstream/master
 class Sprite;
 class SpriteSet;
 class StarField;
@@ -90,12 +86,8 @@ class Wormhole;
 // universe.
 class GameData {
 public:
-<<<<<<< HEAD
-	static std::future<void> BeginLoad(int options);
-=======
 	static std::shared_future<void> BeginLoad(TaskQueue &queue, const PlayerInfo &player,
 		bool onlyLoadData, bool debugMode, bool preventUpload);
->>>>>>> upstream/master
 	static void FinishLoading();
 	// Check for objects that are referred to but never defined.
 	static void CheckReferences();
@@ -104,12 +96,6 @@ public:
 	static double GetProgress();
 	// Whether initial game loading is complete (data, sprites and audio are loaded).
 	static bool IsLoaded();
-<<<<<<< HEAD
-	// Begin loading a sprite that was previously deferred. Currently this is
-	// done with all landscapes to speed up the program's startup.
-	static std::future<void> Preload(const Sprite *sprite);
-=======
->>>>>>> upstream/master
 
 	// Get the list of resource sources (i.e. plugin folders).
 	static const std::vector<std::filesystem::path> &Sources();
@@ -217,10 +203,6 @@ public:
 
 
 private:
-<<<<<<< HEAD
-	static void LoadSources();
-=======
 	static void LoadSources(TaskQueue &queue);
 	static std::map<std::string, std::shared_ptr<ImageSet>> FindImages();
->>>>>>> upstream/master
 };

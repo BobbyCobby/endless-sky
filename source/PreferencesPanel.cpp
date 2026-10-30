@@ -34,18 +34,10 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "Preferences.h"
 #include "RenderBuffer.h"
 #include "Screen.h"
-<<<<<<< HEAD
-#include "SoundSet.h"
-#include "Sprite.h"
-#include "SpriteSet.h"
-#include "SpriteShader.h"
-#include "StarField.h"
-=======
 #include "image/Sprite.h"
 #include "image/SpriteSet.h"
 #include "shader/SpriteShader.h"
 #include "shader/StarField.h"
->>>>>>> upstream/master
 #include "text/Table.h"
 #include "text/Truncate.h"
 #include "UI.h"
@@ -324,16 +316,11 @@ bool PreferencesPanel::Click(int x, int y, MouseButton button, int clicks)
 	Rectangle volumeBox = preferencesUI->GetBox("volume box");
 	if(volumeBox.Contains(point))
 	{
-<<<<<<< HEAD
-		Audio::SetVolume((20 - y) / 200.);
-		Audio::Play("warder");
-=======
 		double barSize = preferencesUI->GetValue("master volume bar size");
 		double volume = (volumeBox.Center().Y() - point.Y()) / barSize + .5;
 
 		Audio::SetVolume(volume, SoundCategory::MASTER);
 		Audio::Play(Audio::Get("warder"), SoundCategory::MASTER);
->>>>>>> upstream/master
 		return true;
 	}
 
@@ -1288,16 +1275,6 @@ void PreferencesPanel::DrawPlugins()
 
 		if(pluginDescriptionScroll.Scrollable())
 		{
-<<<<<<< HEAD
-			const Sprite *sprite = GameData::Sprites().Get(plugin.name);
-			Point top(15., firstY);
-			if(sprite)
-			{
-				Point center(130., top.Y() + .5 * sprite->Height());
-				SpriteShader::Draw(sprite, center);
-				top.Y() += sprite->Height() + 10.;
-			}
-=======
 			// Draw up and down pointers, mostly to indicate when
 			// scrolling is possible, but might as well make them
 			// clickable too.
@@ -1305,7 +1282,6 @@ void PreferencesPanel::DrawPlugins()
 			PointerShader::Draw(topRight.Center(), UP,
 				10.f, 10.f, 5.f, Color(pluginDescriptionScroll.IsScrollAtMin() ? .2f : .8f, 0.f));
 			AddZone(topRight, [&]() { pluginDescriptionScroll.Scroll(-Preferences::ScrollSpeed()); });
->>>>>>> upstream/master
 
 			Rectangle bottomRight(descriptionBox.BottomRight() - POINTER_OFFSET, {20.0, 20.0});
 			PointerShader::Draw(bottomRight.Center(), DOWN,

@@ -54,22 +54,6 @@ public:
 		const Conversation *customDeathSentence = nullptr;
 	};
 
-<<<<<<< HEAD
-			bool operator==(const RaidFleet &other) const
-			{
-				return fleet == other.fleet && minAttraction == other.minAttraction && maxAttraction == other.maxAttraction;
-			}
-			bool operator!=(const RaidFleet &other) const
-			{
-				return !(*this == other);
-			}
-		private:
-			const Fleet *fleet = nullptr;
-			double minAttraction;
-			double maxAttraction;
-
-		friend class GovernmentEditor;
-=======
 	enum class SpecialPenalty : int {
 		NONE = 0,
 		PROVOKE,
@@ -84,7 +68,6 @@ public:
 
 		double reputationChange;
 		SpecialPenalty specialPenalty;
->>>>>>> upstream/master
 	};
 
 
@@ -98,16 +81,11 @@ public:
 	bool IsDefined() const;
 
 	// Get the display name of this government.
-<<<<<<< HEAD
-	const std::string &Name() const;
-	// Set / Get the name used for this government in the data files.
-	void SetName(const std::string &trueName);
-=======
 	const std::string &DisplayName() const;
 	// Set / Get the true name used for this government in the data files.
 	void SetTrueName(const std::string &trueName);
->>>>>>> upstream/master
 	const std::string &TrueName() const;
+	const std::string &Name() const { return TrueName(); }
 	// Get the color swizzle to use for ships of this government.
 	const Swizzle *GetSwizzle() const;
 	// Get the color to use for displaying this government on the map.
@@ -221,34 +199,17 @@ public:
 
 
 private:
-<<<<<<< HEAD
-	std::string name;
-=======
 	unsigned id;
 	std::string trueName;
->>>>>>> upstream/master
 	std::string displayName;
 	bool isDefined = false;
 	const Swizzle *swizzle = Swizzle::None();
 	ExclusiveItem<Color> color;
 
-<<<<<<< HEAD
-	struct GovSortyByName
-	{
-		bool operator()(const Government *lhs, const Government *rhs) const
-		{
-			return lhs->name < rhs->name;
-		}
-	};
-	std::map<const Government *, double, GovSortyByName> attitudeToward;
-	std::set<const Government *> trusted;
-	std::map<const Government *, std::map<int, double>> customPenalties;
-=======
 	std::vector<double> attitudeToward;
 	double defaultAttitude = 0.;
 	std::set<const Government *> trusted;
 	std::map<unsigned, std::map<int, PenaltyEffect>> customPenalties;
->>>>>>> upstream/master
 	double initialPlayerReputation = 0.;
 	double reputationMax = std::numeric_limits<double>::max();
 	double reputationMin = std::numeric_limits<double>::lowest();
@@ -285,18 +246,11 @@ private:
 	double crewAttack = 1.;
 	double crewDefense = 2.;
 	bool provokedOnScan = false;
-<<<<<<< HEAD
-
-	friend class GovernmentEditor;
-	// If a government appears in this set, and the reputation with this government is affected by actions,
-	// and events performed against that government, use the penalties that government applies for the
-	// action instead of this governments own penalties.
-	std::set<const Government *> useForeignPenaltiesFor;
-=======
 	ExclusiveItem<Confusion> confusion;
 	// If a government appears in this set, and the reputation with this government is affected by actions,
 	// and events performed against that government, use the penalties that government applies for the
 	// action instead of this government's own penalties.
 	std::set<unsigned> useForeignPenaltiesFor;
->>>>>>> upstream/master
+
+	friend class GovernmentEditor;
 };

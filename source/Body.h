@@ -20,15 +20,6 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "Angle.h"
 #include "Point.h"
 
-<<<<<<< HEAD
-#include <cstdint>
-#include <string>
-
-class DataNode;
-class DataWriter;
-class Effect;
-=======
->>>>>>> upstream/master
 class Government;
 class Mask;
 class Outfit;
@@ -102,52 +93,10 @@ protected:
 private:
 	// Record when this object is marked for removal from the game.
 	bool shouldBeRemoved = false;
-<<<<<<< HEAD
-
-	// Cache the frame calculation so it doesn't have to be repeated if given
-	// the same step over and over again.
-	mutable int currentStep = -1;
-	mutable float frame = 0.f;
-
-	friend bool operator==(const Body &lhs, const Body &rhs);
-	friend bool operator!=(const Body &lhs, const Body &rhs);
 
 	friend class EffectEditor;
 	friend class OutfitEditor;
 	friend class ShipEditor;
 	friend class SystemEditor;
-	template <typename T>
-	friend class TemplateEditor;
+	template <typename T> friend class TemplateEditor;
 };
-
-
-
-inline bool operator==(const Body &lhs, const Body &rhs)
-{
-	return
-		lhs.sprite == rhs.sprite &&
-		lhs.scale == rhs.scale &&
-		lhs.randomize == rhs.randomize &&
-		lhs.delay == rhs.delay &&
-		lhs.repeat == rhs.repeat &&
-		lhs.rewind == rhs.rewind &&
-		lhs.frameOffset == rhs.frameOffset &&
-		lhs.position == rhs.position &&
-		lhs.velocity == rhs.velocity &&
-		lhs.angle.Degrees() == rhs.angle.Degrees() &&
-		lhs.zoom == rhs.zoom;
-}
-
-
-
-inline bool operator!=(const Body &lhs, const Body &rhs)
-{
-	return !(lhs == rhs);
-}
-
-
-
-#endif
-=======
-};
->>>>>>> upstream/master

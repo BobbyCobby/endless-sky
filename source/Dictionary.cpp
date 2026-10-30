@@ -88,34 +88,16 @@ Type Dictionary<Type>::Get(const string &key) const
 
 
 
-<<<<<<< HEAD
-void Dictionary::Remove(const char *key)
-{
-	auto pos = Search(key, *this);
-	if(pos.second)
-		erase(begin() + pos.first);
-=======
 template<class Type>
 void Dictionary<Type>::Erase(const char *key)
 {
 	auto [pos, exists] = Search(key, *this);
 	if(exists)
 		this->erase(next(this->begin(), pos));
->>>>>>> upstream/master
 }
 
 
 
-<<<<<<< HEAD
-void Dictionary::Update(const char *key, double diff)
-{
-	auto pos = Search(key, *this);
-	auto it = pos.second ?
-		begin() + pos.first : insert(begin() + pos.first, make_pair(Intern(key), 0.));
-
-	it->second += diff;
-}
-=======
 template<class Type>
 void Dictionary<Type>::Clear()
 {
@@ -126,4 +108,3 @@ void Dictionary<Type>::Clear()
 
 template class Dictionary<int64_t>;
 template class Dictionary<double>;
->>>>>>> upstream/master

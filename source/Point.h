@@ -155,27 +155,3 @@ inline const double &Point::Y() const noexcept
 	return y;
 #endif
 }
-<<<<<<< HEAD
-
-
-
-inline bool operator==(const Point &lhs, const Point &rhs)
-{
-	constexpr double eps = .000001;
-#ifdef __SSE3__
-	return std::abs(lhs.val.x - rhs.val.x) < eps && std::abs(lhs.val.y - rhs.val.y) < eps;
-#else
-	return std::abs(lhs.x - rhs.x) < eps && std::abs(lhs.y - rhs.y) < eps;
-#endif
-}
-
-
-
-inline bool operator!=(const Point &lhs, const Point &rhs)
-{
-	return !(lhs == rhs);
-}
-#endif
-
-=======
->>>>>>> upstream/master

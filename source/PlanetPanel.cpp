@@ -76,11 +76,6 @@ PlanetPanel::PlanetPanel(PlayerInfo &player, function<void()> callback)
 
 	// Since the loading of landscape images is deferred, make sure that the
 	// landscapes for this system are loaded before showing the planet panel.
-<<<<<<< HEAD
-	auto preload = GameData::Preload(planet.Landscape());
-	if(preload.valid())
-		preload.wait();
-=======
 	TaskQueue queue;
 	SpriteLoadManager::LoadDeferred(queue, planet.Landscape());
 	queue.Wait();
@@ -94,7 +89,6 @@ PlanetPanel::PlanetPanel(PlayerInfo &player, function<void()> callback)
 PlanetPanel::~PlanetPanel()
 {
 	Audio::Resume();
->>>>>>> upstream/master
 }
 
 

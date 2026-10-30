@@ -3107,12 +3107,6 @@ void AI::DoAppeasing(const shared_ptr<Ship> &ship, double *threshold) const
 			toDump -= dumped;
 		}
 
-<<<<<<< HEAD
-	Messages::Add(ship->GetGovernment()->Name() + " " + ship->Noun() + " \"" + ship->Name()
-		+ "\": Please, just take my cargo and leave me alone.", Messages::Importance::Low);
-
-=======
->>>>>>> upstream/master
 	*threshold = (1. - health) + .1;
 
 	if(ship->GetPersonality().IsMute())
@@ -4779,11 +4773,6 @@ void AI::MovePlayer(Ship &ship, Command &activeCommands)
 			else if(isTryingLanding)
 				message = object.LandingMessage();
 		}
-<<<<<<< HEAD
-		if(!message.empty())
-			Audio::Play("fail");
-=======
->>>>>>> upstream/master
 
 		const StellarObject *target = ship.GetTargetStellar();
 		// Require that the player's planetary target is one of the current system's planets.
@@ -4825,12 +4814,8 @@ void AI::MovePlayer(Ship &ship, Command &activeCommands)
 			{
 				message = "The authorities on this " + next->GetPlanet()->Noun() +
 					" refuse to clear you to land here.";
-<<<<<<< HEAD
-				Audio::Play("fail");
-=======
 				messageCategory = GameData::MessageCategories().Get("high");
 				UI::PlaySound(UI::UISound::FAILURE);
->>>>>>> upstream/master
 			}
 			else if(next != target)
 				message = "Switching landing targets. Now landing on " + next->DisplayName() + ".";
@@ -4869,25 +4854,16 @@ void AI::MovePlayer(Ship &ship, Command &activeCommands)
 
 			if(!target)
 			{
-<<<<<<< HEAD
-				message = "There are no planets in this system that you can land on.";
-				Audio::Play("fail");
-=======
 				Messages::Add(*GameData::Messages().Get("no landables"));
 				message.clear();
 				UI::PlaySound(UI::UISound::FAILURE);
->>>>>>> upstream/master
 			}
 			else if(!target->GetPlanet()->CanLand())
 			{
 				message = "The authorities on this " + target->GetPlanet()->Noun() +
 					" refuse to clear you to land here.";
-<<<<<<< HEAD
-				Audio::Play("fail");
-=======
 				messageCategory = GameData::MessageCategories().Get("high");
 				UI::PlaySound(UI::UISound::FAILURE);
->>>>>>> upstream/master
 			}
 			else if(!types.empty())
 			{
@@ -5105,41 +5081,25 @@ void AI::MovePlayer(Ship &ship, Command &activeCommands)
 		{
 			Messages::Add(*GameData::Messages().Get("no hyperdrive"));
 			autoPilot.Clear();
-<<<<<<< HEAD
-			Audio::Play("fail");
-=======
 			UI::PlaySound(UI::UISound::FAILURE);
->>>>>>> upstream/master
 		}
 		else if(!ship.JumpNavigation().JumpFuel(ship.GetTargetSystem()))
 		{
 			Messages::Add(*GameData::Messages().Get("cannot jump"));
 			autoPilot.Clear();
-<<<<<<< HEAD
-			Audio::Play("fail");
-=======
 			UI::PlaySound(UI::UISound::FAILURE);
->>>>>>> upstream/master
 		}
 		else if(!ship.JumpsRemaining() && !ship.IsEnteringHyperspace())
 		{
 			Messages::Add(*GameData::Messages().Get("no fuel"));
 			autoPilot.Clear();
-<<<<<<< HEAD
-			Audio::Play("fail");
-=======
 			UI::PlaySound(UI::UISound::FAILURE);
->>>>>>> upstream/master
 		}
 		else if(ship.IsLanding())
 		{
 			Messages::Add(*GameData::Messages().Get("cannot jump while landing"));
 			autoPilot.Clear(Command::JUMP);
-<<<<<<< HEAD
-			Audio::Play("fail");
-=======
 			UI::PlaySound(UI::UISound::FAILURE);
->>>>>>> upstream/master
 		}
 		else
 		{

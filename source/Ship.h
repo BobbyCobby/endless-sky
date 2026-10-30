@@ -222,13 +222,9 @@ public:
 	void SetUUID(const EsUuid &id);
 
 	// Get the name of this particular ship.
-<<<<<<< HEAD
-	const std::string &Name() const;
-	const std::string &TrueName() const { return variantName.empty() ? ModelName() : VariantName(); }
-=======
 	const std::string &GivenName() const;
+	const std::string &Name() const { return GivenName(); }
 	void SetGivenName(const std::string &name);
->>>>>>> upstream/master
 
 	// Set / Get the name of this model of ship.
 	void SetTrueModelName(const std::string &model);
@@ -851,32 +847,6 @@ private:
 	double hyperspaceFuelCost = 0.;
 	Point hyperspaceOffset;
 
-<<<<<<< HEAD
-	// The hull may spring a "leak" (venting atmosphere, flames, blood, etc.)
-	// when the ship is dying.
-	class Leak {
-	public:
-		Leak(const Effect *effect = nullptr) : effect(effect) {}
-
-		bool operator==(const Leak &rhs) const
-		{
-			return
-				effect == rhs.effect &&
-				location == rhs.location &&
-				angle.Degrees() == rhs.angle.Degrees() &&
-				openPeriod == rhs.openPeriod &&
-				closePeriod == rhs.closePeriod;
-		}
-		bool operator!=(const Leak &rhs) const { return !(*this == rhs); }
-
-		const Effect *effect = nullptr;
-		Point location;
-		Angle angle;
-		int openPeriod = 60;
-		int closePeriod = 60;
-	};
-=======
->>>>>>> upstream/master
 	std::vector<Leak> leaks;
 	std::vector<Leak> activeLeaks;
 
@@ -906,19 +876,17 @@ private:
 	std::vector<std::weak_ptr<Ship>> escorts;
 	std::weak_ptr<Ship> parent;
 
-<<<<<<< HEAD
-	friend class OutfitEditor;
-	friend class ShipEditor;
-=======
 	// List of enemy ships targeting this one.
 	std::vector<std::weak_ptr<Ship>> targetingList;
 	double targeterStrength = 0.;
 
->>>>>>> upstream/master
 	bool removeBays = false;
 
 	// If this ship is disabled or dies as a result of something like corrosion damage,
 	// attribute the event to the last government that hit this ship.
 	const Government *lastHitBy = nullptr;
 	std::list<ShipEvent> unhandledEvents;
+
+	friend class OutfitEditor;
+	friend class ShipEditor;
 };

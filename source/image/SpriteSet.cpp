@@ -15,13 +15,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "SpriteSet.h"
 
-<<<<<<< HEAD:source/SpriteSet.cpp
-#include "Set.h"
-#include "Files.h"
-#include "Logger.h"
-=======
 #include "../Logger.h"
->>>>>>> upstream/master:source/image/SpriteSet.cpp
 #include "Sprite.h"
 
 using namespace std;
@@ -32,15 +26,6 @@ const Sprite *SpriteSet::Get(const string &name) const
 {
 	lock_guard<mutex> guard(modifyMutex);
 
-<<<<<<< HEAD:source/SpriteSet.cpp
-	auto it = sprites.Find(name);
-	if(!it)
-	{
-		it = sprites.Get(name);
-		*it = Sprite(name);
-	}
-	return it;
-=======
 
 
 void SpriteSet::CheckReferences()
@@ -48,7 +33,6 @@ void SpriteSet::CheckReferences()
 	for(const auto &[name, sprite] : sprites)
 		if(!sprite.HasDimensions())
 			Logger::Log("Image \"" + name + "\" is referred to, but has no pixels.", Logger::Level::WARNING);
->>>>>>> upstream/master:source/image/SpriteSet.cpp
 }
 
 

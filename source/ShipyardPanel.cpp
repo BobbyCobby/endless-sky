@@ -49,46 +49,8 @@ class System;
 using namespace std;
 
 namespace {
-<<<<<<< HEAD
-	// The name entry dialog should include a "Random" button to choose a random
-	// name using the civilian ship name generator.
-	class NameDialog : public Dialog {
-	public:
-		NameDialog(ShipyardPanel *panel, void (ShipyardPanel::*fun)(const string &), const string &message)
-			: Dialog(panel, fun, message) {}
-
-		virtual void Draw() override
-		{
-			Dialog::Draw();
-
-			randomPos = cancelPos - Point(80., 0.);
-			SpriteShader::Draw(GameData::Sprites().Get("ui/dialog cancel"), randomPos);
-
-			const Font &font = FontSet::Get(14);
-			static const string label = "Random";
-			Point labelPos = randomPos - .5 * Point(font.Width(label), font.Height());
-			font.Draw(label, labelPos, *GameData::Colors().Get("medium"));
-		}
-
-	protected:
-		virtual bool Click(int x, int y, int clicks) override
-		{
-			Point off = Point(x, y) - randomPos;
-			if(fabs(off.X()) < 40. && fabs(off.Y()) < 20.)
-			{
-				input = GameData::Phrases().Get("civilian")->Get();
-				return true;
-			}
-			return Dialog::Click(x, y, clicks);
-		}
-
-	private:
-		Point randomPos;
-	};
-=======
 	// Label for the description field of the detail pane.
 	const string DESCRIPTION = "description";
->>>>>>> upstream/master
 }
 
 
@@ -167,12 +129,6 @@ double ShipyardPanel::DrawDetails(const Point &center)
 {
 	string selectedItem = "No Ship Selected";
 	const Font &font = FontSet::Get(14);
-<<<<<<< HEAD
-	const Color &bright = *GameData::Colors().Get("bright");
-	const Color &dim = *GameData::Colors().Get("medium");
-	const Sprite *collapsedArrow = GameData::Sprites().Get("ui/collapsed");
-=======
->>>>>>> upstream/master
 
 	double heightOffset = 20.;
 
@@ -181,59 +137,9 @@ double ShipyardPanel::DrawDetails(const Point &center)
 		shipInfo.Update(*selectedShip, player, hasFleetCapacity, collapsed.contains(DESCRIPTION), true);
 		selectedItem = selectedShip->DisplayModelName();
 
-<<<<<<< HEAD
-		const Sprite *background = GameData::Sprites().Get("ui/shipyard selected");
-		const Sprite *shipSprite = selectedShip->GetSprite();
-		float spriteScale = shipSprite
-			? min(1.f, (INFOBAR_WIDTH - 20.f) / max(shipSprite->Width(), shipSprite->Height()))
-			: 1.f;
-
-		int swizzle = selectedShip->CustomSwizzle() >= 0
-			? selectedShip->CustomSwizzle() : GameData::PlayerGovernment()->GetSwizzle();
-
-		Point spriteCenter(center.X(), center.Y() + 20 + TileSize() / 2);
-		Point startPoint(center.X() - INFOBAR_WIDTH / 2 + 20, center.Y() + 20 + TileSize());
-
-		double descriptionOffset = 35.;
-		Point descCenter(Screen::Right() - SIDE_WIDTH + INFOBAR_WIDTH / 2, startPoint.Y() + 20.);
-
-		// Maintenance note: This can be replaced with collapsed.contains() in C++20
-		if(!collapsed.count("description"))
-		{
-			descriptionOffset = shipInfo.DescriptionHeight();
-			shipInfo.DrawDescription(startPoint);
-		}
-		else
-		{
-			std::string label = "description";
-			font.Draw(label, startPoint + Point(35., 12.), dim);
-			SpriteShader::Draw(collapsedArrow, startPoint + Point(20., 20.));
-		}
-
-		// Calculate the new ClickZone for the description.
-		Point descDimensions(INFOBAR_WIDTH, descriptionOffset + 10.);
-		ClickZone<std::string> collapseDescription = ClickZone<std::string>(
-			descCenter, descDimensions, std::string("description"));
-
-		// Find the old zone, and replace it with the new zone.
-		for(auto it = categoryZones.begin(); it != categoryZones.end(); ++it)
-		{
-			if(it->Value() == "description")
-			{
-				categoryZones.erase(it);
-				break;
-			}
-		}
-		categoryZones.emplace_back(collapseDescription);
-
-		Point attrPoint(startPoint.X(), startPoint.Y() + descriptionOffset);
-		Point outfPoint(startPoint.X(), attrPoint.Y() + shipInfo.AttributesHeight());
-
-=======
 		const Point spriteCenter(center.X(), center.Y() + 20 + TileSize() / 2);
 		const Point startPoint(center.X() - INFOBAR_WIDTH / 2 + 20, center.Y() + 20 + TileSize());
 		const Sprite *background = SpriteSet::Get("ui/shipyard selected");
->>>>>>> upstream/master
 		SpriteShader::Draw(background, spriteCenter);
 
 		const Sprite *shipSprite = selectedShip->GetSprite();

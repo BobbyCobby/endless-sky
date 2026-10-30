@@ -66,11 +66,6 @@ void Effect::Load(const DataNode &node)
 		bool hasValue = child.Size() >= 2;
 		if(key == "sprite")
 			LoadSprite(child);
-<<<<<<< HEAD
-		else if(child.Token(0) == "sound" && child.Size() >= 2)
-			sound = GameData::Sounds().Get(child.Token(1));
-		else if(child.Token(0) == "lifetime" && child.Size() >= 2)
-=======
 		else if(key == "zooms")
 			inheritsZoom = true;
 		else if(key == "sound" && hasValue)
@@ -83,7 +78,6 @@ void Effect::Load(const DataNode &node)
 				child.PrintTrace("Unknown sound category \"" + child.Token(1) + "\"");
 		}
 		else if(key == "lifetime" && hasValue)
->>>>>>> upstream/master
 			lifetime = child.Value(1);
 		else if(key == "random lifetime" && hasValue)
 			randomLifetime = child.Value(1);

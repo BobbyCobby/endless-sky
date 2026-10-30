@@ -144,14 +144,5 @@ private:
 	bool isDefined = false;
 
 	std::bitset<PERSONALITY_COUNT> flags;
-<<<<<<< HEAD
-	double confusionMultiplier;
-	double aimMultiplier;
-	Point confusion;
-	Point confusionVelocity;
-
-	friend class FleetEditor;
-=======
 	ExclusiveItem<Confusion> confusion;
->>>>>>> upstream/master
 };

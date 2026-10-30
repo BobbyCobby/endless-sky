@@ -17,6 +17,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include <map>
 #include <string>
+#include <utility>
 
 
 
@@ -35,13 +36,9 @@ public:
 	Type *Find(const std::string &name);
 	const Type *Find(const std::string &name) const;
 
-<<<<<<< HEAD
-	bool Has(const std::string &name) const { return data.count(name); }
+	bool Has(const std::string &name) const { return data.contains(name); }
 	void Rename(const std::string &name, const std::string &newName) const;
 	void Erase(const std::string &name) const { data[name] = {}; }
-=======
-	bool Has(const std::string &name) const { return data.contains(name); }
->>>>>>> upstream/master
 
 	typename std::map<std::string, Type>::iterator begin() { return data.begin(); }
 	typename std::map<std::string, Type>::const_iterator begin() const { return data.begin(); }
@@ -73,29 +70,28 @@ const Type *Set<Type>::Find(const std::string &name) const
 
 
 
-<<<<<<< HEAD
-template <class Type>
+template<class Type>
 Type *Set<Type>::Find(const std::string &name)
 {
-	return const_cast<Type *>(const_cast<const Set<Type> *>(this)->Find(name));
+	return const_cast<Type *>(static_cast<const Set<Type> *>(this)->Find(name));
 }
 
 
 
-template <typename T>
-void Set<T>::Rename(const std::string &name, const std::string &newName) const
+template<class Type>
+void Set<Type>::Rename(const std::string &name, const std::string &newName) const
 {
 	auto node = data.extract(name);
-	node.key() = newName;
-	data.insert(std::move(node));
+	if(!node.empty())
+	{
+		node.key() = newName;
+		data.insert(std::move(node));
+	}
 }
 
 
 
-template <class Type>
-=======
 template<class Type>
->>>>>>> upstream/master
 void Set<Type>::Revert(const Set<Type> &other)
 {
 	auto it = data.begin();
@@ -118,34 +114,3 @@ void Set<Type>::Revert(const Set<Type> &other)
 		// reverting to has a name that is not also in this set.
 	}
 }
-<<<<<<< HEAD
-
-
-
-template <class Type>
-void Set<Type>::RevertNoOverwrite(const Set<Type> &other)
-{
-	auto it = data.begin();
-	auto oit = other.data.begin();
-
-	while(it != data.end())
-	{
-		if(oit == other.data.end() || it->first < oit->first)
-			it = data.erase(it);
-		else if(it->first == oit->first)
-		{
-			// Don't overwrite!
-			++it;
-			++oit;
-		}
-
-		// There should never be a case when an entry in the set we are
-		// reverting to has a name that is not also in this set.
-	}
-}
-
-
-
-#endif
-=======
->>>>>>> upstream/master

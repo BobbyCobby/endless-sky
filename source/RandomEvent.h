@@ -29,19 +29,15 @@ class ConditionsStore;
 template<typename T>
 class RandomEvent {
 public:
+	RandomEvent(const T *event, int period) noexcept;
 	RandomEvent(const T *event, int period, const DataNode &node,
 		const ConditionsStore *playerConditions) noexcept;
 
+	const std::string &Name() const;
 	const T *Get() const noexcept;
 	int Period() const noexcept;
 	bool CanTrigger() const;
 
-<<<<<<< HEAD
-	const std::string &Name() const;
-	constexpr const T *Get() const noexcept;
-	constexpr int Period() const noexcept;
-=======
->>>>>>> upstream/master
 
 	friend constexpr bool operator==(const RandomEvent &lhs, const RandomEvent &rhs)
 	{
@@ -55,13 +51,18 @@ public:
 private:
 	const T *event;
 	int period;
-<<<<<<< HEAD
+	ConditionSet conditions;
 
 	friend class SystemEditor;
-=======
-	ConditionSet conditions;
->>>>>>> upstream/master
 };
+
+
+
+template<typename T>
+RandomEvent<T>::RandomEvent(const T *event, int period) noexcept
+	: event(event), period(period > 0 ? period : 200)
+{
+}
 
 
 
@@ -76,21 +77,18 @@ RandomEvent<T>::RandomEvent(const T *event, int period, const DataNode &node,
 		// TODO: else with an error-message?
 }
 
-<<<<<<< HEAD
-template <typename T>
+
+
+template<typename T>
 const std::string &RandomEvent<T>::Name() const
 {
 	return event->Name();
 }
 
-template <typename T>
-constexpr const T *RandomEvent<T>::Get() const noexcept
-=======
 
 
 template<typename T>
 const T *RandomEvent<T>::Get() const noexcept
->>>>>>> upstream/master
 {
 	return event;
 }

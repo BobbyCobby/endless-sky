@@ -18,18 +18,6 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "../Angle.h"
 #include "../Body.h"
 #include "DrawList.h"
-<<<<<<< HEAD:source/StarField.cpp
-#include "GameData.h"
-#include "Engine.h"
-#include "pi.h"
-#include "Point.h"
-#include "Preferences.h"
-#include "Random.h"
-#include "Screen.h"
-#include "Sprite.h"
-#include "SpriteSet.h"
-#include "System.h"
-=======
 #include "../GameData.h"
 #include "../Interface.h"
 #include "../pi.h"
@@ -39,7 +27,6 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "../image/Sprite.h"
 #include "../image/SpriteSet.h"
 #include "../System.h"
->>>>>>> upstream/master:source/shader/StarField.cpp
 
 #include <algorithm>
 #include <cmath>

@@ -15,15 +15,6 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 #pragma once
 
-<<<<<<< HEAD:source/SpriteSet.h
-#include "Set.h"
-#include "Sprite.h"
-
-#include <map>
-#include <mutex>
-#include <set>
-=======
->>>>>>> upstream/master:source/image/SpriteSet.h
 #include <string>
 #include <vector>
 
@@ -50,17 +41,5 @@ public:
 	// Inspect the sprite map and warn if some images contain no data.
 	void CheckReferences() const;
 
-<<<<<<< HEAD:source/SpriteSet.h
-
-private:
-	mutable Set<Sprite> sprites;
-	mutable std::vector<const Sprite *> moonSprites;
-	mutable std::vector<const Sprite *> stationSprites;
-	mutable std::vector<const Sprite *> giantSprites;
-	mutable std::vector<const Sprite *> planetSprites;
-	mutable std::vector<const Sprite *> starSprites;
-	mutable std::mutex modifyMutex;
-=======
 	static Sprite *Modify(const std::string &name);
->>>>>>> upstream/master:source/image/SpriteSet.h
 };

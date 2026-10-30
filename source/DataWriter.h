@@ -18,11 +18,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "WeightedList.h"
 
 #include <algorithm>
-<<<<<<< HEAD
-#include <iomanip>
-=======
 #include <filesystem>
->>>>>>> upstream/master
 #include <map>
 #include <sstream>
 #include <string>
@@ -58,15 +54,8 @@ public:
 
 	// The Write() function can take any number of arguments. Each argument is
 	// converted to a token. Arguments may be strings or numeric values.
-<<<<<<< HEAD
-	template <class A, class ...B>
-	void Write(const A &a, const B &...others);
-	template <typename ...As>
-	void WriteQuoted(const std::string &a, const As &...others);
-=======
 	template<class A, class ...B>
 	void Write(const A &a, B... others);
->>>>>>> upstream/master
 	// Write the entire structure represented by a DataNode, including any
 	// children that it has.
 	void Write(const DataNode &node);
@@ -115,13 +104,8 @@ private:
 
 // The Write() function can take any number of arguments, each of which becomes
 // a token. They must be either strings or numeric types.
-<<<<<<< HEAD
-template <class A, class ...B>
-void DataWriter::Write(const A &a, const B &...others)
-=======
 template<class A, class ...B>
 void DataWriter::Write(const A &a, B... others)
->>>>>>> upstream/master
 {
 	WriteToken(a);
 	Write(others...);
@@ -181,23 +165,7 @@ void WriteSorted(const C<T, Args...> &container, A sortFn, B writeFn)
 	for(const auto &sit : sorted)
 		writeFn(*sit);
 }
-<<<<<<< HEAD
-template <class T, template<class, class...> class C, class... Args, typename A, typename B>
-void WriteSorted(const C<const T *, Args...> &container, A sortFn, B writeFn)
-{
-	std::vector<const T *> sorted;
-	sorted.reserve(container.size());
-	for(const auto &it : container)
-		sorted.emplace_back(it);
-	std::sort(sorted.begin(), sorted.end(), sortFn);
-
-	for(const auto &sit : sorted)
-		writeFn(*sit);
-}
-template <class K, class V, class... Args, typename A, typename B>
-=======
 template<class K, class V, class... Args, typename A, typename B>
->>>>>>> upstream/master
 void WriteSorted(const std::map<const K *, V, Args...> &container, A sortFn, B writeFn)
 {
 	std::vector<const std::pair<const K *const, V> *> sorted;
@@ -209,22 +177,3 @@ void WriteSorted(const std::map<const K *, V, Args...> &container, A sortFn, B w
 	for(const auto &sit : sorted)
 		writeFn(*sit);
 }
-<<<<<<< HEAD
-template <class T, typename A, typename B>
-void WriteSorted(const WeightedList<T> &container, A sortFn, B writeFn)
-{
-	std::vector<const typename WeightedList<T>::Item *> sorted;
-	sorted.reserve(container.size());
-	for(const auto &it : container)
-		sorted.emplace_back(&it);
-	std::sort(sorted.begin(), sorted.end(), sortFn);
-
-	for(const auto &sit : sorted)
-		writeFn(*sit);
-}
-
-
-
-#endif
-=======
->>>>>>> upstream/master

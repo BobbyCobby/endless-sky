@@ -26,22 +26,14 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 class GameWindow {
 public:
 	static std::string SDLVersions();
-<<<<<<< HEAD
-	static bool Init(std::function<void(SDL_Window *, const SDL_GLContext &)> post = {});
-=======
 	static bool Init(bool headless);
->>>>>>> upstream/master
 	static void Quit();
 
 	// Paint the next frame in the main window.
 	static void Step();
 
 	// Handle resize events of the main window.
-<<<<<<< HEAD
-	static void AdjustViewport(int topBar = 0);
-=======
 	static void AdjustViewport(bool noResizeEvent = false);
->>>>>>> upstream/master
 
 	// Attempt to set the game's VSync setting.
 	static bool SetVSync(Preferences::VSync state);

@@ -71,38 +71,11 @@ namespace {
 
 
 
-<<<<<<< HEAD
-PlanetLabel::PlanetLabel(const Point &position, const StellarObject &object, const System *system, double zoom, bool alwaysVisisble)
-	: position(position * zoom), radius(object.RealRadius() * zoom)
-{
-	const Planet &planet = *object.GetPlanet();
-	name = planet.Name();
-	if(planet.IsWormhole())
-		color = *planet.GetWormhole()->GetLinkColor();
-	else if(planet.GetGovernment())
-	{
-		government = "(" + planet.GetGovernment()->Name() + ")";
-		color = planet.GetGovernment()->GetColor();
-		color = Color(color.Get()[0] * .5f + .3f, color.Get()[1] * .5f + .3f, color.Get()[2] * .5f + .3f);
-		if(!planet.CanLand())
-			hostility = 3 + 2 * planet.GetGovernment()->IsEnemy();
-	}
-	else
-	{
-		color = Color(.3f, .3f, .3f, 1.f);
-		government = "(No government)";
-	}
-	float alpha = static_cast<float>(min(.5, max(0., .6 - (position.Length() - object.Radius()) * .001 * zoom)));
-	if(alwaysVisisble)
-		alpha = .75f;
-	color = Color(color.Get()[0] * alpha, color.Get()[1] * alpha, color.Get()[2] * alpha, 0.);
-=======
 PlanetLabel::PlanetLabel(const vector<PlanetLabel> &labels, const System &system, const StellarObject &object)
 	: object(&object)
 {
 	UpdateData(labels, system);
 }
->>>>>>> upstream/master
 
 
 

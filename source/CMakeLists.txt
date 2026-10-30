@@ -330,17 +330,6 @@ target_sources(EndlessSkyLib PRIVATE
 	ShopPanel.h
 	SpaceportPanel.cpp
 	SpaceportPanel.h
-<<<<<<< HEAD
-	Sprite.cpp
-	Sprite.h
-	SpriteSet.cpp
-	SpriteSet.h
-	SpriteShader.cpp
-	SpriteShader.h
-	StarField.cpp
-	StarField.h
-=======
->>>>>>> upstream/master
 	StartConditions.cpp
 	StartConditions.h
 	StartConditionsPanel.cpp

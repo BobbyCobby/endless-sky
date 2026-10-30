@@ -15,20 +15,12 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "Weapon.h"
 
-<<<<<<< HEAD
-=======
 #include "audio/Audio.h"
->>>>>>> upstream/master
 #include "DataNode.h"
 #include "Effect.h"
 #include "GameData.h"
 #include "Outfit.h"
-<<<<<<< HEAD
-#include "SoundSet.h"
-#include "SpriteSet.h"
-=======
 #include "image/SpriteSet.h"
->>>>>>> upstream/master
 
 #include <algorithm>
 
@@ -128,13 +120,9 @@ void Weapon::Load(const DataNode &node)
 		else if(key == "hardpoint sprite")
 			hardpointSprite.LoadSprite(child);
 		else if(key == "sound")
-<<<<<<< HEAD
-			sound = GameData::Sounds().Get(child.Token(1));
-=======
 			sound = Audio::Get(child.Token(1));
 		else if(key == "empty sound")
 			emptySound = Audio::Get(child.Token(1));
->>>>>>> upstream/master
 		else if(key == "ammo")
 		{
 			int usage = (child.Size() >= 3) ? child.Value(2) : 1;

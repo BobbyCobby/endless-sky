@@ -126,17 +126,6 @@ namespace {
 Government::Government()
 {
 	// Default penalties:
-<<<<<<< HEAD
-	penaltyFor[ShipEvent::ASSIST] = -0.1;
-	penaltyFor[ShipEvent::DISABLE] = 0.5;
-	penaltyFor[ShipEvent::BOARD] = 0.3;
-	penaltyFor[ShipEvent::CAPTURE] = 1.;
-	penaltyFor[ShipEvent::DESTROY] = 1.;
-	penaltyFor[ShipEvent::SCAN_OUTFITS] = 0.;
-	penaltyFor[ShipEvent::SCAN_CARGO] = 0.;
-	penaltyFor[ShipEvent::PROVOKE] = 0.;
-	penaltyFor[ShipEvent::ATROCITY] = 10.;
-=======
 	penaltyFor[ShipEvent::ASSIST] = PenaltyEffect(-.1);
 	penaltyFor[ShipEvent::DISABLE] = PenaltyEffect(.5);
 	penaltyFor[ShipEvent::BOARD] = PenaltyEffect(.3);
@@ -148,7 +137,6 @@ Government::Government()
 	penaltyFor[ShipEvent::ATROCITY] = PenaltyEffect(10., SpecialPenalty::ATROCITY);
 
 	id = nextID++;
->>>>>>> upstream/master
 }
 
 
@@ -292,12 +280,8 @@ void Government::Load(const DataNode &node, const set<const System *> *visitedSy
 				if(grand.Size() >= 2)
 				{
 					const Government *gov = GameData::Governments().Get(grand.Token(0));
-<<<<<<< HEAD
-					attitudeToward[gov] = grand.Value(1);
-=======
 					attitudeToward.resize(nextID, numeric_limits<double>::quiet_NaN());
 					attitudeToward[gov->id] = grand.Value(1);
->>>>>>> upstream/master
 				}
 				else
 					grand.PrintTrace("Skipping unrecognized attribute:");
@@ -353,20 +337,12 @@ void Government::Load(const DataNode &node, const set<const System *> *visitedSy
 		else if(key == "custom penalties for")
 			for(const DataNode &grand : child)
 			{
-<<<<<<< HEAD
-				if(grand.Token(0) == "remove" && grand.Size() >= 2)
-					customPenalties[GameData::Governments().Get(grand.Token(1))].clear();
-				else
-				{
-					auto &pens = customPenalties[GameData::Governments().Get(grand.Token(0))];
-=======
 				const string &grandKey = grand.Token(0);
 				if(grandKey == "remove" && grand.Size() >= 2)
 					customPenalties[GameData::Governments().Get(grand.Token(1))->id].clear();
 				else
 				{
 					auto &pens = customPenalties[GameData::Governments().Get(grandKey)->id];
->>>>>>> upstream/master
 					PenaltyHelper(grand, pens);
 				}
 			}
@@ -568,11 +544,7 @@ bool Government::IsDefined() const
 
 
 // Get the display name of this government.
-<<<<<<< HEAD
-const string &Government::Name() const
-=======
 const string &Government::DisplayName() const
->>>>>>> upstream/master
 {
 	return displayName;
 }
@@ -620,16 +592,11 @@ double Government::AttitudeToward(const Government *other) const
 	if(other == this)
 		return 1.;
 
-<<<<<<< HEAD
-	auto it = attitudeToward.find(other);
-	return (it == attitudeToward.end() ? 0. : it->second);
-=======
 	if(attitudeToward.size() <= other->id)
 		return defaultAttitude;
 
 	double attitude = attitudeToward[other->id];
 	return std::isnan(attitude) ? defaultAttitude : attitude;
->>>>>>> upstream/master
 }
 
 
@@ -652,12 +619,8 @@ Government::PenaltyEffect Government::PenaltyFor(int eventType, const Government
 	if(other == this)
 		return PenaltyHelper(eventType, penaltyFor);
 
-<<<<<<< HEAD
-	const auto &penalties = useForeignPenaltiesFor.count(other) ? other->penaltyFor : penaltyFor;
-=======
 	const int id = other->id;
 	const auto &penalties = useForeignPenaltiesFor.contains(id) ? other->penaltyFor : penaltyFor;
->>>>>>> upstream/master
 
 	const auto it = customPenalties.find(other);
 	if(it == customPenalties.end())

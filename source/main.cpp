@@ -33,11 +33,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "GameWindow.h"
 #include "Interface.h"
 #include "Logger.h"
-<<<<<<< HEAD
-#include "MenuAnimationPanel.h"
-=======
 #include "MainPanel.h"
->>>>>>> upstream/master
 #include "MenuPanel.h"
 #include "Panel.h"
 #include "PilotProfile.h"
@@ -47,20 +43,12 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "PrintData.h"
 #include "Random.h"
 #include "Screen.h"
-<<<<<<< HEAD
-#include "SpriteSet.h"
-#include "SpriteShader.h"
-#include "TaskQueue.h"
-#include "Test.h"
-#include "TestContext.h"
-=======
 #include "image/SpriteSet.h"
 #include "shader/SpriteShader.h"
 #include "Statistics.h"
 #include "TaskQueue.h"
 #include "test/Test.h"
 #include "test/TestContext.h"
->>>>>>> upstream/master
 #include "UI.h"
 
 #ifdef _WIN32
@@ -180,21 +168,6 @@ int main(int argc, char *argv[])
 	Logger::Session logSession{isConsoleOnly || isTesting};
 
 	try {
-<<<<<<< HEAD
-		TaskQueue taskQueue;
-
-		const bool isConsoleOnly = loadOnly || printTests || printData;
-		if(isConsoleOnly)
-			loadOptions |= GameAssets::OnlyData;
-		else
-		{
-			// OpenAL needs to be initialized before we begin loading any sounds/music.
-			Audio::Init();
-		}
-
-		// Begin loading the game data.
-		future<void> dataLoading = GameData::BeginLoad(loadOptions);
-=======
 		// Load plugin settings and preferences before game data.
 		Preferences::Load();
 		PluginManager::LoadSettings();
@@ -204,7 +177,6 @@ int main(int argc, char *argv[])
 		// Begin loading the game data.
 		auto dataFuture = GameData::BeginLoad(queue, player, isConsoleOnly, debugMode,
 			isConsoleOnly || checkAssets || (isTesting && !debugMode));
->>>>>>> upstream/master
 
 		// If we are not using the UI, or performing some automated task, we should load
 		// all data now.
@@ -285,10 +257,6 @@ int main(int argc, char *argv[])
 			GameWindow::Step();
 		}
 
-<<<<<<< HEAD
-		// This is the main loop where all the action begins.
-		GameLoop(player, conversation, testToRunName, loadOptions & GameAssets::Debug);
-=======
 		Audio::Init(GameData::Sources());
 
 		if(isTesting && !noTestMute)
@@ -297,7 +265,6 @@ int main(int argc, char *argv[])
 		CustomEvents::Init();
 		// This is the main loop where all the action begins.
 		GameLoop(player, queue, conversation, testToRunName, debugMode);
->>>>>>> upstream/master
 	}
 	catch(Test::known_failure_tag)
 	{
@@ -345,30 +312,7 @@ void GameLoop(PlayerInfo &player, TaskQueue &queue, const Conversation &conversa
 	// Whether the game data is done loading. This is used to trigger any
 	// tests to run.
 	bool dataFinishedLoading = false;
-<<<<<<< HEAD
-	menuPanels.Push(new GameLoadingPanel([&player, &conversation, &menuPanels, &gamePanels] (GameLoadingPanel *This)
-		{
-			player.LoadRecent();
-
-			menuPanels.Pop(This);
-			if(conversation.IsEmpty())
-			{
-				menuPanels.Push(new MenuPanel(player, gamePanels));
-				menuPanels.Push(new MenuAnimationPanel());
-			}
-			else
-			{
-				menuPanels.Push(new MenuAnimationPanel());
-
-				auto *talk = new ConversationPanel(player, conversation);
-
-				talk->SetCallback([ui = &menuPanels](int response) { ui->Quit(); });
-				menuPanels.Push(talk);
-			}
-		}, dataFinishedLoading));
-=======
 	menuPanels.Push(new GameLoadingPanel(player, queue, conversation, gamePanels, dataFinishedLoading));
->>>>>>> upstream/master
 
 	bool showCursor = true;
 	int cursorTime = 0;
@@ -500,23 +444,6 @@ void GameLoop(PlayerInfo &player, TaskQueue &queue, const Conversation &conversa
 			SDL_Keymod mod = SDL_GetModState();
 			Font::ShowUnderlines(mod & KMOD_ALT);
 
-<<<<<<< HEAD
-		// Process any tasks to execute.
-		TaskQueue::ProcessTasks();
-
-		// All manual events and processing done. Handle any test inputs and events if we have any.
-		const Test *runningTest = testContext.CurrentTest();
-		if(runningTest && dataFinishedLoading)
-		{
-			// When flying around, all test processing must be handled in the
-			// thread-safe section of Engine. When not flying around (and when no
-			// Engine exists), then it is safe to execute the tests from here.
-			auto mainPanel = gamePanels.Root();
-			if(!isPaused && inFlight && menuPanels.IsEmpty() && mainPanel)
-				mainPanel->SetTestContext(testContext);
-			else if(debugMode && testDebugUIDelay > 0)
-				--testDebugUIDelay;
-=======
 			// In full-screen mode, hide the cursor if inactive for ten seconds,
 			// but only if the player is flying around in the main view.
 			bool inFlight = (menuPanels.IsEmpty() && gamePanels.Root() == gamePanels.Top());
@@ -555,7 +482,6 @@ void GameLoop(PlayerInfo &player, TaskQueue &queue, const Conversation &conversa
 					timer.SetFrameRate(frameRate);
 				}
 			}
->>>>>>> upstream/master
 			else
 			{
 				if(frameRate < 60)
@@ -648,23 +574,7 @@ void GameLoop(PlayerInfo &player, TaskQueue &queue, const Conversation &conversa
 
 			GameWindow::Step();
 
-<<<<<<< HEAD
-		Audio::Step();
-
-		// Events in this frame may have cleared out the menu, in which case
-		// we should draw the game panels instead:
-		(menuPanels.IsEmpty() ? gamePanels : menuPanels).DrawAll();
-		if(isFastForward)
-			SpriteShader::Draw(GameData::Sprites().Get("ui/fast forward"), Screen::TopLeft() + Point(10., 10.));
-
-		GameWindow::Step();
-
-		// When we perform automated testing, then we run the game by default as quickly as possible.
-		// Except when debug-mode is set.
-		if(!testContext.CurrentTest() || debugMode)
-=======
 			// Lock the game loop to 60 FPS.
->>>>>>> upstream/master
 			timer.Wait();
 
 			// If the player ended this frame in-game, count the elapsed time as played time.

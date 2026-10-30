@@ -15,25 +15,13 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "GameLoadingPanel.h"
 
-<<<<<<< HEAD
-#include "Angle.h"
-#include "Audio.h"
-=======
 #include "audio/Audio.h"
 #include "Conversation.h"
->>>>>>> upstream/master
 #include "ConversationPanel.h"
 #include "GameData.h"
 #include "image/MaskManager.h"
 #include "MenuAnimationPanel.h"
 #include "MenuPanel.h"
-<<<<<<< HEAD
-#include "Point.h"
-#include "PointerShader.h"
-#include "Ship.h"
-#include "SpriteSet.h"
-#include "StarField.h"
-=======
 #include "PilotProfile.h"
 #include "PlayerInfo.h"
 #include "Point.h"
@@ -41,21 +29,15 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "shader/StarField.h"
 #include "TaskQueue.h"
 #include "UI.h"
->>>>>>> upstream/master
 
 #include "opengl.h"
 
 
 
-<<<<<<< HEAD
-GameLoadingPanel::GameLoadingPanel(mfunction<void(GameLoadingPanel *)> done, bool &finishedLoading)
-	: done(std::move(done)), finishedLoading(finishedLoading), ANGLE_OFFSET(360. / MAX_TICKS)
-=======
 GameLoadingPanel::GameLoadingPanel(PlayerInfo &player, TaskQueue &queue, const Conversation &conversation,
 	UI &gamePanels, bool &finishedLoading)
 	: player(player), queue(queue), conversation(conversation), gamePanels(gamePanels),
 		finishedLoading(finishedLoading), loadingCircle(140.f, 60)
->>>>>>> upstream/master
 {
 	SetIsFullScreen(true);
 }
@@ -66,10 +48,7 @@ void GameLoadingPanel::Step()
 {
 	progress = GameData::GetProgress();
 
-<<<<<<< HEAD
-=======
 	queue.ProcessSyncTasks();
->>>>>>> upstream/master
 	if(GameData::IsLoaded())
 	{
 		// Now that we have finished loading all the basic sprites and sounds, we can look for invalid file paths,
@@ -79,9 +58,6 @@ void GameLoadingPanel::Step()
 		// Set the game's initial internal state.
 		GameData::FinishLoading();
 
-<<<<<<< HEAD
-		done(this);
-=======
 		PilotProfile::LoadProfiles();
 		player.LoadRecent();
 
@@ -105,7 +81,6 @@ void GameLoadingPanel::Step()
 			talk->SetCallback([&ui](int response) { ui.Quit(); });
 			GetUI().Push(talk);
 		}
->>>>>>> upstream/master
 
 		finishedLoading = true;
 	}

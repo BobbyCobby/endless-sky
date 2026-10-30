@@ -262,13 +262,8 @@ void Planet::Load(const DataNode &node, Set<Wormhole> &wormholes, const Conditio
 			child.PrintTrace("Cannot \"remove\" a specific value from the given key:");
 			continue;
 		}
-<<<<<<< HEAD
-		else if(key == "landscape")
-			landscape = GameData::Sprites().Get(value);
-=======
 		else if(key == "display name")
 			displayName = value;
->>>>>>> upstream/master
 		else if(key == "music")
 			music = value;
 		else if(key == "description")

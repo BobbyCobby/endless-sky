@@ -178,30 +178,3 @@ private:
 
 	friend class ShipEditor;
 };
-<<<<<<< HEAD
-
-
-
-inline bool operator==(const Hardpoint &lhs, const Hardpoint &rhs)
-{
-	return
-		lhs.outfit == rhs.outfit &&
-		lhs.point == rhs.point &&
-		lhs.baseAngle.Degrees() == rhs.baseAngle.Degrees() &&
-		lhs.isTurret == rhs.isTurret &&
-		lhs.isParallel == rhs.isParallel &&
-		lhs.isUnder == rhs.isUnder;
-}
-
-
-
-inline bool operator!=(const Hardpoint &lhs, const Hardpoint &rhs)
-{
-	return !(lhs == rhs);
-}
-
-
-
-#endif
-=======
->>>>>>> upstream/master

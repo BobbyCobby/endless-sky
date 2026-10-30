@@ -42,13 +42,6 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include <list>
 #include <map>
 #include <memory>
-<<<<<<< HEAD
-#include <optional>
-#ifndef ES_NO_THREADS
-#include <thread>
-#endif // ES_NO_THREADS
-=======
->>>>>>> upstream/master
 #include <utility>
 #include <vector>
 
@@ -80,12 +73,7 @@ public:
 	// Place all the player's ships, and "enter" the system the player is in.
 	void Place();
 	// Place NPCs spawned by a mission that offers when the player is not landed.
-<<<<<<< HEAD
-	void Place(const std::list<NPC> &npcs, std::shared_ptr<Ship> flagship = nullptr);
-	void Place(const std::shared_ptr<Ship> &ship);
-=======
 	void Place(const std::list<NPC> &npcs, const std::shared_ptr<Ship> &flagship = nullptr);
->>>>>>> upstream/master
 
 	// Wait for the previous calculations (if any) to be done.
 	void Wait();
@@ -118,14 +106,8 @@ public:
 	// projectiles stop targeting gov.
 	void BreakTargeting(const Government *gov);
 
-<<<<<<< HEAD
-	void SetCustomCenter(std::optional<Point> center) { newCustomCenter = std::move(center); }
-
-
-private:
-	void EnterSystem(const System *system = nullptr);
-=======
 	void DisengageAutopilot();
+	void SetCustomCenter(std::optional<Point> center) { newCustomCenter = std::move(center); }
 
 
 private:
@@ -144,7 +126,6 @@ private:
 		const Color color;
 	};
 
->>>>>>> upstream/master
 	class Target {
 	public:
 		Point center;
@@ -213,16 +194,12 @@ private:
 
 
 private:
-<<<<<<< HEAD
-	void ThreadEntryPoint();
-=======
 	// Determine if the click was within the radar display,
 	// if the clickable radar preference is active.
 	void LocateClick(const Point &point);
 
 	void EnterSystem();
 
->>>>>>> upstream/master
 	void CalculateStep();
 	// Calculate things that require the engine not to be paused.
 	void CalculateUnpaused(const Ship *flagship, const System *playerSystem);
@@ -256,6 +233,7 @@ private:
 
 private:
 	friend class ArenaPanel;
+	friend class Editor;
 
 	PlayerInfo &player;
 
@@ -283,21 +261,6 @@ private:
 
 	AI ai;
 
-<<<<<<< HEAD
-#ifndef ES_NO_THREADS
-	std::thread calcThread;
-	std::condition_variable condition;
-	std::mutex swapMutex;
-	bool hasFinishedCalculating = true;
-	bool terminate = false;
-#endif // ES_NO_THREADS
-
-	bool calcTickTock = false;
-	bool drawTickTock = false;
-	bool wasActive = false;
-	bool isMouseHoldEnabled = false;
-	bool isMouseTurningEnabled = false;
-=======
 	TaskQueue queue;
 	TaskQueue asyncQueue;
 
@@ -307,7 +270,6 @@ private:
 	// currently rendering buffer.
 	size_t currentCalcBuffer = 0;
 	size_t currentDrawBuffer = 0;
->>>>>>> upstream/master
 	DrawList draw[2];
 	BatchDrawList batchDraw[2];
 	Radar radar[2];
@@ -391,16 +353,5 @@ private:
 
 	Zoom zoom;
 	// Tracks the next zoom change so that objects aren't drawn at different zooms in a single frame.
-<<<<<<< HEAD
-	double nextZoom = 0.;
-
-	double load = 0.;
-	int loadCount = 0;
-	double loadSum = 0.;
-
-	friend class Editor;
-	friend class ArenaControl;
-=======
 	Zoom nextZoom;
->>>>>>> upstream/master
 };

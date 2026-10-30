@@ -27,43 +27,6 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 using namespace std;
 
 namespace {
-<<<<<<< HEAD
-	const map<string, int> TOKEN = {
-		{"pacifist", Personality::PACIFIST},
-		{"forbearing", Personality::FORBEARING},
-		{"timid", Personality::TIMID},
-		{"disables", Personality::DISABLES},
-		{"plunders", Personality::PLUNDERS},
-		{"hunting", Personality::HUNTING},
-		{"staying", Personality::STAYING},
-		{"entering", Personality::ENTERING},
-		{"nemesis", Personality::NEMESIS},
-		{"surveillance", Personality::SURVEILLANCE},
-		{"uninterested", Personality::UNINTERESTED},
-		{"waiting", Personality::WAITING},
-		{"derelict", Personality::DERELICT},
-		{"fleeing", Personality::FLEEING},
-		{"escort", Personality::ESCORT},
-		{"frugal", Personality::FRUGAL},
-		{"coward", Personality::COWARD},
-		{"vindictive", Personality::VINDICTIVE},
-		{"swarming", Personality::SWARMING},
-		{"unconstrained", Personality::UNCONSTRAINED},
-		{"mining", Personality::MINING},
-		{"harvests", Personality::HARVESTS},
-		{"appeasing", Personality::APPEASING},
-		{"mute", Personality::MUTE},
-		{"opportunistic", Personality::OPPORTUNISTIC},
-		{"merciful", Personality::MERCIFUL},
-		{"target", Personality::TARGET},
-		{"marked", Personality::MARKED},
-		{"launching", Personality::LAUNCHING},
-		{"lingering", Personality::LINGERING},
-		{"daring", Personality::DARING},
-		{"secretive", Personality::SECRETIVE},
-		{"ramming", Personality::RAMMING},
-		{"decloaked", Personality::DECLOAKED}
-=======
 	// Make sure the length of PersonalityTrait matches PERSONALITY_COUNT
 	// or the build will fail.
 	enum PersonalityTrait {
@@ -151,7 +114,6 @@ namespace {
 		{"decloaked", DECLOAKED},
 		{"quiet", QUIET},
 		{"getaway", GETAWAY}
->>>>>>> upstream/master
 	};
 
 	// Tokens that combine two or more flags.

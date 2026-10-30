@@ -56,12 +56,8 @@ void Conversation::Load(const DataNode &node, const ConditionsStore *playerCondi
 		{
 			// A scene always starts a new text node.
 			AddNode();
-<<<<<<< HEAD
-			nodes.back().scene = GameData::Sprites().Get(child.Token(1));
-=======
 			nodes.back().scene = SpriteSet::Get(child.Token(1));
 			scenes.insert(nodes.back().scene);
->>>>>>> upstream/master
 		}
 		else if(key == "label" && hasValue)
 		{

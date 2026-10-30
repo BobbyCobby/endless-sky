@@ -25,13 +25,8 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 // that prioritizes fast lookup time at the expense of longer construction time
 // compared to an STL map. That makes it suitable for ship attributes, which are
 // changed much less frequently than they are queried.
-<<<<<<< HEAD
-using DictionaryBase = std::vector<std::pair<const char *, double>>;
-class Dictionary : private DictionaryBase {
-=======
 template<class Type>
 class Dictionary : private std::vector<std::pair<const char *, Type>> {
->>>>>>> upstream/master
 public:
 	Dictionary() noexcept = default;
 	Dictionary(const DictionaryBase &base) noexcept : DictionaryBase(base) {}

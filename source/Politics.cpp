@@ -387,11 +387,7 @@ pair<const Conversation *, string> Politics::Fine(PlayerInfo &player,
 				deathSentence = gov->DeathSentence();
 		}
 		else
-<<<<<<< HEAD
-			reason = "After scanning your ship, the " + gov->Name()
-=======
 			reason = "After scanning your ship, the " + gov->DisplayName()
->>>>>>> upstream/master
 				+ " captain hails you with a grim expression on his face. He says, "
 				"\"I'm afraid we're going to have to put you to death " + reason + " Goodbye.\"";
 	}
@@ -399,11 +395,7 @@ pair<const Conversation *, string> Politics::Fine(PlayerInfo &player,
 	{
 		// Scale the fine based on how lenient this government is.
 		maxFine = lround(maxFine * gov->GetFineFraction());
-<<<<<<< HEAD
-		reason = "The " + gov->Name() + " authorities fine you "
-=======
 		reason = "The " + gov->DisplayName() + " authorities fine you "
->>>>>>> upstream/master
 			+ Format::CreditString(maxFine) + reason;
 		player.Accounts().AddFine(maxFine);
 		fined.insert(gov);

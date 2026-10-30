@@ -1655,9 +1655,6 @@ void MapPanel::DrawSystems()
 			Angle angularSpacing = 0;
 			Point starOffset = Point(0, 0);
 
-<<<<<<< HEAD
-		if(commodity == SHOW_GOVERNMENT && node.government && node.government->Name() != "Uninhabited")
-=======
 			const int starsToDraw = min<int>(node.mapIcons.size(), MAX_STARS);
 			if(starsToDraw > 1)
 			{
@@ -1678,7 +1675,6 @@ void MapPanel::DrawSystems()
 		}
 
 		if(commodity == SHOW_GOVERNMENT && node.government && node.government->DisplayName() != "Uninhabited")
->>>>>>> upstream/master
 		{
 			// For every government that is drawn, keep track of how close it
 			// is to the center of the view. The four closest governments

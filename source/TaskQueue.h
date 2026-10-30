@@ -7,18 +7,6 @@ Foundation, either version 3 of the License, or (at your option) any later versi
 
 Endless Sky is distributed in the hope that it will be useful, but WITHOUT ANY
 WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-<<<<<<< HEAD
-PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-*/
-
-#ifndef TASK_QUEUE_H_
-#define TASK_QUEUE_H_
-
-#include "mfunction.h"
-
-#include <functional>
-#include <future>
-=======
 PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with
@@ -32,31 +20,11 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include <list>
 #include <mutex>
 #include <queue>
->>>>>>> upstream/master
 
 
 
 // Class for queuing up tasks that are to be executed in parallel by using
 // every thread available on the executing CPU.
-<<<<<<< HEAD
-class TaskQueue {
-public:
-	// Initialize the threads used to execute the tasks.
-	TaskQueue();
-	~TaskQueue();
-
-	// Queue a function to execute in parallel.
-	static std::future<void> Run(mfunction<void()> f);
-	// Queue a function to execute in parallel and another function that
-	// will get executed on the main thread after the first function finishes.
-	static std::future<void> Run(mfunction<void()> f, mfunction<void()> g);
-
-	// Process any tasks scheduled to be executed on the main thread.
-	static void ProcessTasks();
-};
-
-#endif
-=======
 // The queue is also responsible to execute follow-up tasks that need to
 // executed after the async task, for example uploading a loaded to the GPU
 // (which needs to happen on the main thread on OpenGL).
@@ -125,4 +93,3 @@ private:
 	std::queue<std::function<void()>> syncTasks;
 	mutable std::mutex syncMutex;
 };
->>>>>>> upstream/master

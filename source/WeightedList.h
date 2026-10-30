@@ -68,17 +68,12 @@ public:
 	std::size_t TotalWeight() const noexcept { return total; }
 
 	// Average the result of the given function by the choices' weights.
-<<<<<<< HEAD
-	template <class Callable>
-	auto Average(Callable c) const;
-=======
 	template<class Callable>
 	std::enable_if_t<
 		std::is_arithmetic_v<std::invoke_result_t<Callable &&, const Type &&>>,
 		// The return type of WeightedList::Average, if the above test passes:
 		std::invoke_result_t<Callable &&, const Type &&>
 	> Average(Callable c) const;
->>>>>>> upstream/master
 	// Supplying a callable that does not return an arithmetic value will fail to compile.
 
 	iterator begin() noexcept { return items.begin(); }
@@ -151,27 +146,7 @@ std::size_t erase_if(WeightedList<T> &list, UnaryPredicate pred)
 
 
 
-<<<<<<< HEAD
-template <typename T, typename U>
-bool operator==(const WeightedList<T> &lhs, const WeightedList<U> &rhs)
-{
-	return lhs.items == rhs.items;
-}
-
-
-
-template <typename T, typename U>
-bool operator!=(const WeightedList<T> &lhs, const WeightedList<U> &rhs)
-{
-	return !(lhs == rhs);
-}
-
-
-
-template <class Type>
-=======
 template<class Type>
->>>>>>> upstream/master
 const Type &WeightedList<Type>::Get() const
 {
 	if(empty())
@@ -186,34 +161,19 @@ const Type &WeightedList<Type>::Get() const
 
 
 
-<<<<<<< HEAD
-template <class Type>
-template <class Callable>
-auto WeightedList<Type>::Average(Callable fn) const
-=======
 template<class Type>
 template<class Callable>
 std::enable_if_t<
 	std::is_arithmetic_v<std::invoke_result_t<Callable &&, const Type &&>>,
 	std::invoke_result_t<Callable &&, const Type &&>
 > WeightedList<Type>::Average(Callable fn) const
->>>>>>> upstream/master
 {
 	auto sum = std::invoke_result_t<Callable, const Type &>{};
 
-<<<<<<< HEAD
-	std::size_t tw = TotalWeight();
-	if (tw == 0) return sum;
-
-	for(unsigned index = 0; index < items.size(); ++index)
-		sum += std::invoke(fn, items[index].item) * items[index].weight;
-	return static_cast<decltype(sum)>(sum / tw);
-=======
 	auto sum = typename std::invoke_result_t<Callable, const Type &>{};
 	for(unsigned index = 0; index < choices.size(); ++index)
 		sum += fn(choices[index]) * weights[index];
 	return sum / tw;
->>>>>>> upstream/master
 }
 
 
@@ -233,13 +193,8 @@ Type &WeightedList<Type>::emplace_back(int weight, Args &&...args)
 
 
 
-<<<<<<< HEAD
-template <class Type>
-auto WeightedList<Type>::eraseAt(iterator position) noexcept -> iterator
-=======
 template<class Type>
 typename std::vector<Type>::iterator WeightedList<Type>::eraseAt(typename std::vector<Type>::iterator position) noexcept
->>>>>>> upstream/master
 {
 	total -= position->weight;
 	return items.erase(position);
@@ -247,14 +202,9 @@ typename std::vector<Type>::iterator WeightedList<Type>::eraseAt(typename std::v
 
 
 
-<<<<<<< HEAD
-template <class Type>
-auto WeightedList<Type>::erase(iterator first, iterator last) noexcept -> iterator
-=======
 template<class Type>
 typename std::vector<Type>::iterator WeightedList<Type>::erase(typename std::vector<Type>::iterator first,
 	typename std::vector<Type>::iterator last) noexcept
->>>>>>> upstream/master
 {
 	auto it = items.erase(first, last);
 	RecalculateWeight();

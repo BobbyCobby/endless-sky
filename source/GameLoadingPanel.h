@@ -20,14 +20,10 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "LoadingCircle.h"
 
-<<<<<<< HEAD
-class Editor;
-=======
 class Conversation;
 class PlayerInfo;
 class TaskQueue;
 class UI;
->>>>>>> upstream/master
 
 
 
@@ -35,26 +31,18 @@ class UI;
 // (like game data and save files).
 class GameLoadingPanel final : public Panel {
 public:
-<<<<<<< HEAD
-	GameLoadingPanel(mfunction<void(GameLoadingPanel *)> done, bool &finishedLoading);
-=======
 	GameLoadingPanel(PlayerInfo &player, TaskQueue &queue, const Conversation &conversation,
 		UI &gamePanels, bool &finishedLoading);
->>>>>>> upstream/master
 
 	void Step() final;
 	void Draw() final;
 
 
 private:
-<<<<<<< HEAD
-	mfunction<void(GameLoadingPanel *)> done;
-=======
 	PlayerInfo &player;
 	TaskQueue &queue;
 	const Conversation &conversation;
 	UI &gamePanels;
->>>>>>> upstream/master
 	bool &finishedLoading;
 
 	double progress = 0;

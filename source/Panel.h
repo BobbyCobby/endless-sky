@@ -112,13 +112,10 @@ protected:
 protected:
 	// Only override the ones you need; the default action is to return false.
 	virtual bool KeyDown(SDL_Keycode key, Uint16 mod, const Command &command, bool isNewPress);
-<<<<<<< HEAD
+	virtual bool Click(int x, int y, MouseButton button, int clicks);
 	virtual bool Click(int x, int y, int clicks);
 	virtual bool RClick(int x, int y);
 	virtual bool MClick(int x, int y);
-=======
-	virtual bool Click(int x, int y, MouseButton button, int clicks);
->>>>>>> upstream/master
 	virtual bool Hover(int x, int y);
 	virtual bool Drag(double dx, double dy);
 	virtual bool Release(int x, int y, MouseButton button);

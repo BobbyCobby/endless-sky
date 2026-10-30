@@ -22,9 +22,6 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "Files.h"
 #include "text/Format.h"
 #include "GameData.h"
-<<<<<<< HEAD
-#include "SpriteSet.h"
-=======
 #include "Information.h"
 #include "Planet.h"
 #include "PlayerInfo.h"
@@ -32,7 +29,6 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "image/Sprite.h"
 #include "image/SpriteSet.h"
 #include "System.h"
->>>>>>> upstream/master
 
 using namespace std;
 
@@ -118,13 +114,8 @@ void SavedGame::Load(const filesystem::path &path)
 				bool childHasValue = child.Size() >= 2;
 				if(childKey == "name" && childHasValue)
 					shipName = child.Token(1);
-<<<<<<< HEAD
-				else if(child.Token(0) == "sprite" && child.Size() >= 2)
-					shipSprite = GameData::Sprites().Get(child.Token(1));
-=======
 				else if(childKey == "sprite" && childHasValue)
 					shipSprite = SpriteSet::Get(child.Token(1));
->>>>>>> upstream/master
 			}
 		}
 	}

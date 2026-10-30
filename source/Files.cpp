@@ -413,23 +413,7 @@ string Files::Name(const filesystem::path &path)
 
 
 
-<<<<<<< HEAD
-void Files::CreateNewDirectory(const string &path)
-{
-#if defined _WIN32
-	if(!CreateDirectoryW(Utf8::ToUTF16(path).c_str(), nullptr))
-		Logger::LogError("Failed to create directory at '" + path + "'.");
-#else
-	mkdir(path.c_str(), 0755);
-#endif
-}
-
-
-
-FILE *Files::Open(const string &path, bool write)
-=======
 std::string Files::NameNoExtension(const std::filesystem::path &path)
->>>>>>> upstream/master
 {
 	string name = path.filename().string();
 	return name.substr(0, name.length() - path.extension().string().length());

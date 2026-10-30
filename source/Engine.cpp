@@ -124,15 +124,9 @@ namespace {
 
 		// If this ship has no name, show its model name instead.
 		string tag;
-<<<<<<< HEAD
-		const string &gov = ship->GetGovernment()->Name();
-		if(!ship->Name().empty())
-			tag = gov + " " + ship->Noun() + " \"" + ship->Name() + "\": ";
-=======
 		const string &gov = ship->GetGovernment()->DisplayName();
 		if(!ship->GivenName().empty())
 			tag = gov + " " + ship->Noun() + " \"" + ship->GivenName() + "\": ";
->>>>>>> upstream/master
 		else
 			tag = ship->DisplayModelName() + " (" + gov + "): ";
 
@@ -207,17 +201,8 @@ Engine::Engine(PlayerInfo &player)
 	: player(player), ai(player, ships, asteroids.Minables(), flotsam),
 	ammoDisplay(player), minimap(player), shipCollisions(256u, 32u, CollisionType::SHIP)
 {
-<<<<<<< HEAD
-	zoom = Preferences::ViewZoom();
-
-#ifndef ES_NO_THREADS
-	// Start the thread for doing calculations.
-	calcThread = thread(&Engine::ThreadEntryPoint, this);
-#endif // ES_NO_THREADS
-=======
 	zoom.base = Preferences::ViewZoom();
 	zoom.modifier = Preferences::Has("Landing zoom") ? 2. : 1.;
->>>>>>> upstream/master
 
 	if(!player.IsLoaded() || !player.GetSystem())
 		return;
@@ -271,20 +256,9 @@ Engine::Engine(PlayerInfo &player)
 
 Engine::~Engine()
 {
-<<<<<<< HEAD
-#ifndef ES_NO_THREADS
-	{
-		unique_lock<mutex> lock(swapMutex);
-		terminate = true;
-	}
-	condition.notify_all();
-	calcThread.join();
-#endif // ES_NO_THREADS
-=======
 	// Wait for any outstanding task to finish to avoid race conditions when
 	// destroying the engine.
 	queue.Wait();
->>>>>>> upstream/master
 }
 
 
@@ -478,16 +452,8 @@ void Engine::Place(const shared_ptr<Ship> &ship)
 // Wait for the previous calculations (if any) to be done.
 void Engine::Wait()
 {
-<<<<<<< HEAD
-#ifndef ES_NO_THREADS
-	unique_lock<mutex> lock(swapMutex);
-	condition.wait(lock, [this] { return hasFinishedCalculating; });
-	drawTickTock = calcTickTock;
-#endif // ES_NO_THREADS
-=======
 	queue.Wait();
 	currentDrawBuffer = currentCalcBuffer;
->>>>>>> upstream/master
 }
 
 
@@ -538,18 +504,12 @@ void Engine::Step(bool isActive)
 
 		minimap.Step(flagship);
 	}
-<<<<<<< HEAD
 	else if(customCenter)
-	{
-		center = *customCenter;
-		centerVelocity = Point();
-	}
-	customCenter = newCustomCenter;
-=======
+		camera.SnapTo(*customCenter);
 	else
 		// If there is no flagship, stop the camera.
 		camera.SnapTo(camera.Center());
->>>>>>> upstream/master
+	customCenter = newCustomCenter;
 	ai.UpdateEvents(events);
 	if(isActive)
 	{
@@ -914,12 +874,7 @@ void Engine::Step(bool isActive)
 		if(!target->GetGovernment())
 			info.SetString("target government", "No Government");
 		else
-<<<<<<< HEAD
-			info.SetString("target government", target->GetGovernment()->Name());
-		targetSwizzle = target->GetSwizzle();
-=======
 			info.SetString("target government", target->GetGovernment()->DisplayName());
->>>>>>> upstream/master
 		info.SetString("mission target", target->GetPersonality().IsTarget() ? "(mission target)" : "");
 
 		// Only update the "active" state shown for the target if it is
@@ -951,13 +906,6 @@ void Engine::Step(bool isActive)
 
 			targetVector = target->Position() - camera.Center();
 
-<<<<<<< HEAD
-			// Check if the target is close enough to show tactical information.
-			double tacticalRange = flagship ? 100. * sqrt(flagship->Attributes().Get("tactical scan power")) : numeric_limits<double>::max();
-			double targetRange = flagship ? target->Position().Distance(flagship->Position())
-				: target->Position().Length();
-			if(tacticalRange)
-=======
 			int options = player.CanScan(target);
 			bool hasTactical = options & ScanType::TACTICAL;
 			bool hasStrategic = options & ScanType::STRATEGIC;
@@ -976,7 +924,6 @@ void Engine::Step(bool isActive)
 			// have strategic or weapon range info, use normal display.
 			// If they do, then use strategic range display.
 			if(hasRange)
->>>>>>> upstream/master
 			{
 				double targetRange = target->Position().Distance(flagship->Position());
 				info.SetString("target range", to_string(static_cast<int>(round(targetRange))));
@@ -1053,14 +1000,9 @@ void Engine::Step(bool isActive)
 			}
 		}
 	}
-<<<<<<< HEAD
-	if(target && flagship && target->IsTargetable() && target->GetSystem() == currentSystem
-		&& (flagship->CargoScanFraction() || flagship->OutfitScanFraction()))
-=======
 	if(!Preferences::Has("Ship outlines in HUD"))
 		info.SetCondition("fast hud sprites");
 	if(target && target->IsTargetable() && target->GetSystem() == currentSystem)
->>>>>>> upstream/master
 	{
 		double outfitScan = player.OutfitScanFraction(target);
 		double cargoScan = player.CargoScanFraction(target);
@@ -1198,22 +1140,6 @@ void Engine::Step(bool isActive)
 // Begin the next step of calculations.
 void Engine::Go()
 {
-<<<<<<< HEAD
-#ifndef ES_NO_THREADS
-	{
-		unique_lock<mutex> lock(swapMutex);
-		++step;
-		calcTickTock = !calcTickTock;
-		hasFinishedCalculating = false;
-	}
-	condition.notify_all();
-#else
-	++step;
-	drawTickTock = !drawTickTock;
-	CalculateStep();
-	calcTickTock = drawTickTock;
-#endif // ES_NO_THREADS
-=======
 	if(!timePaused)
 		++step;
 	currentCalcBuffer = currentCalcBuffer ? 0 : 1;
@@ -1234,7 +1160,6 @@ bool Engine::IsPaused() const
 void Engine::GiveCommand(const Command &command)
 {
 	activeCommands.Set(command);
->>>>>>> upstream/master
 }
 
 
@@ -1343,22 +1268,6 @@ void Engine::Draw() const
 
 	// Draw messages. Draw the most recent messages first, as some messages
 	// may be wrapped onto multiple lines.
-<<<<<<< HEAD
-	const Font &font = FontSet::Get(14);
-	if(Preferences::Has("editor - show chat"))
-	{
-		const vector<Messages::Entry> &messages = Messages::Get(step);
-		Rectangle messageBox = hud->GetBox("messages");
-		WrappedText messageLine(font);
-		messageLine.SetWrapWidth(messageBox.Width());
-		messageLine.SetParagraphBreak(0.);
-		Point messagePoint = Point(messageBox.Left(), messageBox.Bottom());
-		for(auto it = messages.rbegin(); it != messages.rend(); ++it)
-		{
-			messageLine.Wrap(it->message);
-			messagePoint.Y() -= messageLine.Height();
-			if(messagePoint.Y() < messageBox.Top())
-=======
 	const Font &font = FontSet::Get(Preferences::GetFontSize());
 	Rectangle messageBox = hud->GetBox("messages");
 	bool messagesReversed = hud->GetValue("messages reversed");
@@ -1394,7 +1303,6 @@ void Engine::Draw() const
 		{
 			messagePoint.Y() += height;
 			if(messagePoint.Y() > messageBox.Bottom())
->>>>>>> upstream/master
 				break;
 			float alpha = (it->step + 1000 - step) * .001f;
 			const Color *color = nullptr;
@@ -1414,8 +1322,6 @@ void Engine::Draw() const
 				color = GameData::Colors().Get("message importance default");
 			messageLine.Draw(messagePoint, color->Additive(alpha));
 		}
-<<<<<<< HEAD
-=======
 		else
 		{
 			messagePoint.Y() -= height;
@@ -1425,7 +1331,6 @@ void Engine::Draw() const
 		float alpha = isAnimating ? isDying ? min<double>(messageAnimation(age), naturalDecay(naturalAge))
 			: messageAnimation(age) : naturalDecay(age);
 		messageLine.Draw(messagePoint, it->category->MainColor().Additive(alpha));
->>>>>>> upstream/master
 	}
 
 	// Draw crosshairs around anything that is targeted.
@@ -1483,25 +1388,6 @@ void Engine::Draw() const
 
 	// Draw escort status.
 	escorts.Draw(hud->GetBox("escorts"));
-<<<<<<< HEAD
-
-	if(Preferences::Has("Show CPU / GPU load"))
-	{
-		string loadString = to_string(lround(load * 100.)) + "% CPU";
-		Color color = *colors.Get("medium");
-		font.Draw(loadString,
-			Point(-10 - font.Width(loadString), Screen::Height() * -.5 + 5.), color);
-	}
-}
-
-
-
-// Set the given TestContext in the next step of the Engine.
-void Engine::SetTestContext(TestContext &newTestContext)
-{
-	testContext = &newTestContext;
-=======
->>>>>>> upstream/master
 }
 
 
@@ -1586,9 +1472,6 @@ void Engine::BreakTargeting(const Government *gov)
 
 
 
-<<<<<<< HEAD
-void Engine::EnterSystem(const System *system)
-=======
 void Engine::DisengageAutopilot()
 {
 	ai.DisengageAutopilot(false);
@@ -1616,7 +1499,6 @@ void Engine::LocateClick(const Point &point)
 
 
 void Engine::EnterSystem()
->>>>>>> upstream/master
 {
 	ai.Clean();
 
@@ -1634,34 +1516,14 @@ void Engine::EnterSystem()
 	Audio::PlayMusic(system->MusicName());
 	GameData::SetHaze(system->Haze(), false);
 
-<<<<<<< HEAD
-	if(flagship)
-		Messages::Add("Entering the " + system->Name() + " system on "
-			+ today.ToString() + (system->IsInhabited(flagship) ?
-				"." : ". No inhabited planets detected."), Messages::Importance::High);
-=======
 	Messages::Add({"Entering the " + system->DisplayName() + " system on "
 		+ today.ToString() + (system->IsInhabited(flagship) ?
 		"." : ". No inhabited planets detected."),
 		GameData::MessageCategories().Get("daily")});
->>>>>>> upstream/master
 
 	// Preload landscapes and determine if the player used a wormhole.
 	// (It is allowed for a wormhole's exit point to have no sprite.)
 	const StellarObject *usedWormhole = nullptr;
-<<<<<<< HEAD
-	if(flagship)
-	{
-		for(const StellarObject &object : system->Objects())
-			if(object.HasValidPlanet())
-			{
-				GameData::Preload(object.GetPlanet()->Landscape());
-				if(object.GetPlanet()->IsWormhole() && !usedWormhole
-						&& flagship->Position().Distance(object.Position()) < 1.)
-					usedWormhole = &object;
-			}
-	}
-=======
 	for(const StellarObject &object : system->Objects())
 	{
 		if(object.HasSprite())
@@ -1676,7 +1538,6 @@ void Engine::EnterSystem()
 	}
 	// Cull images that haven't been seen in a while.
 	SpriteLoadManager::CullOldImages(asyncQueue);
->>>>>>> upstream/master
 
 	// Advance the positions of every StellarObject and update politics.
 	// Remove expired bribes, clearance, and grace periods from past fines.
@@ -1752,13 +1613,8 @@ void Engine::EnterSystem()
 				CreateWeather(hazard, stellar.Position());
 	}
 
-<<<<<<< HEAD
-	if(flagship)
-		for(const auto &raidFleet : system->GetGovernment()->RaidFleets())
-=======
 	if(GameData::GetGamerules().SpawnRaidFleets())
 		for(const auto &raidFleet : system->RaidFleets())
->>>>>>> upstream/master
 		{
 			double attraction = player.RaidFleetAttraction(raidFleet, system);
 			if(attraction > 0.)
@@ -1766,15 +1622,9 @@ void Engine::EnterSystem()
 					if(Random::Real() < attraction)
 					{
 						raidFleet.GetFleet()->Place(*system, newShips);
-<<<<<<< HEAD
-						Messages::Add("Your fleet has attracted the interest of a "
-								+ raidFleet.GetFleet()->GetGovernment()->Name() + " raiding party.",
-								Messages::Importance::Highest);
-=======
 						Messages::Add({"Your fleet has attracted the interest of a "
 							+ raidFleet.GetFleet()->GetGovernment()->DisplayName() + " raiding party.",
 							GameData::MessageCategories().Get("high")});
->>>>>>> upstream/master
 					}
 		}
 
@@ -1805,41 +1655,9 @@ void Engine::EnterSystem()
 	// since the new player ships can make at most four jumps before landing.
 	if(flagship && today <= player.StartData().GetDate() + 4)
 	{
-<<<<<<< HEAD
-		Messages::Add(GameData::HelpMessage("basics 1"), Messages::Importance::High);
-		Messages::Add(GameData::HelpMessage("basics 2"), Messages::Importance::High);
-	}
-}
-
-
-
-// Thread entry point.
-void Engine::ThreadEntryPoint()
-{
-#ifndef ES_NO_THREADS
-	while(true)
-	{
-		{
-			unique_lock<mutex> lock(swapMutex);
-			condition.wait(lock, [this] { return !hasFinishedCalculating || terminate; });
-
-			if(terminate)
-				break;
-		}
-
-		// Do all the calculations.
-		CalculateStep();
-
-		{
-			unique_lock<mutex> lock(swapMutex);
-			hasFinishedCalculating = true;
-		}
-		condition.notify_one();
-=======
 		Messages::Add(*GameData::Messages().Get("basics 1"));
 		Messages::Add(*GameData::Messages().Get("basics 2"));
 		Messages::Add(*GameData::Messages().Get("basics 3"));
->>>>>>> upstream/master
 	}
 #endif // ES_NO_THREADS
 }
@@ -2021,17 +1839,12 @@ void Engine::CalculateUnpaused(const Ship *flagship, const System *playerSystem)
 		bool isJumping = flagship->IsUsingJumpDrive();
 		const map<const Sound *, int> &jumpSounds = isJumping
 			? flagship->Attributes().JumpSounds() : flagship->Attributes().HyperSounds();
-<<<<<<< HEAD
-		if(jumpSounds.empty())
-			Audio::Play(isJumping ? "jump drive" : "hyperdrive");
-=======
 		if(flagship->SilentJumps())
 		{
 			// No sounds.
 		}
 		else if(jumpSounds.empty())
 			Audio::Play(Audio::Get(isJumping ? "jump drive" : "hyperdrive"), SoundCategory::JUMP);
->>>>>>> upstream/master
 		else
 			for(const auto &sound : jumpSounds)
 				Audio::Play(sound.first, SoundCategory::JUMP);
@@ -2142,104 +1955,6 @@ void Engine::CalculateUnpaused(const Ship *flagship, const System *playerSystem)
 	// Check for ship scanning.
 	for(const shared_ptr<Ship> &it : ships)
 		DoScanning(it);
-<<<<<<< HEAD
-
-	// Draw the objects. Start by figuring out where the view should be centered:
-	Point newCenter = center;
-	Point newCenterVelocity;
-	if(flagship)
-	{
-		newCenter = flagship->Position();
-		newCenterVelocity = flagship->Velocity();
-	}
-	else if(newCustomCenter)
-		newCenter =  *customCenter;
-	draw[calcTickTock].SetCenter(newCenter, newCenterVelocity);
-	batchDraw[calcTickTock].SetCenter(newCenter);
-	radar[calcTickTock].SetCenter(newCenter);
-
-	// Populate the radar.
-	FillRadar();
-
-	// Draw the planets.
-	for(const StellarObject &object : playerSystem->Objects())
-		if(object.HasSprite())
-		{
-			// Don't apply motion blur to very large planets and stars.
-			if(object.Width() >= 280.)
-				draw[calcTickTock].AddUnblurred(object);
-			else
-				draw[calcTickTock].Add(object);
-		}
-	// Draw the asteroids and minables.
-	asteroids.Draw(draw[calcTickTock], newCenter, zoom);
-	// Draw the flotsam.
-	for(const shared_ptr<Flotsam> &it : flotsam)
-		draw[calcTickTock].Add(*it);
-	// Draw the ships. Skip the flagship, then draw it on top of all the others.
-	bool showFlagship = false;
-	for(const shared_ptr<Ship> &ship : ships)
-		if(ship->GetSystem() == playerSystem && ship->HasSprite())
-		{
-			if(ship.get() != flagship)
-			{
-				AddSprites(*ship);
-				if(ship->IsThrusting() && !ship->EnginePoints().empty())
-				{
-					for(const auto &it : ship->Attributes().FlareSounds())
-						Audio::Play(it.first, ship->Position());
-				}
-				else if(ship->IsReversing() && !ship->ReverseEnginePoints().empty())
-				{
-					for(const auto &it : ship->Attributes().ReverseFlareSounds())
-						Audio::Play(it.first, ship->Position());
-				}
-				if(ship->IsSteering() && !ship->SteeringEnginePoints().empty())
-				{
-					for(const auto &it : ship->Attributes().SteeringFlareSounds())
-						Audio::Play(it.first, ship->Position());
-				}
-			}
-			else
-				showFlagship = true;
-		}
-
-	if(flagship && showFlagship)
-	{
-		AddSprites(*flagship);
-		if(flagship->IsThrusting() && !flagship->EnginePoints().empty())
-		{
-			for(const auto &it : flagship->Attributes().FlareSounds())
-				Audio::Play(it.first);
-		}
-		else if(flagship->IsReversing() && !flagship->ReverseEnginePoints().empty())
-		{
-			for(const auto &it : flagship->Attributes().ReverseFlareSounds())
-				Audio::Play(it.first);
-		}
-		if(flagship->IsSteering() && !flagship->SteeringEnginePoints().empty())
-		{
-			for(const auto &it : flagship->Attributes().SteeringFlareSounds())
-				Audio::Play(it.first);
-		}
-	}
-	// Draw the projectiles.
-	for(const Projectile &projectile : projectiles)
-		batchDraw[calcTickTock].Add(projectile, projectile.Clip());
-	// Draw the visuals.
-	for(const Visual &visual : visuals)
-		batchDraw[calcTickTock].AddVisual(visual);
-
-	// Keep track of how much of the CPU time we are using.
-	loadSum += loadTimer.Time();
-	if(++loadCount == 60)
-	{
-		load = loadSum;
-		loadSum = 0.;
-		loadCount = 0;
-	}
-=======
->>>>>>> upstream/master
 }
 
 
@@ -2287,17 +2002,12 @@ void Engine::MoveShip(const shared_ptr<Ship> &ship)
 		{
 			const map<const Sound *, int> &jumpSounds = isJump
 				? ship->Attributes().JumpOutSounds() : ship->Attributes().HyperOutSounds();
-<<<<<<< HEAD
-			if(jumpSounds.empty())
-				Audio::Play(isJump ? "jump out" : "hyperdrive out", position);
-=======
 			if(ship->SilentJumps())
 			{
 				// No sounds.
 			}
 			else if(jumpSounds.empty())
 				Audio::Play(Audio::Get(isJump ? "jump out" : "hyperdrive out"), position, SoundCategory::JUMP);
->>>>>>> upstream/master
 			else
 				for(const auto &sound : jumpSounds)
 					Audio::Play(sound.first, position, SoundCategory::JUMP);
@@ -2308,17 +2018,12 @@ void Engine::MoveShip(const shared_ptr<Ship> &ship)
 		{
 			const map<const Sound *, int> &jumpSounds = isJump
 				? ship->Attributes().JumpInSounds() : ship->Attributes().HyperInSounds();
-<<<<<<< HEAD
-			if(jumpSounds.empty())
-				Audio::Play(isJump ? "jump in" : "hyperdrive in", position);
-=======
 			if(ship->SilentJumps())
 			{
 				// No sounds.
 			}
 			else if(jumpSounds.empty())
 				Audio::Play(Audio::Get(isJump ? "jump in" : "hyperdrive in"), position, SoundCategory::JUMP);
->>>>>>> upstream/master
 			else
 				for(const auto &sound : jumpSounds)
 					Audio::Play(sound.first, position, SoundCategory::JUMP);
@@ -2626,11 +2331,7 @@ void Engine::HandleMouseClicks()
 	// flagship must not be in the process of landing or taking off.
 	bool clickedPlanet = false;
 	const System *playerSystem = player.GetSystem();
-<<<<<<< HEAD
-	if(flagship && !isRightClick && flagship->Zoom() == 1.)
-=======
 	if(mouseButton == MouseButton::LEFT && flagship->Zoom() == 1.)
->>>>>>> upstream/master
 		for(const StellarObject &object : playerSystem->Objects())
 			if(object.HasSprite() && object.HasValidPlanet())
 			{
@@ -2665,10 +2366,6 @@ void Engine::HandleMouseClicks()
 	for(shared_ptr<Ship> &ship : ships)
 		if(ship->GetSystem() == playerSystem && &*ship != flagship && ship->IsTargetable())
 		{
-<<<<<<< HEAD
-			Point position = ship->Position() - center;
-=======
->>>>>>> upstream/master
 			const Mask &mask = ship->GetMask(step);
 			double range = mask.Range(clickPoint - ship->Position(), ship->Facing());
 			if(range <= clickRange)
@@ -2683,22 +2380,7 @@ void Engine::HandleMouseClicks()
 			}
 		}
 
-<<<<<<< HEAD
-	if(!flagship)
-	{
-		if(clickTarget)
-		{
-			if(clickTarget == targetShip)
-				targetShip = nullptr;
-			else
-				targetShip = clickTarget;
-		}
-		return;
-	}
-
-=======
 	MouseButton secondaryMouseButton = isMouseTurningEnabled ? MouseButton::MIDDLE : MouseButton::RIGHT;
->>>>>>> upstream/master
 	bool clickedAsteroid = false;
 	if(clickTarget)
 	{
@@ -3246,11 +2928,7 @@ void Engine::FillRadar()
 	else if(hasHostiles && !hadHostiles)
 	{
 		if(Preferences::PlayAudioAlert())
-<<<<<<< HEAD
-			Audio::Play("alarm");
-=======
 			Audio::Play(Audio::Get("alarm"), SoundCategory::ALERT);
->>>>>>> upstream/master
 		alarmTime = 300;
 		hadHostiles = true;
 	}
@@ -3343,11 +3021,7 @@ void Engine::DoGrudge(const shared_ptr<Ship> &target, const Government *attacker
 		message = "Please assist us in ";
 		message += (target->GetPersonality().Disables() ? "disabling " : "destroying ");
 		message += (attackerCount == 1 ? "this " : "these ");
-<<<<<<< HEAD
-		message += attacker->Name();
-=======
 		message += attacker->DisplayName();
->>>>>>> upstream/master
 		message += (attackerCount == 1 ? " ship." : " ships.");
 	}
 	else
@@ -3355,11 +3029,7 @@ void Engine::DoGrudge(const shared_ptr<Ship> &target, const Government *attacker
 		message = "We are under attack by ";
 		if(attackerCount == 1)
 			message += "a ";
-<<<<<<< HEAD
-		message += attacker->Name();
-=======
 		message += attacker->DisplayName();
->>>>>>> upstream/master
 		message += (attackerCount == 1 ? " ship" : " ships");
 		message += ". Please assist us!";
 	}

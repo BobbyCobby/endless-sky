@@ -124,48 +124,7 @@ const Government *Body::GetGovernment() const
 
 double Body::Alpha(const Point &drawCenter) const
 {
-<<<<<<< HEAD
-	if(node.Size() < 2)
-		return;
-	sprite = GameData::Sprites().Get(node.Token(1));
-
-	// The only time the animation does not start on a specific frame is if no
-	// start frame is specified and it repeats. Since a frame that does not
-	// start at zero starts when the game started, it does not make sense for it
-	// to do that unless it is repeating endlessly.
-	for(const DataNode &child : node)
-	{
-		if(child.Token(0) == "frame rate" && child.Size() >= 2 && child.Value(1) >= 0.)
-			frameRate = child.Value(1) / 60.;
-		else if(child.Token(0) == "frame time" && child.Size() >= 2 && child.Value(1) > 0.)
-			frameRate = 1. / child.Value(1);
-		else if(child.Token(0) == "delay" && child.Size() >= 2 && child.Value(1) > 0.)
-			delay = child.Value(1);
-		else if(child.Token(0) == "scale" && child.Size() >= 2 && child.Value(1) > 0.)
-			scale = static_cast<float>(child.Value(1));
-		else if(child.Token(0) == "start frame" && child.Size() >= 2)
-		{
-			frameOffset += static_cast<float>(child.Value(1));
-			startAtZero = true;
-		}
-		else if(child.Token(0) == "random start frame")
-			randomize = true;
-		else if(child.Token(0) == "no repeat")
-		{
-			repeat = false;
-			startAtZero = true;
-		}
-		else if(child.Token(0) == "rewind")
-			rewind = true;
-		else
-			child.PrintTrace("Skipping unrecognized attribute:");
-	}
-
-	if(scale != 1.f)
-		GameData::GetMaskManager().RegisterScale(sprite, Scale());
-=======
 	return alpha * DistanceAlpha(drawCenter);
->>>>>>> upstream/master
 }
 
 

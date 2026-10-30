@@ -305,6 +305,30 @@ bool Panel::KeyDown(SDL_Keycode key, Uint16 mod, const Command &command, bool is
 
 bool Panel::Click(int x, int y, MouseButton button, int clicks)
 {
+	switch(button)
+	{
+		case MouseButton::LEFT:
+			return Click(x, y, clicks);
+		case MouseButton::MIDDLE:
+			return MClick(x, y);
+		case MouseButton::RIGHT:
+			return RClick(x, y);
+		default:
+			return false;
+	}
+}
+
+
+
+bool Panel::Click(int x, int y, int clicks)
+{
+	return false;
+}
+
+
+
+bool Panel::RClick(int x, int y)
+{
 	return false;
 }
 

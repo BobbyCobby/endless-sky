@@ -17,13 +17,8 @@ option(BUILD_TESTING "" ON)
 # Support Debug and Release configurations.
 set(CMAKE_CONFIGURATION_TYPES "Debug" "Release" CACHE STRING "" FORCE)
 
-<<<<<<< HEAD
-# Use C++17 without any compiler specific extensions.
-set(CMAKE_CXX_STANDARD 17 CACHE STRING "")
-=======
 # Use C++20 without any compiler specific extensions.
 set(CMAKE_CXX_STANDARD 20 CACHE STRING "")
->>>>>>> upstream/master
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 # We don't use modules, so avoid using unrecognised compiler-specific commands that cmake produces when they are enabled.

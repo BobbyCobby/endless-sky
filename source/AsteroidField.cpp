@@ -15,16 +15,10 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "AsteroidField.h"
 
-<<<<<<< HEAD
-#include "DrawList.h"
-#include "GameData.h"
-#include "Mask.h"
-=======
 #include "Collision.h"
 #include "CollisionType.h"
 #include "shader/DrawList.h"
 #include "image/Mask.h"
->>>>>>> upstream/master
 #include "Minable.h"
 #include "Projectile.h"
 #include "Random.h"

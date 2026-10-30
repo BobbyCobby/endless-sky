@@ -290,12 +290,6 @@ double OutfitterPanel::DrawDetails(const Point &center)
 {
 	string selectedItem = "Nothing Selected";
 	const Font &font = FontSet::Get(14);
-<<<<<<< HEAD
-	const Color &bright = *GameData::Colors().Get("bright");
-	const Color &dim = *GameData::Colors().Get("medium");
-	const Sprite *collapsedArrow = GameData::Sprites().Get("ui/collapsed");
-=======
->>>>>>> upstream/master
 
 	double heightOffset = 20.;
 
@@ -308,18 +302,10 @@ double OutfitterPanel::DrawDetails(const Point &center)
 			collapsed.contains(DESCRIPTION));
 		selectedItem = selectedOutfit->DisplayName();
 
-<<<<<<< HEAD
-		const Sprite *thumbnail = selectedOutfit->Thumbnail();
-		const Sprite *background = GameData::Sprites().Get("ui/outfitter selected");
-
-		float tileSize = thumbnail
-			? max(thumbnail->Height(), static_cast<float>(TileSize()))
-=======
 		const Drawable &thumbnail = selectedOutfit->Thumbnail();
 		const Sprite *thumbnailSprite = thumbnail.GetSprite();
 		const float tileSize = thumbnailSprite
 			? max(thumbnailSprite->Height(), static_cast<float>(TileSize()))
->>>>>>> upstream/master
 			: static_cast<float>(TileSize());
 		const Point thumbnailCenter(center.X(), center.Y() + 20 + static_cast<int>(tileSize / 2));
 		const Point startPoint(center.X() - INFOBAR_WIDTH / 2 + 20, center.Y() + 20 + tileSize);
@@ -1050,14 +1036,6 @@ bool OutfitterPanel::ShouldHighlight(const Ship *ship)
 // Draw the display filter selection checkboxes in the lower left of the outfit panel.
 void OutfitterPanel::DrawKey()
 {
-<<<<<<< HEAD
-	const Sprite *back = GameData::Sprites().Get("ui/outfitter key");
-	SpriteShader::Draw(back, Screen::BottomLeft() + .5 * Point(back->Width(), -back->Height()));
-
-	const Font &font = FontSet::Get(14);
-	Color color[2] = {*GameData::Colors().Get("medium"), *GameData::Colors().Get("bright")};
-	const Sprite *box[2] = {GameData::Sprites().Get("ui/unchecked"), GameData::Sprites().Get("ui/checked")};
-=======
 	const Sprite *back = SpriteSet::Get("ui/outfitter key");
 
 	SpriteShader::Draw(back, Screen::BottomLeft() + .5 * Point(back->Width(), -back->Height()));
@@ -1065,7 +1043,6 @@ void OutfitterPanel::DrawKey()
 	const Font &font = FontSet::Get(14);
 	const Color color[2] = {*GameData::Colors().Get("medium"), *GameData::Colors().Get("bright")};
 	const Sprite *box[2] = {SpriteSet::Get("ui/unchecked"), SpriteSet::Get("ui/checked")};
->>>>>>> upstream/master
 
 	Point pos = Screen::BottomLeft() +
 		Point{keyPad.X() + .5 * checkboxSize.X(), -VisibilityCheckboxesSize() + .5 * checkboxSize.Y() + keyPad.Y()};
@@ -1184,13 +1161,7 @@ bool OutfitterPanel::ShipCanRemove(const Ship *ship, const Outfit *outfit)
 
 void OutfitterPanel::DrawOutfit(const Outfit &outfit, const Point &center, bool isSelected, bool isOwned) const
 {
-<<<<<<< HEAD
-	const Sprite *thumbnail = outfit.Thumbnail();
-	const Sprite *back = GameData::Sprites().Get(
-		isSelected ? "ui/outfitter selected" : "ui/outfitter unselected");
-=======
 	const Sprite *back = SpriteSet::Get(isSelected ? "ui/outfitter selected" : "ui/outfitter unselected");
->>>>>>> upstream/master
 	SpriteShader::Draw(back, center);
 	DrawThumbnail(outfit.Thumbnail(), isSelected, center);
 

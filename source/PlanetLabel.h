@@ -29,13 +29,9 @@ class System;
 
 class PlanetLabel {
 public:
-<<<<<<< HEAD
-	PlanetLabel(const Point &position, const StellarObject &object, const System *system, double zoom, bool alwaysVisisble = false);
-=======
 	PlanetLabel(const std::vector<PlanetLabel> &labels, const System &system, const StellarObject &object);
 
 	void Update(const Point &center, double zoom, const std::vector<PlanetLabel> &labels, const System &system);
->>>>>>> upstream/master
 
 	void Draw() const;
 

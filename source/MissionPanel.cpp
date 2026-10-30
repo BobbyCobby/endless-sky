@@ -706,42 +706,12 @@ void MissionPanel::SetSelectedScrollAndCenter(bool immediate)
 
 void MissionPanel::DrawKey() const
 {
-<<<<<<< HEAD
-	const Sprite *back = GameData::Sprites().Get("ui/mission key");
-	SpriteShader::Draw(back, Screen::BottomLeft() + .5 * Point(back->Width(), -back->Height()));
-
-	const Font &font = FontSet::Get(14);
-	Point angle = Point(1., 1.).Unit();
-
-	const int ROWS = 5;
-	Point pos(Screen::Left() + 10., Screen::Bottom() - ROWS * 20. + 5.);
-	Point pointerOff(5., 5.);
-	Point textOff(8., -.5 * font.Height());
-
-	const Set<Color> &colors = GameData::Colors();
-	const Color &bright = *colors.Get("bright");
-	const Color &dim = *colors.Get("dim");
-	const Color COLOR[ROWS] = {
-		*colors.Get("available job"),
-		*colors.Get("unavailable job"),
-		*colors.Get("active mission"),
-		*colors.Get("blocked mission"),
-		*colors.Get("waypoint")
-	};
-	static const string LABEL[ROWS] = {
-		"Available job; can accept",
-		"Too little space to accept",
-		"Active job; go here to complete",
-		"Has unfinished requirements",
-		"Waypoint you must visit"
-=======
 	static const string CONDITIONS[] = {
 		"available",
 		"unavailable",
 		"active",
 		"blocked",
 		"waypoint"
->>>>>>> upstream/master
 	};
 	int selected = -1;
 	if(availableIt != available.end())
@@ -749,52 +719,10 @@ void MissionPanel::DrawKey() const
 	if(acceptedIt != accepted.end() && acceptedIt->Destination())
 		selected = 2 + !IsSatisfied(*acceptedIt);
 
-<<<<<<< HEAD
-	for(int i = 0; i < ROWS; ++i)
-	{
-		PointerShader::Draw(pos + pointerOff, angle, 10.f, 18.f, 0.f, COLOR[i]);
-		font.Draw(LABEL[i], pos + textOff, i == selected ? bright : dim);
-		pos.Y() += 20.;
-	}
-}
-
-
-
-// Fill in the top-middle header bar that names the selected system, and indicates its distance.
-void MissionPanel::DrawSelectedSystem() const
-{
-	const Sprite *sprite = GameData::Sprites().Get("ui/selected system");
-	SpriteShader::Draw(sprite, Point(0., Screen::Top() + .5f * sprite->Height()));
-
-	string text;
-	if(!player.KnowsName(*selectedSystem))
-		text = "Selected system: unexplored system";
-	else
-		text = "Selected system: " + selectedSystem->Name();
-
-	int jumps = 0;
-	const vector<const System *> &plan = player.TravelPlan();
-	auto it = find(plan.begin(), plan.end(), selectedSystem);
-	if(it != plan.end())
-		jumps = plan.end() - it;
-	else if(distance.HasRoute(selectedSystem))
-		jumps = distance.Days(selectedSystem);
-
-	if(jumps == 1)
-		text += " (1 jump away)";
-	else if(jumps > 0)
-		text += " (" + to_string(jumps) + " jumps away)";
-
-	const Font &font = FontSet::Get(14);
-	Point pos(-175., Screen::Top() + .5 * (30. - font.Height()));
-	font.Draw({text, {350, Alignment::CENTER, Truncate::MIDDLE}},
-		pos, *GameData::Colors().Get("bright"));
-=======
 	Information info;
 	if(selected >= 0)
 		info.SetCondition(CONDITIONS[selected]);
 	GameData::Interfaces().Get("map: mission view: key")->Draw(info);
->>>>>>> upstream/master
 }
 
 

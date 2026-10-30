@@ -46,13 +46,9 @@ public:
 	// The main panel allows fast-forward.
 	bool AllowsFastForward() const noexcept final;
 
-<<<<<<< HEAD
-	Engine &GetEngine() { return engine; }
-=======
 	// Get the underlying game engine used by the game.
 	Engine &GetEngine();
 
->>>>>>> upstream/master
 
 protected:
 	// Only override the ones you need; the default action is to return false.

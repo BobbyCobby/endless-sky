@@ -603,19 +603,7 @@ void LoadPanel::WriteSnapshot(const filesystem::path &sourceFile, const filesyst
 	{
 		UpdateLists();
 		selectedFile = Files::Name(snapshotName);
-<<<<<<< HEAD
-		loadedInfo.Load(Files::Saves() + selectedFile);
-
-#ifdef __EMSCRIPTEN__
-		// sync from persisted state into memory and then
-		EM_ASM(FS.syncfs(function(err) {
-			assert(!err);
-			console.log("save snapshot synced to IndexedDB");
-		}););
-#endif
-=======
 		loadedInfo.Load(Files::Saves() / selectedFile);
->>>>>>> upstream/master
 	}
 	else
 		GetUI().Push(DialogPanel::Info("Error: unable to create the file \"" + snapshotName.string() + "\"."));

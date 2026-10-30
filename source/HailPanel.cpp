@@ -54,17 +54,10 @@ HailPanel::HailPanel(PlayerInfo &player, const shared_ptr<Ship> &ship, function<
 	UI::PlaySound(UI::UISound::SOFT);
 
 	const Government *gov = ship->GetGovernment();
-<<<<<<< HEAD
-	if(!ship->Name().empty())
-		header = gov->Name() + " " + ship->Noun() + " \"" + ship->Name() + "\":";
-	else
-		header = ship->ModelName() + " (" + gov->Name() + "): ";
-=======
 	if(!ship->GivenName().empty())
 		header = gov->DisplayName() + " " + ship->Noun() + " \"" + ship->GivenName() + "\":";
 	else
 		header = ship->DisplayModelName() + " (" + gov->DisplayName() + "):";
->>>>>>> upstream/master
 	// Drones are always unpiloted, so they never respond to hails.
 	bool isMute = ship->GetPersonality().IsMute() || (ship->Attributes().Category() == "Drone");
 	hasLanguage = !isMute && (gov->Language().empty() || player.Conditions().Get("language: " + gov->Language()));
@@ -157,11 +150,7 @@ HailPanel::HailPanel(PlayerInfo &player, const StellarObject *object)
 
 	const Government *gov = planet ? planet->GetGovernment() : player.GetSystem()->GetGovernment();
 	if(planet)
-<<<<<<< HEAD
-		header = gov->Name() + " " + planet->Noun() + " \"" + planet->Name() + "\":";
-=======
 		header = gov->DisplayName() + " " + planet->Noun() + " \"" + planet->DisplayName() + "\":";
->>>>>>> upstream/master
 	hasLanguage = (gov->Language().empty() || player.Conditions().Get("language: " + gov->Language()));
 
 	// If the player is hailing a planet, determine if a mission grants them clearance before checking
@@ -386,15 +375,9 @@ bool HailPanel::KeyDown(SDL_Keycode key, Uint16 mod, const Command &command, boo
 				{
 					bribed = ship->GetGovernment();
 					bribed->Bribe();
-<<<<<<< HEAD
-					Messages::Add("You bribed a " + bribed->Name() + " ship "
-						+ Format::CreditString(bribe) + " to refrain from attacking you today."
-							, Messages::Importance::High);
-=======
 					Messages::Add({"You bribed a " + bribed->DisplayName() + " ship "
 						+ Format::CreditString(bribe) + " to refrain from attacking you today.",
 						GameData::MessageCategories().Get("normal")});
->>>>>>> upstream/master
 				}
 			}
 			else

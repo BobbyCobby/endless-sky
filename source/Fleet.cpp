@@ -499,11 +499,7 @@ void Fleet::Place(const System &system, Ship &ship)
 
 int64_t Fleet::Strength() const
 {
-<<<<<<< HEAD
-	return variants.Average(&Variant::Strength);
-=======
 	return variants.Average(mem_fn(&Variant::Strength));
->>>>>>> upstream/master
 }
 
 

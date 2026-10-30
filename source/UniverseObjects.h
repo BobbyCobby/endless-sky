@@ -52,12 +52,9 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "Trade.h"
 #include "Wormhole.h"
 
-<<<<<<< HEAD
-=======
 #include <atomic>
 #include <filesystem>
 #include <future>
->>>>>>> upstream/master
 #include <map>
 #include <mutex>
 #include <set>
@@ -101,13 +98,8 @@ class UniverseObjects {
 	friend class TestData;
 public:
 	// Load game objects from the given directories of definitions.
-<<<<<<< HEAD
-	void Load(const std::vector<std::string> &sources, bool debugMode = false);
-	void LoadFrom(const std::string &path, bool debugMode = false);
-=======
 	std::shared_future<void> Load(TaskQueue &queue, const std::vector<std::filesystem::path> &sources,
 		const PlayerInfo &player, const ConditionsStore *globalConditions, bool debugMode = false);
->>>>>>> upstream/master
 	// Determine the fraction of data files read from disk.
 	double GetProgress() const;
 	// Resolve every game object dependency.
@@ -130,13 +122,8 @@ public:
 
 
 private:
-<<<<<<< HEAD
-	void LoadFolder(const std::vector<std::string> &files, bool debugMode = false);
-	void LoadFile(const std::string &path, bool debugMode = false);
-=======
 	void LoadFile(const std::filesystem::path &path, const PlayerInfo &player,
 		const ConditionsStore *globalConditions, bool debugMode = false);
->>>>>>> upstream/master
 
 
 private:
