@@ -13,8 +13,7 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef WEATHER_H_
-#define WEATHER_H_
+#pragma once
 
 #include "Point.h"
 
@@ -32,8 +31,8 @@ class Weather {
 public:
 	class ImpactInfo {
 	public:
-		ImpactInfo(const Weapon &weapon, Point position, double scale)
-			: weapon(weapon), position(std::move(position)), scale(scale) {}
+		ImpactInfo(const Weapon &weapon, const Point &position, double scale)
+			: weapon(weapon), position(position), scale(scale) {}
 
 		const Weapon &weapon;
 		Point position;
@@ -86,5 +85,3 @@ private:
 	// Record when this object is marked for removal from the game.
 	bool shouldBeRemoved = false;
 };
-
-#endif

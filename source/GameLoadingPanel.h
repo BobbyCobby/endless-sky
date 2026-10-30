@@ -13,16 +13,21 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef GAME_LOADING_PANEL_H_
-#define GAME_LOADING_PANEL_H_
+#pragma once
 
 #include "mfunction.h"
 #include "Panel.h"
 
-#include <string>
-#include <vector>
+#include "LoadingCircle.h"
 
+<<<<<<< HEAD
 class Editor;
+=======
+class Conversation;
+class PlayerInfo;
+class TaskQueue;
+class UI;
+>>>>>>> upstream/master
 
 
 
@@ -30,23 +35,28 @@ class Editor;
 // (like game data and save files).
 class GameLoadingPanel final : public Panel {
 public:
+<<<<<<< HEAD
 	GameLoadingPanel(mfunction<void(GameLoadingPanel *)> done, bool &finishedLoading);
+=======
+	GameLoadingPanel(PlayerInfo &player, TaskQueue &queue, const Conversation &conversation,
+		UI &gamePanels, bool &finishedLoading);
+>>>>>>> upstream/master
 
 	void Step() final;
 	void Draw() final;
 
 
 private:
+<<<<<<< HEAD
 	mfunction<void(GameLoadingPanel *)> done;
+=======
+	PlayerInfo &player;
+	TaskQueue &queue;
+	const Conversation &conversation;
+	UI &gamePanels;
+>>>>>>> upstream/master
 	bool &finishedLoading;
 
-	// The circular loading indicator shows 60 tick marks when all game data is loaded.
-	const int MAX_TICKS = 60;
-	const double ANGLE_OFFSET;
-	// The current number of ticks to be displayed.
-	int progress = 0;
+	double progress = 0;
+	LoadingCircle loadingCircle;
 };
-
-
-
-#endif

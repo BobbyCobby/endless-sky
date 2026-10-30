@@ -29,7 +29,7 @@ const string DataWriter::space = " ";
 
 
 // Constructor, specifying the file to save.
-DataWriter::DataWriter(const string &path)
+DataWriter::DataWriter(const filesystem::path &path)
 	: DataWriter()
 {
 	this->path = path;
@@ -56,9 +56,17 @@ DataWriter::~DataWriter()
 
 
 // Save the contents to a file.
-void DataWriter::SaveToPath(const std::string &filepath)
+void DataWriter::SaveToPath(const filesystem::path &filepath)
 {
 	Files::Write(filepath, out.str());
+}
+
+
+
+// Get the contents as a string.
+string DataWriter::SaveToString() const
+{
+	return out.str();
 }
 
 
@@ -113,7 +121,8 @@ void DataWriter::EndChild()
 // Write a comment line, at the current indentation level.
 void DataWriter::WriteComment(const string &str)
 {
-	out << indent << "# " << str << '\n';
+	out << *before << "# " << str;
+	Write();
 }
 
 
@@ -129,17 +138,17 @@ void DataWriter::WriteToken(const char *a, bool needsQuoting)
 // Write a token, given as a string object.
 void DataWriter::WriteToken(const string &a, bool needsQuoting)
 {
-	// Figure out what kind of quotation marks need to be used for this string.
-	bool hasSpace = any_of(a.begin(), a.end(), [](char c) { return isspace(c); });
-	bool hasQuote = any_of(a.begin(), a.end(), [](char c) { return (c == '"'); });
-	// Write the token, enclosed in quotes if necessary.
 	out << *before;
+<<<<<<< HEAD
 	if(hasQuote)
 		out << '`' << a << '`';
 	else if(needsQuoting || hasSpace || a.empty())
 		out << '"' << a << '"';
 	else
 		out << a;
+=======
+	out << Quote(a);
+>>>>>>> upstream/master
 
 	// The next token written will not be the first one on this line, so it only
 	// needs to have a single space before it.
@@ -148,8 +157,26 @@ void DataWriter::WriteToken(const string &a, bool needsQuoting)
 
 
 
+<<<<<<< HEAD
 // Write a token of a bool;
 void DataWriter::WriteToken(bool b)
 {
 	WriteToken(static_cast<int>(b));
+=======
+string DataWriter::Quote(const string &a)
+{
+	// Figure out what kind of quotation marks need to be used for this string.
+	bool hasSpace = any_of(a.begin(), a.end(), [](unsigned char c) { return isspace(c); });
+	bool hasQuote = any_of(a.begin(), a.end(), [](char c) { return (c == '"'); });
+	bool hasBacktick = any_of(a.begin(), a.end(), [](char c) { return (c == '`'); });
+	// If the token is an empty string, it needs to be wrapped in quotes as if it had a space.
+	hasSpace |= a.empty();
+
+	if(hasQuote)
+		return '`' + a + '`';
+	else if(hasSpace || hasBacktick)
+		return '"' + a + '"';
+	else
+		return a;
+>>>>>>> upstream/master
 }

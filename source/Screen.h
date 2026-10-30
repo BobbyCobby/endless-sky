@@ -13,8 +13,7 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef SCREEN_H_
-#define SCREEN_H_
+#pragma once
 
 #include "Point.h"
 
@@ -25,18 +24,32 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 // is allowed to use it.
 class Screen {
 public:
-	static void SetRaw(int width, int height);
+	// Use RAII to define the scope of a temporary screen size change.
+	class ScreenDimensionsGuard final
+	{
+	public:
+		// Constructor that changes the screen size on creation.
+		ScreenDimensionsGuard(int width, int height);
+		// Destructor, which restores the expected screen size.
+		~ScreenDimensionsGuard();
+		// Restore the screen settings.
+		void Deactivate();
+
+	private:
+		bool valid = false;
+		int oldWidth = 0;
+		int oldHeight = 0;
+	};
+
+
+public:
+	static void SetRaw(int width, int height, bool noResizeEvent = false);
 
 	// Zoom level as specified by the user.
 	static int UserZoom();
 	// Effective zoom level, as restricted by the current resolution / window size.
 	static int Zoom();
-	static void SetZoom(int percent);
-
-	// Specify that this is a high-DPI window.
-	static void SetHighDPI(bool isHighDPI = true);
-	// This is true if the screen is high DPI, or if the zoom is above 100%.
-	static bool IsHighResolution();
+	static void SetZoom(int percent, bool noEvent = false);
 
 	static Point Dimensions();
 	static int Width();
@@ -56,7 +69,3 @@ public:
 	static Point BottomLeft();
 	static Point BottomRight();
 };
-
-
-
-#endif

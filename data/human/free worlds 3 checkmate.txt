@@ -21,7 +21,7 @@ mission "FWC Scouting 1"
 	to offer
 		has "FW Liberate Delta Sagittarii: done"
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		log `Drove the Navy out of Delta Sagittarii with the help of the "Wolf Pack," a militia group in favor of more extreme measures who launched a preemptive strike before the main Free Worlds force arrived. The Free Worlds are now committed to fighting the Republic to a standstill rather than proving their innocence; the defector has been recaptured by the Syndicate and whatever information he had to share is now lost.`
@@ -41,8 +41,21 @@ mission "FWC Scouting 1"
 		personality staying heroic
 		system "Kaus Borealis"
 		government "Republic"
-		fleet "Large Republic" 5
-
+		fleet 2
+			names "republic capital"
+			fighters
+				names "republic fighter"
+			variant
+				"Carrier (Mark II)"
+				"Lance" 8
+				"Combat Drone" 6
+		fleet 3
+			names "republic capital"
+			fighters
+				names "republic fighter"
+			variant
+				"Cruiser (Mark II)"
+				"Combat Drone" 4
 
 
 mission "FWC Attack Kaus Borealis"
@@ -56,12 +69,12 @@ mission "FWC Attack Kaus Borealis"
 	to offer
 		has "FWC Scouting 1: done"
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		event "fwc attack kaus borealis"
 		conversation
-			`When you return to New Portland, a sizeable Free Worlds fleet is already parked on the landing pads surrounding the spaceport. JJ explains to you, "When the Navy struck and cut our territory in half, a lot of these ships were cut off from their chain of command and just went and sheltered wherever they could. So it took a bit of doing to gather them all together. And now what we need is another stirring victory, or they'll begin to scatter again."`
+			`When you return to New Portland, a sizable Free Worlds fleet is already parked on the landing pads surrounding the spaceport. JJ explains to you, "When the Navy struck and cut our territory in half, a lot of these ships were cut off from their chain of command and just went and sheltered wherever they could. So it took a bit of doing to gather them all together. And now what we need is another stirring victory, or they'll begin to scatter again."`
 			choice
 				`	"Are you saying we risk having members of our militia desert?"`
 					goto desert
@@ -100,7 +113,8 @@ mission "FWC Attack Kaus Borealis"
 		personality heroic escort
 		fleet
 			names "free worlds capital"
-			fighters "free worlds fighters"
+			fighters
+				names "free worlds fighters"
 			variant
 				"Dreadnought"
 				"Skein"
@@ -127,14 +141,16 @@ mission "FWC Attack Kaus Borealis"
 		government "Republic"
 		fleet 2
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Carrier (Mark II)"
-				"Lance" 4
+				"Lance" 8
 				"Combat Drone" 6
 		fleet 3
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Cruiser (Mark II)"
 				"Combat Drone" 4
@@ -145,13 +161,15 @@ mission "FWC Attack Kaus Borealis"
 		government "Republic"
 		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Carrier (Mark II)"
 				"Frigate" 2
 		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Cruiser (Mark II)"
 				"Frigate" 2
@@ -168,7 +186,7 @@ mission "FWC Cebalrai 1"
 	to offer
 		has "FWC Attack Kaus Borealis: done"
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		log "Captured the Kaus Borealis system from the Navy, even though the locals are still loyal to the Republic. Also, learned that the Wolf Pack ships have been using nuclear missiles, and that is why they were so effective in decimating the Navy fleet."
@@ -214,11 +232,11 @@ mission "FWC Cebalrai 1"
 		government "Republic"
 		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
-				"Carrier (Mark II)"
-				"Lance" 4
-				"Combat Drone" 6
+				"Cruiser (Mark II)"
+				"Combat Drone" 4
 				"Gunboat (Mark II)" 2
 
 
@@ -235,7 +253,7 @@ mission "FWC Cebalrai 1B"
 	to offer
 		has "FWC Cebalrai 1: done"
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		event "fwc attack cebalrai"
@@ -279,31 +297,35 @@ mission "FWC Cebalrai 1B"
 		government "Republic"
 		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Carrier (Mark II)"
-				"Lance" 4
+				"Lance" 8
 				"Combat Drone" 6
 				"Frigate (Mark II)" 2
 		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Frigate (Mark II)"
 				"Gunboat (Mark II)" 2
 		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Frigate"
 				"Gunboat" 2
 		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Cruiser"
-				"Lance" 4
-				"Frigate" 2
+				"Combat Drone" 4
+				"Frigate"
 
 
 
@@ -317,7 +339,7 @@ mission "FWC Nuke Supply 1"
 	to offer
 		has "FWC Cebalrai 1B: done"
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		conversation
@@ -344,6 +366,7 @@ mission "FWC Nuke Supply 1"
 mission "FWC Nuke Supply: Enemies"
 	landing
 	invisible
+	non-blocking
 	to offer
 		has "FWC Nuke Supply 1: done"
 	
@@ -388,7 +411,7 @@ mission "FWC Nuke Supply 1B"
 	to offer
 		has "FWC Nuke Supply 1: done"
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		conversation
@@ -414,7 +437,7 @@ mission "FWC Nuke Supply 1C"
 	to offer
 		has "FWC Nuke Supply 1B: done"
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		log "Delivered a load of enriched uranium to a warlord's fortress on Greenrock, in exchange for warheads for the Free Worlds to use against the Navy. Hopefully forming such a friendly relationship with dangerous criminals will not cause trouble for the Free Worlds in the future."
@@ -441,7 +464,7 @@ mission "FWC Diplomacy 1"
 	to offer
 		has "FWC Nuke Supply 1C: done"
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		conversation
@@ -481,7 +504,7 @@ mission "FWC Diplomacy 1B"
 	passengers 2
 	blocked "You have reached <origin>, but you don't have a bunk free for Alondo! You should return to <origin> once you have freed one up."
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		event "fw safe passage starts"
@@ -526,7 +549,7 @@ mission "FWC Diplomacy 1C"
 		has "FWC Diplomacy 1B: done"
 	passengers 2
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		log "Visited Earth with Alondo to try to pressure Parliament into agreeing to a peace deal. The negotiations failed. Only escaped the planet safely because a Free Worlds ship in orbit threatened to bombard the Parliament building."
@@ -564,14 +587,16 @@ mission "FWC Diplomacy 1C"
 		government "Republic"
 		fleet 2
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Carrier (Mark II)"
-				"Lance" 4
+				"Lance" 8
 				"Combat Drone" 6
 		fleet 2
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Cruiser (Mark II)"
 				"Combat Drone" 4
@@ -582,14 +607,16 @@ mission "FWC Diplomacy 1C"
 		government "Republic"
 		fleet 2
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Carrier (Mark II)"
-				"Lance" 4
+				"Lance" 8
 				"Combat Drone" 6
 		fleet 2
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Cruiser (Mark II)"
 				"Combat Drone" 4
@@ -605,7 +632,7 @@ mission "FWC Checkmate 1"
 	to offer
 		has "FWC Diplomacy 1C: done"
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		event "fwc defend cebalrai"
@@ -625,7 +652,8 @@ mission "FWC Checkmate 1"
 		personality heroic escort
 		fleet
 			names "free worlds capital"
-			fighters "free worlds fighters"
+			fighters
+				names "free worlds fighters"
 			variant
 				"Dreadnought"
 				"Skein"
@@ -662,7 +690,8 @@ mission "FWC Checkmate 1"
 		government "Republic"
 		fleet 3
 			names "republic small"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Frigate (Mark II)"
 				"Gunboat (Mark II)" 2
@@ -674,14 +703,16 @@ mission "FWC Checkmate 1"
 		system Menkent
 		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Carrier (Mark II)"
-				"Lance" 4
+				"Lance" 8
 				"Combat Drone" 6
 		fleet 2
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Cruiser (Mark II)"
 				"Combat Drone" 4
@@ -692,14 +723,16 @@ mission "FWC Checkmate 1"
 		system Sol
 		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Carrier (Mark II)"
-				"Lance" 4
+				"Lance" 8
 				"Combat Drone" 6
 		fleet 3
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Cruiser (Mark II)"
 				"Combat Drone" 4
@@ -710,14 +743,16 @@ mission "FWC Checkmate 1"
 		system Pollux
 		fleet 2
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Carrier (Mark II)"
-				"Lance" 4
+				"Lance" 8
 				"Combat Drone" 6
-		fleet 2
+		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Cruiser (Mark II)"
 				"Combat Drone" 4
@@ -744,11 +779,12 @@ mission "FWC Checkmate 1"
 	
 	npc
 		personality heroic
-		system Pherkad
+		system Alniyat
 		government "Free Worlds"
 		fleet
 			names "free worlds capital"
-			fighters "free worlds fighters"
+			fighters
+				names "free worlds fighters"
 			variant
 				"Dreadnought"
 				"Skein"
@@ -823,7 +859,7 @@ mission "FWC Checkmate 1B"
 	passengers 1
 	blocked "You have returned to <origin>, but you do not have a bunk free for Katya. You should return here once you have a bunk free."
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		event "fwc attack menkent"
@@ -848,7 +884,8 @@ mission "FWC Checkmate 1B"
 		personality heroic escort
 		fleet
 			names "free worlds capital"
-			fighters "free worlds fighters"
+			fighters
+				names "free worlds fighters"
 			variant
 				"Dreadnought"
 				"Skein"
@@ -879,14 +916,16 @@ mission "FWC Checkmate 1B"
 		system Menkent
 		fleet 2
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Carrier (Mark II)"
-				"Lance" 4
+				"Lance" 8
 				"Combat Drone" 6
 		fleet 2
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Cruiser (Mark II)"
 				"Combat Drone" 4
@@ -897,14 +936,16 @@ mission "FWC Checkmate 1B"
 		system Menkent
 		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Carrier (Mark II)"
 				"Frigate (Mark II)" 2
 				"Gunboat (Mark II)" 1
 		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Cruiser (Mark II)"
 				"Frigate (Mark II)" 1
@@ -924,7 +965,7 @@ mission "FWC Checkmate 1C"
 		has "FWC Checkmate 1B: done"
 	passengers 1
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		event "fwc attack vega"
@@ -952,6 +993,7 @@ mission "FWC Checkmate 1C"
 mission "FWC Checkmate Escorts"
 	landing
 	invisible
+	non-blocking
 	to offer
 		has "FWC Checkmate 1B: done"
 	to fail
@@ -969,7 +1011,8 @@ mission "FWC Checkmate Escorts"
 				"Argosy (Laser)"
 		fleet
 			names "free worlds capital"
-			fighters "free worlds fighters"
+			fighters
+				names "free worlds fighters"
 			variant
 				"Skein"
 				"Finch" 6
@@ -997,7 +1040,7 @@ mission "FWC Pug 1"
 	to offer
 		has "FWC Checkmate 1C: done"
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		event "fwc pug invasion"
@@ -1042,7 +1085,8 @@ mission "FWC Pug 1"
 		government "Free Worlds"
 		fleet
 			names "free worlds small"
-			fighters "free worlds fighters"
+			fighters
+				names "free worlds fighters"
 			variant
 				"Skein"
 				"Finch" 6
@@ -1081,13 +1125,13 @@ mission "FWC Pug 1"
 	npc evade
 		personality entering disables heroic
 		government Pug
-		fleet 2
+		fleet
 			names "pug"
 			variant
 				"Pug Maboro"
 				"Pug Enfolta"
 				"Pug Zibruka" 2
-		fleet 3
+		fleet 2
 			names "pug"
 			variant
 				"Pug Enfolta"
@@ -1120,7 +1164,7 @@ mission "FWC Pug 1B"
 	to offer
 		has "FWC Pug 1: done"
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		log "The moment the nuclear-armed Wolf Pack ships arrived in-system to prepare for the assault on Earth, a fleet of alien ships appeared and attacked them. In addition, the aliens somehow cut off the Vega system from the rest of human space."
@@ -1157,7 +1201,7 @@ mission "FWC Pug 2"
 	to offer
 		has "FWC Pug 1B: done"
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		log "Found out that the aliens who attacked the Wolf Pack fleet call themselves the Pug. After destroying that fleet, the aliens have not attacked anyone else except a few merchants who tried to resist them. They came from a nearby star system that did not previously have any hyperspace connections to human space, and seem intent on controlling and perhaps enslaving the local human population."
@@ -1235,7 +1279,7 @@ mission "FWC Pug 2B"
 	passengers 1
 	blocked "You need to have a bunk free for Katya to continue with the next mission. Complete or abort whatever mission is using up all your passenger space, then return here to <origin>."
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		conversation
@@ -1286,7 +1330,7 @@ mission "FWC Pug 2C"
 		has "FWC Pug 2B: done"
 	passengers 1
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		log `Visited the homeworld of the Pug, the aliens who have taken over this region of space. They claim that when the Free Worlds fleet was threatening to invade Earth, they had no choice but to interfere to prevent humanity from destroying itself. They say that their plan is to slowly bring more and more human worlds under their "protection," but what they are talking about sounds more like slavery.`
@@ -1309,8 +1353,16 @@ mission "FWC Pug 2C"
 			label interfere
 			`	"'Interfere'?" says the alien. "We have 'interfered' many times before, and always you have benefited. If you do not believe us, ask those who live in the place you call the Deep. We helped them defeat the twisted half-human beings that you created in your foolish attempts to improve your race's genetic code. We have helped keep those creatures in check in the centuries since then. And we have helped in many other ways."`
 			choice
+				`	"I'm from the Deep, and I've never heard of you before."`
+					to display
+						has "start: deep"
 				`	"What do you want from us in return?"`
+					goto goals
 				`	"What are you planning to do with these systems you have occupied?"`
+					goto goals
+			`	"Then perhaps you know of the myths of 'elves,' and of the tradition of tributation," says the alien. "We had been content with protecting your species from afar, letting your kind take our accomplishments as your own, but it is clear further intervention is necessary."`
+			`	Katya says, "So you got sick of babysitting us? Don't see why that means you have to conquer us instead of leaving us alone."`
+			label goals
 			`	"We have brought peace to this region," says the alien, "and we will continue to spread peace until violence has come to an end throughout human space. That is our only desire. All that we ask in return is a portion of the goods your worlds produce, to help offset the cost of watching over and protecting so many human worlds. And after some time, we will again allow human beings autonomous control of certain parts of your territory, when you show yourselves capable of living peacefully."`
 			`	"By 'spreading peace,' do you mean occupying more systems?" asks Katya.`
 			`	"We mean bringing an end to your war and your divisions," the alien says. "Those of your worlds and your people who have shown themselves unable to live peacefully, we must govern, to teach them peace. Any who attack us, we must destroy, because we are the bringers of peace, and whoever attacks us is not on the side of peace. Now, are you prepared to pledge your loyalty?"`
@@ -1348,7 +1400,7 @@ mission "FWC Pug 2D"
 		has "FWC Pug 2C: done"
 	passengers 1
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		event "fwc navy retakes cebalrai"
@@ -1382,7 +1434,7 @@ mission "FWC Pug 3"
 		has "FWC Pug 2D: done"
 	passengers 1
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		log "Escaped from the territory captured by the Pug by using a jump drive. Found out that Freya has been captured by the Navy while she was trying to figure out the reason for the hyperspace links disappearing. The Navy thinks that the Free Worlds are behind the hyperspace disruptions. But, making peace with the Navy may be the only way to defeat the Pug."
@@ -1407,7 +1459,7 @@ mission "FWC Pug 3"
 			label links
 			`	Alondo says, "That's what Freya was working on. As soon as your fleet disappeared, she began investigating, and she went to <planet> to set up something she called a 'graviton detector' pointed towards Vega. Right before that system was taken, she sent us a message that she had found some sort of residual trace of the link, maybe a way to reopen it."`
 			`	"Wait," says Katya, "what do you mean, 'right before the system was taken'? By whom?"`
-			`	"The Navy," says Alondo. "They think the Free Worlds is behind the disappearance of those systems. And with your fleet gone, we didn't have enough ships left to resist them. Freya could have evacuated, but she stayed behind to finish her research. I believe her exact words were, 'To hell with your war, this is more important.'" If she's still there, she may be our best hope for figuring this out.`
+			`	"The Navy," says Alondo. "They think the Free Worlds are behind the disappearance of those systems. And with your fleet gone, we didn't have enough ships left to resist them. Freya could have evacuated, but she stayed behind to finish her research. I believe her exact words were, 'To hell with your war, this is more important.'" If she's still there, she may be our best hope for figuring this out.`
 				goto next
 			
 			label next
@@ -1444,7 +1496,7 @@ mission "FWC Pug 3A"
 		has "FWC Pug 3: done"
 	passengers 1
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		log "Convinced the Navy that the disappearing hyperspace links really are an alien attack and not some sort of Free Worlds super-weapon. Freya thinks that she might be able to undo the hyperspace disruption and allow the Navy to enter the captured territory and begin to drive the Pug back."
@@ -1506,7 +1558,7 @@ mission "FWC Pug 3B"
 	to offer
 		has "FWC Pug 3A: done"
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		event "fwc defend oblivion"
@@ -1535,7 +1587,8 @@ mission "FWC Pug 3B"
 		personality heroic escort
 		fleet
 			names "free worlds capital"
-			fighters "free worlds fighters"
+			fighters
+				names "free worlds fighters"
 			variant
 				"Skein"
 				"Finch" 6
@@ -1569,14 +1622,14 @@ mission "FWC Pug 3C"
 	destination Tundra
 	on enter Cebalrai
 		dialog
-			"As soon as you reenter human space, you contact the Navy and tell them to send an attack fleet to the Cebalrai system. Then, just for good measure, you contact the Free Worlds and ask them to do the same."
+			"As soon as you re-enter human space, you contact the Navy and tell them to send an attack fleet to the Cebalrai system. Then, just for good measure, you contact the Free Worlds and ask them to do the same."
 	to offer
 		has "FWC Pug 3B: done"
 	passengers 1
 	cargo "graviton reflector" 10
 	blocked `As you are landing, Freya contacts you and says, "You're going to need ten tons of cargo space for this next mission, and a bunk for me, as well." That means you have to free up <capacity>.`
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		conversation
@@ -1608,7 +1661,7 @@ mission "FWC Pug 3D"
 		has "FWC Pug 3C: done"
 	passengers 1
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		log "Succeeded in restoring the hyperspace link to the Rasalhague system. With the Navy's help, it might now be possible to turn the tide against the Pug."
@@ -1642,6 +1695,7 @@ mission "FWC Pug 3D"
 mission "FWC Pug 3D: Reinforcements"
 	landing
 	invisible
+	non-blocking
 	to offer
 		has "FWC Pug 3C: done"
 	to fail
@@ -1652,17 +1706,19 @@ mission "FWC Pug 3D: Reinforcements"
 		personality heroic waiting
 		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Cruiser (Mark II)"
 				"Combat Drone" 4
 				"Frigate (Mark II)" 2
 		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Carrier (Mark II)"
-				"Lance" 4
+				"Lance" 8
 				"Combat Drone" 6
 				"Gunboat (Mark II)" 3
 	npc kill
@@ -1670,17 +1726,19 @@ mission "FWC Pug 3D: Reinforcements"
 		personality heroic waiting
 		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Cruiser"
 				"Combat Drone" 4
 				"Frigate" 2
 		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Carrier"
-				"Lance" 4
+				"Lance" 8
 				"Combat Drone" 6
 				"Gunboat" 2
 	npc kill
@@ -1694,7 +1752,8 @@ mission "FWC Pug 3D: Reinforcements"
 				"Argosy (Laser)"
 		fleet
 			names "free worlds capital"
-			fighters "free worlds fighters"
+			fighters
+				names "free worlds fighters"
 			variant
 				"Dreadnought"
 				"Falcon (Plasma)"
@@ -1720,7 +1779,7 @@ mission "FWC Pug 4"
 		has "FWC Pug 3D: done"
 	passengers 1
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		conversation
@@ -1804,7 +1863,7 @@ mission "FWC Pug 4A"
 		has "FWC Pug 4: done"
 	passengers 1
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		log "Drove off another Pug attack. Fighting side by side together is beginning to build some camaraderie between the Free Worlds and the Navy, even though they were enemies so recently."
@@ -1859,7 +1918,7 @@ mission "FWC Pug 4B"
 	passengers 1
 	blocked `When you land on <origin>, Freya says, "Captain, it looks like you're going to need <capacity> to continue with this mission." You should free up more space, then return here.`
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		conversation
@@ -1953,10 +2012,10 @@ mission "FWC Pug 4C"
 		has "FWC Pug 4B: done"
 	passengers 1
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
-		event "fwc reconnect ascella"
+		event "fwc reconnect ascella" 0
 		conversation
 			`You help Freya to unload and set up the reflector equipment, then contact the Navy on Oblivion and instruct them to point the transmitter in your direction. A few minutes later Admiral Danforth contacts you. "This link appears to be returning too," he says. "So, let's move on. We're going to make an attack on the <system> system, now, and we would welcome your assistance in this battle." You leave the equipment on <origin> and return to your ship with Freya.`
 				accept
@@ -1965,7 +2024,7 @@ mission "FWC Pug 4C"
 		dialog `You've landed on <planet>, but there are still Pug ships circling overhead. You should take off and help finish them off.`
 	on complete
 		log "Succeeded in restoring a few more hyperspace connections, and in driving back the Pug (with the help of the Navy). But, Freya thinks it is way too coincidental that the aliens have left behind the exact technology needed to fix the hyperspace disruptions; it feels like the Pug are playing a game rather than fighting a serious war."
-		event "fwc reconnect zeta aquilae"
+		event "fwc reconnect zeta aquilae" 0
 		dialog `After a few minutes of scanning the surface of <planet>, Freya locates another transmitter station that matches the one you found on Oblivion. You contact Admiral Danforth to tell him its location, and he dispatches a crew to take control of it. He also reports to you that once again, apparently all the Pug left the planet during the course of the battle. "A pity," he says. "If we had taken prisoners, maybe we could have gotten some answers from them. Anyway, meet me in the spaceport whenever you're ready to help with our next mission."`
 	
 	npc evade
@@ -1984,14 +2043,16 @@ mission "FWC Pug 4C"
 		personality heroic staying
 		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Cruiser (Mark II)"
 				"Combat Drone" 4
 				"Frigate (Mark II)" 2
 		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Cruiser (Mark II)"
 				"Combat Drone" 4
@@ -2002,14 +2063,16 @@ mission "FWC Pug 4C"
 		personality heroic staying uninterested
 		fleet 2
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Cruiser (Mark II)"
 				"Combat Drone" 4
 				"Frigate (Mark II)" 2
 		fleet
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Cruiser (Mark II)"
 				"Combat Drone" 4
@@ -2028,11 +2091,11 @@ mission "FWC Pug 5"
 		has "FWC Pug 4C: done"
 	passengers 1
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		conversation
-			`You find Admiral Danforth supervising the repairs of the damaged Navy ships. "Glad you survived that battle!" he says. "These alien ships are much more advanced than ours, but we outnumber them, so now that we've established a strong beachhead I think we actually have a chance at defeating them. The only problem is, the majority of our fleet is still up north. With the Vega system cut off, our supply lines are having to go all the way around through the dirt belt. So I'd like to propose liberating Vega next."`
+			`You find Admiral Danforth supervising the repairs of the damaged Navy ships. "Glad you survived that battle!" he says. "These alien ships are much more advanced than ours, but we outnumber them, so now that we've established a strong beachhead I think we actually have a chance at defeating them. The only problem is, the majority of our fleet is still up north. With the Vega system cut off, our supply lines are having to go all the way around through the Dirt Belt. So I'd like to propose liberating Vega next."`
 			choice
 				`	"That does sound like a good strategic choice."`
 				`	"How will your fleet get to Vega without traveling through the Pug home system? That system is swarming with their ships."`
@@ -2054,18 +2117,19 @@ mission "FWC Pug 5"
 	on visit
 		dialog `You've landed on <planet>, but there are still Pug ships circling overhead. You should take off and help finish them off.`
 	on complete
-		event "fwc liberation of vega"
+		event "fwc liberation of vega" 0
 	
 	npc
 		government "Navy (Oathkeeper)"
 		personality heroic escort
 		fleet 3
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Carrier (Jump)"
 				"Combat Drone" 6
-				"Dagger" 4
+				"Dagger" 8
 	
 	npc evade
 		personality disables heroic staying
@@ -2097,7 +2161,7 @@ mission "FWC Pug 5B"
 	cargo "graviton reflector" 10
 	blocked `When you land on <origin>, Freya says, "Captain, it looks like you're going to need <capacity> to continue with this mission." You should free up more space, then return here.`
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		log "Drove the Pug out of the Vega system with the help of some Navy ships equipped with jump drives. Once again, the Pug somehow managed to evacuate all their people from the planet before the Navy arrived, as if they were already expecting to lose this system."
@@ -2123,10 +2187,11 @@ mission "FWC Pug 5B"
 		personality heroic staying uninterested
 		fleet 3
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Carrier (Mark II)"
-				"Lance" 4
+				"Lance" 8
 				"Combat Drone" 6
 				"Cruiser (Mark II)"
 				"Combat Drone" 4
@@ -2147,7 +2212,7 @@ mission "FWC Pug 5C"
 		has "FWC Pug 5B: done"
 	passengers 1
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		event "fwc reconnect vega"
@@ -2165,10 +2230,11 @@ mission "FWC Pug 5C"
 		personality heroic waiting
 		fleet 3
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Carrier (Mark II)"
-				"Lance" 4
+				"Lance" 8
 				"Combat Drone" 6
 				"Cruiser (Mark II)"
 				"Combat Drone" 4
@@ -2194,7 +2260,7 @@ mission "FWC Pug 6"
 		dialog
 			`You enter the Deneb system expecting a massive Pug battle fleet to be waiting for you. Instead, it is entirely deserted. Also, your sensors are picking up some sort of anomaly outside the orbit of the outermost planet.`
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		log "Preparing for the final assault on the Pug homeworld. There seems to be no other option but to force them to surrender, but with the help of the Navy that no longer seems like an impossible task."
@@ -2207,7 +2273,7 @@ mission "FWC Pug 6"
 				`	"Sure, with the Navy at our backs I think we've got a good chance."`
 				`	"As ready as I'll ever be, I guess."`
 			`	She laughs. "I suppose that's the best we can hope for. Do you mind if I ride in your ship tomorrow, rather than one of the others? If this is the end, I'd rather face it with people I know." You agree. She turns back to look out the window.`
-			`	Since Freya seems to want to be alone, you return downstairs, and discover that a sizeable Oathkeeper fleet has arrived. In the main vestibule of the spaceport, an Oathkeeper officer is leading a group in qigong meditation. And surprisingly, you spot Admiral Danforth sitting with the Muslim prayer group and chanting in fluent Arabic. Meanwhile, the party outside the pub continues.`
+			`	Since Freya seems to want to be alone, you return downstairs, and discover that a sizable Oathkeeper fleet has arrived. In the main vestibule of the spaceport, an Oathkeeper officer is leading a group in qigong meditation. And surprisingly, you spot Admiral Danforth sitting with the Muslim prayer group and chanting in fluent Arabic. Meanwhile, the party outside the pub continues.`
 			`	Eventually morning comes, and you prepare your ship for the assault on the Pug homeworld...`
 				accept
 	
@@ -2216,10 +2282,11 @@ mission "FWC Pug 6"
 		personality heroic
 		fleet 3
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Carrier (Mark II)"
-				"Lance" 4
+				"Lance" 8
 				"Combat Drone" 6
 				"Cruiser (Mark II)"
 				"Combat Drone" 4
@@ -2232,17 +2299,19 @@ mission "FWC Pug 6"
 		system Cebalrai
 		fleet 2
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Cruiser (Mark II)"
 				"Combat Drone" 4
 				"Frigate (Mark II)" 2
 		fleet 2
 			names "republic capital"
-			fighters "republic fighter"
+			fighters
+				names "republic fighter"
 			variant
 				"Carrier (Mark II)"
-				"Lance" 4
+				"Lance" 8
 				"Combat Drone" 6
 				"Gunboat (Mark II)" 3
 	npc
@@ -2258,7 +2327,8 @@ mission "FWC Pug 6"
 				"Argosy (Laser)"
 		fleet
 			names "free worlds capital"
-			fighters "free worlds fighters"
+			fighters
+				names "free worlds fighters"
 			variant
 				"Dreadnought"
 				"Falcon (Plasma)"
@@ -2346,7 +2416,7 @@ mission "FWC End"
 	passengers 1
 	blocked "You need at least one bunk free for Freya in order to continue this mission."
 	on fail
-		dialog `You have failed an essential Free Worlds mission. If you want to complete the story line, revert to the autosave or another earlier snapshot of the game.`
+		dialog phrase "free worlds failed"
 	
 	on offer
 		"reputation: Republic" += 20
@@ -2377,6 +2447,7 @@ mission "FWC End"
 		set "free worlds plot completed"
 		set "free worlds checkmate"
 		event "stack core for sale"
+		event "fwc kaus borealis ceded back"
 		conversation
 			`You arrive in the Parliament building just as Alondo and Katya have finished meeting with them. "Good news," says Katya. "We're all officially pardoned. And you, Captain <last>, have become something of a hero."`
 			`	"Better yet," says Alondo, "the war with the Republic is over. We agreed to limiting our territory to its current size, and to a very minor tax to cover the cost of Navy protection if the aliens attack again or some other major catastrophe strikes. In return, the Free Worlds have been granted autonomy from the Republic."`

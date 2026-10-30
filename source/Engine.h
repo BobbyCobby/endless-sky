@@ -13,49 +13,56 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef ENGINE_H_
-#define ENGINE_H_
+#pragma once
 
 #include "AI.h"
+#include "AlertLabel.h"
 #include "AmmoDisplay.h"
 #include "AsteroidField.h"
-#include "BatchDrawList.h"
+#include "shader/BatchDrawList.h"
+#include "Camera.h"
 #include "CollisionSet.h"
+#include "Color.h"
 #include "Command.h"
-#include "DrawList.h"
+#include "DamageProfile.h"
+#include "shader/DrawList.h"
 #include "EscortDisplay.h"
 #include "Information.h"
+#include "MiniMap.h"
+#include "MouseButton.h"
+#include "PlanetLabel.h"
 #include "Point.h"
 #include "Preferences.h"
+#include "Projectile.h"
 #include "Radar.h"
 #include "Rectangle.h"
+#include "TaskQueue.h"
 
 #include <condition_variable>
 #include <list>
 #include <map>
 #include <memory>
+<<<<<<< HEAD
 #include <optional>
 #ifndef ES_NO_THREADS
 #include <thread>
 #endif // ES_NO_THREADS
+=======
+>>>>>>> upstream/master
 #include <utility>
 #include <vector>
 
-class AlertLabel;
 class Flotsam;
 class Government;
 class NPC;
 class Outfit;
-class PlanetLabel;
 class PlayerInfo;
-class Projectile;
 class Ship;
 class ShipEvent;
 class Sprite;
-class TestContext;
+class Swizzle;
 class Visual;
 class Weather;
-
 
 
 // Class representing the game engine: its job is to track all of the objects in
@@ -73,8 +80,12 @@ public:
 	// Place all the player's ships, and "enter" the system the player is in.
 	void Place();
 	// Place NPCs spawned by a mission that offers when the player is not landed.
+<<<<<<< HEAD
 	void Place(const std::list<NPC> &npcs, std::shared_ptr<Ship> flagship = nullptr);
 	void Place(const std::shared_ptr<Ship> &ship);
+=======
+	void Place(const std::list<NPC> &npcs, const std::shared_ptr<Ship> &flagship = nullptr);
+>>>>>>> upstream/master
 
 	// Wait for the previous calculations (if any) to be done.
 	void Wait();
@@ -83,6 +94,11 @@ public:
 	void Step(bool isActive);
 	// Begin the next step of calculations.
 	void Go();
+	// Whether the player has the game paused.
+	bool IsPaused() const;
+
+	// Give a command on behalf of the player, used for integration tests.
+	void GiveCommand(const Command &command);
 
 	// Get any special events that happened in this step.
 	// MainPanel::Step will clear this list.
@@ -91,12 +107,10 @@ public:
 	// Draw a frame.
 	void Draw() const;
 
-	// Set the given TestContext in the next step of the Engine.
-	void SetTestContext(TestContext &newTestContext);
-
 	// Select the object the player clicked on.
-	void Click(const Point &from, const Point &to, bool hasShift, bool hasControl);
-	void RClick(const Point &point);
+	void LeftClick(const Point &point, bool hasShift, bool hasControl, int clicks);
+	void ReleaseDrag(const Point &from, const Point &to);
+	void RightOrMiddleClick(const Point &point, MouseButton button, int clicks);
 	void SelectGroup(int group, bool hasShift, bool hasControl);
 
 	// Break targeting on all projectiles between the player and the given
@@ -104,11 +118,33 @@ public:
 	// projectiles stop targeting gov.
 	void BreakTargeting(const Government *gov);
 
+<<<<<<< HEAD
 	void SetCustomCenter(std::optional<Point> center) { newCustomCenter = std::move(center); }
 
 
 private:
 	void EnterSystem(const System *system = nullptr);
+=======
+	void DisengageAutopilot();
+
+
+private:
+	class Outline {
+	public:
+		Outline(const Sprite *sprite, const Point &position, const Point &unit,
+			const float frame, const Color &color)
+			: sprite(sprite), position(position), unit(unit), frame(frame), color(color)
+		{
+		}
+
+		const Sprite *sprite;
+		const Point position;
+		const Point unit;
+		const float frame;
+		const Color color;
+	};
+
+>>>>>>> upstream/master
 	class Target {
 	public:
 		Point center;
@@ -120,24 +156,76 @@ private:
 
 	class Status {
 	public:
-		Status(const Point &position, double outer, double inner,
-			double disabled, double radius, int type, double angle = 0.)
+		enum class Type {
+			FLAGSHIP,
+			FRIENDLY,
+			HOSTILE,
+			NEUTRAL,
+			SCAN,
+			SCAN_OUT_OF_RANGE,
+			COUNT // This item should always be the last in this list.
+		};
+
+	public:
+		constexpr Status(const Point &position, double outer, double inner,
+			double disabled, double radius, Type type, float alpha, double angle = 0.)
 			: position(position), outer(outer), inner(inner),
-				disabled(disabled), radius(radius), type(type), angle(angle) {}
+				disabled(disabled), radius(radius), type(type), alpha(alpha), angle(angle) {}
 
 		Point position;
 		double outer;
 		double inner;
 		double disabled;
 		double radius;
-		int type;
+		Type type;
+		float alpha;
 		double angle;
+	};
+
+	class TurretOverlay {
+	public:
+		Point position;
+		Point angle;
+		double scale;
+		bool isBlind;
+	};
+
+	class Zoom {
+	public:
+		constexpr Zoom() : base(0.) {}
+		explicit constexpr Zoom(double zoom) : base(zoom) {}
+
+		constexpr operator double() const { return base * modifier; }
+
+		double base;
+		double modifier = 1.;
+	};
+
+	class EntityCollision {
+	public:
+		explicit EntityCollision(const DamageProfile &damage, const Government *gov = nullptr, bool provokable = true)
+			: damage(damage), gov(gov), provokable(provokable) {}
+
+		DamageProfile damage;
+		const Government *gov;
+		bool provokable;
 	};
 
 
 private:
+<<<<<<< HEAD
 	void ThreadEntryPoint();
+=======
+	// Determine if the click was within the radar display,
+	// if the clickable radar preference is active.
+	void LocateClick(const Point &point);
+
+	void EnterSystem();
+
+>>>>>>> upstream/master
 	void CalculateStep();
+	// Calculate things that require the engine not to be paused.
+	void CalculateUnpaused(const Ship *flagship, const System *playerSystem);
 
 	void MoveShip(const std::shared_ptr<Ship> &ship);
 
@@ -151,19 +239,19 @@ private:
 
 	void FillCollisionSets();
 
-	void DoCollisions(Projectile &projectile);
+	void FindCollisions(Projectile &projectile, std::map<Entity *, std::vector<EntityCollision>> &entityCollisions);
+	void DoCollisions(std::map<Entity *, std::vector<EntityCollision>> &entityCollisions);
 	void DoWeather(Weather &weather);
 	void DoCollection(Flotsam &flotsam);
 	void DoScanning(const std::shared_ptr<Ship> &ship);
 
 	void FillRadar();
 
-	void AddSprites(const Ship &ship);
-
 	void DoGrudge(const std::shared_ptr<Ship> &target, const Government *attacker);
 
 	void CreateStatusOverlays();
-	void EmplaceStatusOverlay(const std::shared_ptr<Ship> &ship, Preferences::OverlayState overlaySetting, int value);
+	void EmplaceStatusOverlay(const std::shared_ptr<Ship> &ship, Preferences::OverlayState overlaySetting,
+		Status::Type type, double cloak);
 
 
 private:
@@ -188,11 +276,14 @@ private:
 	std::list<std::shared_ptr<Flotsam>> newFlotsam;
 	std::vector<Visual> newVisuals;
 
-	// Track which ships currently have anti-missiles ready to fire.
+	// Track which ships currently have anti-missiles or
+	// tractor beams ready to fire.
 	std::vector<Ship *> hasAntiMissile;
+	std::vector<Ship *> hasTractorBeam;
 
 	AI ai;
 
+<<<<<<< HEAD
 #ifndef ES_NO_THREADS
 	std::thread calcThread;
 	std::condition_variable condition;
@@ -206,31 +297,53 @@ private:
 	bool wasActive = false;
 	bool isMouseHoldEnabled = false;
 	bool isMouseTurningEnabled = false;
+=======
+	TaskQueue queue;
+	TaskQueue asyncQueue;
+
+	// ES uses a technique called double buffering to calculate the next frame and render the current one simultaneously.
+	// To facilitate this, it uses two buffers for each list of things to draw - one for the next frame's calculations and
+	// one for rendering the current frame. A little synchronization is required to prevent mutable references to the
+	// currently rendering buffer.
+	size_t currentCalcBuffer = 0;
+	size_t currentDrawBuffer = 0;
+>>>>>>> upstream/master
 	DrawList draw[2];
 	BatchDrawList batchDraw[2];
 	Radar radar[2];
-	// Viewport position and velocity.
-	Point center;
-	Point centerVelocity;
+
+	bool wasActive = false;
+	bool isMouseHoldEnabled = false;
+	bool isMouseTurningEnabled = false;
+
+	// Viewport camera.
+	Camera camera;
 	// Other information to display.
 	Information info;
 	std::vector<Target> targets;
 	Point targetVector;
 	Point targetUnit;
-	int targetSwizzle = -1;
+	const Swizzle *targetSwizzle = nullptr;
+	// Represents the state of the currently targeted ship when it was last seen,
+	// so the target display does not show updates to its state the player should not be aware of.
+	int lastTargetType = 0;
 	EscortDisplay escorts;
 	AmmoDisplay ammoDisplay;
+	std::vector<Outline> outlines;
 	std::vector<Status> statuses;
 	std::vector<PlanetLabel> labels;
 	std::vector<AlertLabel> missileLabels;
+	std::vector<TurretOverlay> turretOverlays;
 	std::vector<std::pair<const Outfit *, int>> ammo;
-	int jumpCount = 0;
-	const System *jumpInProgress[2] = {nullptr, nullptr};
-	const Sprite *highlightSprite = nullptr;
-	Point highlightUnit;
-	float highlightFrame = 0.f;
+	// Flagship's hyperspace percentage converted to a [0, 1] double.
+	double hyperspacePercentage = 0.;
+
+	MiniMap minimap;
 
 	int step = 0;
+	// Count steps for UI elements separately, because they shouldn't be affected by pausing.
+	mutable int uiStep = 0;
+	bool timePaused = false;
 
 	std::list<ShipEvent> eventQueue;
 	std::list<ShipEvent> events;
@@ -241,10 +354,15 @@ private:
 	CollisionSet shipCollisions;
 
 	int alarmTime = 0;
+	int nukeAlarmTime = 0;
 	double flash = 0.;
 	bool doFlash = false;
+	bool doEnterLabels = false;
 	bool doEnter = false;
 	bool hadHostiles = false;
+
+	// A timer preventing out-of-ammo sounds from triggering constantly every frame when the fire key is held.
+	std::vector<int> emptySoundsTimer;
 
 	// Commands that are currently active (and not yet handled). This is a combination
 	// of keyboard and mouse commands (and any other available input device).
@@ -259,7 +377,8 @@ private:
 	bool doClick = false;
 	bool hasShift = false;
 	bool hasControl = false;
-	bool isRightClick = false;
+	MouseButton mouseButton = MouseButton::NONE;
+	int numClicks = 0;
 	bool isRadarClick = false;
 	Point clickPoint;
 	Rectangle uiClickBox;
@@ -270,11 +389,9 @@ private:
 	std::set<std::string> asteroidsScanned;
 	bool isAsteroidCatalogComplete = false;
 
-	// Input, Output and State handling for automated tests.
-	TestContext *testContext = nullptr;
-
-	double zoom = 1.;
+	Zoom zoom;
 	// Tracks the next zoom change so that objects aren't drawn at different zooms in a single frame.
+<<<<<<< HEAD
 	double nextZoom = 0.;
 
 	double load = 0.;
@@ -283,8 +400,7 @@ private:
 
 	friend class Editor;
 	friend class ArenaControl;
+=======
+	Zoom nextZoom;
+>>>>>>> upstream/master
 };
-
-
-
-#endif

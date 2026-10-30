@@ -13,8 +13,7 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef CONVERSATION_PANEL_H_
-#define CONVERSATION_PANEL_H_
+#pragma once
 
 #include "Panel.h"
 
@@ -29,6 +28,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 class Color;
 class Conversation;
+class Mission;
 class PlayerInfo;
 class Point;
 class Ship;
@@ -43,15 +43,20 @@ class System;
 class ConversationPanel : public Panel {
 public:
 	ConversationPanel(PlayerInfo &player, const Conversation &conversation,
-		const System *system = nullptr, const std::shared_ptr<Ship> &ship = nullptr,
-		bool useTransactions = false);
+		const Mission *caller = nullptr, const System *system = nullptr,
+		const std::shared_ptr<Ship> &ship = nullptr, bool useTransactions = false);
 
-template <class T>
+	virtual ~ConversationPanel() override;
+
+	template<class T>
 	void SetCallback(T *t, void (T::*fun)(int));
 	void SetCallback(std::function<void(int)> fun);
 
+	virtual void Step() override;
 	// Draw this panel.
 	virtual void Draw() override;
+
+	virtual void UpdateTextDisplay() override;
 
 
 protected:
@@ -89,11 +94,12 @@ private:
 		// Get the height of this paragraph.
 		int Height() const;
 		// Get the "center point" of this paragraph. This is for drawing a
-		// highlight under paragraphcs that represent choices.
+		// highlight under paragraphs that represent choices.
 		Point Center() const;
 		// Draw this paragraph at the given point, and return the point that the
 		// next paragraph below this one should be drawn at.
 		Point Draw(Point point, const Color &color) const;
+		void UpdateTextDisplay();
 
 	private:
 		const Sprite *scene = nullptr;
@@ -108,6 +114,9 @@ private:
 	// Reference to the player, to apply any changes to them.
 	PlayerInfo &player;
 
+	// A pointer to the mission that called this conversation.
+	const Mission *caller = nullptr;
+
 	// Should we use a PlayerInfo transaction to prevent save-load glitches?
 	bool useTransactions = false;
 
@@ -120,6 +129,9 @@ private:
 
 	// Current scroll position.
 	double scroll = 0.;
+
+	// Whether the scenes from the conversation have been preloaded yet.
+	bool hasLoadedScenes = false;
 
 	// The "history" of the conversation up to this point:
 	std::list<Paragraph> text;
@@ -154,12 +166,8 @@ private:
 
 
 // Allow the callback function to be a member of any class.
-template <class T>
+template<class T>
 void ConversationPanel::SetCallback(T *t, void (T::*fun)(int))
 {
 	callback = std::bind(fun, t, std::placeholders::_1);
 }
-
-
-
-#endif

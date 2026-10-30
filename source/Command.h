@@ -13,10 +13,10 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef COMMAND_H_
-#define COMMAND_H_
+#pragma once
 
 #include <cstdint>
+#include <filesystem>
 #include <string>
 
 class DataNode;
@@ -40,7 +40,9 @@ public:
 	static const Command AUTOSTEER;
 	static const Command BACK;
 	static const Command MOUSE_TURNING_HOLD;
+	static const Command AIM_TURRET_HOLD;
 	static const Command PRIMARY;
+	static const Command TURRET_TRACKING;
 	static const Command SECONDARY;
 	static const Command SELECT;
 	static const Command LAND;
@@ -58,14 +60,20 @@ public:
 	// UI controls:
 	static const Command MAP;
 	static const Command INFO;
+	static const Command MESSAGE_LOG;
 	static const Command FULLSCREEN;
 	static const Command FASTFORWARD;
+	static const Command HELP;
+	static const Command PAUSE;
+	static const Command PERFORMANCE_DISPLAY;
 	// Escort commands:
 	static const Command FIGHT;
+	static const Command HOLD_FIRE;
 	static const Command GATHER;
-	static const Command HOLD;
+	static const Command HOLD_POSITION;
 	static const Command AMMO;
 	static const Command HARVEST;
+	static const Command SCAN_ORDER;
 	// This command is given in combination with JUMP or LAND and tells a ship
 	// not to jump or land yet even if it is in position to do so. It can be
 	// given from the AI when a ship is waiting for its parent. It can also be
@@ -90,14 +98,18 @@ public:
 	Command() = default;
 	// Create a command representing whatever command is mapped to the given
 	// keycode (if any).
+#ifdef ES_USE_SDL3
+	explicit Command(uint32_t keycode);
+#else
 	explicit Command(int keycode);
+#endif
 
 	// Read the current keyboard state and set this object to reflect it.
 	void ReadKeyboard();
 
 	// Load or save the keyboard preferences.
-	static void LoadSettings(const std::string &path);
-	static void SaveSettings(const std::string &path);
+	static void LoadSettings(const std::filesystem::path &path);
+	static void SaveSettings(const std::filesystem::path &path);
 	static void SetKey(Command command, int keycode);
 
 	// Get the description or keycode name for this command. If this command is
@@ -149,7 +161,3 @@ private:
 	// Turning amount is stored as a separate double to allow fractional values.
 	double turn = 0.;
 };
-
-
-
-#endif

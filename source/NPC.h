@@ -13,27 +13,28 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef NPC_H_
-#define NPC_H_
+#pragma once
 
-#include "Conversation.h"
+#include "DialogSettings.h"
 #include "EsUuid.h"
 #include "ExclusiveItem.h"
-#include "Fleet.h"
 #include "FleetCargo.h"
 #include "LocationFilter.h"
 #include "NPCAction.h"
 #include "Personality.h"
-#include "Phrase.h"
+#include "ship/ShipFactory.h"
 
 #include <list>
 #include <map>
 #include <memory>
 #include <string>
 
+class ConditionsStore;
 class DataNode;
 class DataWriter;
+class Fleet;
 class Government;
+class Mission;
 class Planet;
 class PlayerInfo;
 class Ship;
@@ -49,12 +50,31 @@ class UI;
 // staying in the system they started in, or attacking only the player's ships.
 class NPC {
 public:
+	enum class Trigger : int_fast8_t {
+		// Triggers corresponding directly to ShipEvents.
+		ASSIST,
+		SCAN_CARGO,
+		SCAN_OUTFITS,
+		PROVOKE,
+		DISABLE,
+		BOARD,
+		CAPTURE,
+		DESTROY,
+		ENCOUNTER,
+		// Can be triggered by either the CAPTURE or DESTROY events.
+		KILL,
+	};
+
+
+public:
 	NPC() = default;
 
 	// Construct and Load() at the same time.
-	NPC(const DataNode &node, const std::string &missionName);
+	explicit NPC(const DataNode &node, const ConditionsStore *playerConditions,
+		const std::set<const System *> *visitedSystems, const std::set<const Planet *> *visitedPlanets);
 
-	void Load(const DataNode &node, const std::string &missionName);
+	void Load(const DataNode &node, const ConditionsStore *playerConditions,
+		const std::set<const System *> *visitedSystems, const std::set<const Planet *> *visitedPlanets);
 	// Note: the Save() function can assume this is an instantiated mission, not
 	// a template, so fleets will be replaced by individual ships already.
 	void Save(DataWriter &out) const;
@@ -69,12 +89,14 @@ public:
 	void UpdateSpawning(const PlayerInfo &player);
 	bool ShouldSpawn() const;
 
+	// Get the personality that dictates the behavior of the ships associated with this set of NPCs.
+	const Personality &GetPersonality() const;
 	// Get the ships associated with this set of NPCs.
-	const std::list<std::shared_ptr<Ship>> Ships() const;
+	const std::list<std::shared_ptr<Ship>> &Ships() const;
 
-	// Handle the given ShipEvent.
-	enum Trigger {KILL, BOARD, ASSIST, DISABLE, SCAN_CARGO, SCAN_OUTFITS, CAPTURE, PROVOKE};
-	void Do(const ShipEvent &event, PlayerInfo &player, UI *ui = nullptr, bool isVisible = true);
+	// Handle the given ShipEvent. Return true if the event target is within this NPC.
+	bool Do(const ShipEvent &event, PlayerInfo &player, UI &ui,
+		const Mission *caller = nullptr, bool isVisible = true);
 	// Determine if the NPC is in a successful state, assuming the player is in the given system.
 	// (By default, a despawnable NPC has succeeded and is not actually checked.)
 	bool HasSucceeded(const System *playerSystem, bool ignoreIfDespawnable = true) const;
@@ -86,13 +108,13 @@ public:
 
 	// Create a copy of this NPC but with the fleets replaced by the actual
 	// ships they represent, wildcards in the conversation text replaced, etc.
-	NPC Instantiate(std::map<std::string, std::string> &subs, const System *origin, const System *destination,
-			int jumps, int64_t payload) const;
+	NPC Instantiate(const PlayerInfo &player, std::map<std::string, std::string> &subs, const System *origin,
+			const System *destination, int jumps, int64_t payload) const;
 
 
 private:
 	// Handle any NPC mission actions that may have been triggered by a ShipEvent.
-	void DoActions(const ShipEvent &event, bool newEvent, PlayerInfo &player, UI *ui = nullptr);
+	void DoActions(const ShipEvent &event, bool newEvent, PlayerInfo &player, UI &ui, const Mission *caller);
 
 
 private:
@@ -114,8 +136,7 @@ private:
 	const Planet *planet = nullptr;
 
 	// Dialog or conversation to show when all requirements for this NPC are met:
-	std::string dialogText;
-	ExclusiveItem<Phrase> dialogPhrase;
+	DialogSettings dialog;
 	ExclusiveItem<Conversation> conversation;
 
 	// Conditions that must be met in order for this NPC to be placed or despawned:
@@ -131,12 +152,11 @@ private:
 	// will generally be true, except when reloading a save.)
 	bool checkedSpawnConditions = false;
 
-	// The ships may be listed individually or referred to as a fleet, and may
-	// be customized or just refer to stock objects:
-	std::list<std::shared_ptr<Ship>> ships;
-	std::list<const Ship *> stockShips;
-	std::list<std::string> shipNames;
+	// The ship and fleet definition that make up this NPC.
+	ShipFactory factory;
 	std::list<ExclusiveItem<Fleet>> fleets;
+	// The actual instantiated ships.
+	std::list<std::shared_ptr<Ship>> ships;
 
 	// This must be done to each ship in this set to complete the mission:
 	int succeedIf = 0;
@@ -149,7 +169,3 @@ private:
 	// The NPCActions that this NPC can run on certain events/triggers.
 	std::map<Trigger, NPCAction> npcActions;
 };
-
-
-
-#endif

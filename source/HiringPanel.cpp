@@ -15,10 +15,12 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "HiringPanel.h"
 
+#include "Command.h"
 #include "GameData.h"
 #include "Information.h"
 #include "Interface.h"
 #include "PlayerInfo.h"
+#include "Screen.h"
 #include "Ship.h"
 #include "UI.h"
 
@@ -45,17 +47,23 @@ void HiringPanel::Step()
 
 void HiringPanel::Draw()
 {
-	if(!player.Flagship())
-		return;
-	const Ship &flagship = *player.Flagship();
-
-	const Interface *hiring = GameData::Interfaces().Get("hiring");
+	const Ship *flagship = player.Flagship();
+	const Interface *hiring = GameData::Interfaces().Get(Screen::Width() < 1280 ? "hiring (small screen)" : "hiring");
 	Information info;
 
-	int flagshipBunks = flagship.Attributes().Get("bunks");
-	int flagshipRequired = flagship.RequiredCrew();
-	int flagshipExtra = flagship.Crew() - flagshipRequired;
-	int flagshipUnused = flagshipBunks - flagship.Crew();
+	int flagshipBunks = 0;
+	int flagshipRequired = 0;
+	int flagshipExtra = 0;
+	int flagshipUnused = 0;
+
+	if(flagship)
+	{
+		flagshipBunks = flagship->Attributes().Get("bunks");
+		flagshipRequired = flagship->RequiredCrew();
+		flagshipExtra = flagship->Crew() - flagshipRequired;
+		flagshipUnused = flagshipBunks - flagship->Crew();
+	}
+
 	info.SetString("flagship bunks", to_string(flagshipBunks));
 	info.SetString("flagship required", to_string(flagshipRequired));
 	info.SetString("flagship extra", to_string(flagshipExtra));
@@ -79,7 +87,7 @@ void HiringPanel::Draw()
 	info.SetString("passengers", to_string(passengers));
 
 	static const int DAILY_SALARY = 100;
-	int salary = DAILY_SALARY * (fleetRequired - 1);
+	int salary = DAILY_SALARY * (fleetRequired - (flagship ? 1 : 0));
 	int extraSalary = DAILY_SALARY * flagshipExtra;
 	info.SetString("salary required", to_string(salary));
 	info.SetString("salary extra", to_string(extraSalary));
@@ -103,6 +111,12 @@ void HiringPanel::Draw()
 
 bool HiringPanel::KeyDown(SDL_Keycode key, Uint16 mod, const Command &command, bool isNewPress)
 {
+	if(command.Has(Command::HELP))
+	{
+		DoHelp("hiring", true);
+		return true;
+	}
+
 	if(!player.Flagship())
 		return false;
 
@@ -117,6 +131,9 @@ bool HiringPanel::KeyDown(SDL_Keycode key, Uint16 mod, const Command &command, b
 		player.Flagship()->AddCrew(-min(maxFire, Modifier()));
 		player.UpdateCargoCapacities();
 	}
+	else
+		return false;
 
-	return false;
+	UI::PlaySound(UI::UISound::NORMAL);
+	return true;
 }

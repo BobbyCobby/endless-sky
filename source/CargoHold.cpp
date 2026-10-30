@@ -71,7 +71,8 @@ void CargoHold::Load(const DataNode &node)
 	// Cargo is stored as name / amount pairs in two lists: commodities and outfits.
 	for(const DataNode &child : node)
 	{
-		if(child.Token(0) == "commodities")
+		const string &key = child.Token(0);
+		if(key == "commodities")
 		{
 			for(const DataNode &grand : child)
 				if(grand.Size() >= 2)
@@ -80,7 +81,7 @@ void CargoHold::Load(const DataNode &node)
 					commodities[grand.Token(0)] += tons;
 				}
 		}
-		else if(child.Token(0) == "outfits")
+		else if(key == "outfits")
 		{
 			for(const DataNode &grand : child)
 			{
@@ -225,6 +226,24 @@ double CargoHold::OutfitsSizePrecise() const
 	double size = 0.;
 	for(const auto &it : outfits)
 		size += it.second * it.first->Mass();
+	return size;
+}
+
+
+
+int CargoHold::MinablesSize() const
+{
+	return ceil(MinablesSizePrecise());
+}
+
+
+
+double CargoHold::MinablesSizePrecise() const
+{
+	double size = 0.;
+	for(const auto &it : outfits)
+		if(it.first->Get("minable"))
+			size += it.second * it.first->Mass();
 	return size;
 }
 
@@ -378,7 +397,7 @@ int CargoHold::Transfer(const string &commodity, int amount, CargoHold &to)
 
 	// Remove up to the specified tons of cargo from this cargo hold, adding
 	// them to the given cargo hold if possible. If not possible, add the
-	// remainder back to this cargo hold, even if there is not space for it.
+	// remainder back to this cargo hold, even if there is no space for it.
 	// Do not invalidate existing iterators by modifying the container.
 	int removed = Remove(commodity, amount);
 	int added = to.Add(commodity, removed);
@@ -397,7 +416,7 @@ int CargoHold::Transfer(const Outfit *outfit, int amount, CargoHold &to)
 
 	// Remove up to the specified number of items from this cargo hold, adding
 	// them to the given cargo hold if possible. If not possible, add the
-	// remainder back to this cargo hold, even if there is not space for it.
+	// remainder back to this cargo hold, even if there is no space for it.
 	// Do not invalidate existing iterators by modifying the container.
 	int removed = Remove(outfit, amount);
 	int added = to.Add(outfit, removed);
@@ -565,26 +584,11 @@ void CargoHold::RemoveMissionCargo(const Mission *mission)
 
 
 
-// Get the total value of all this cargo, in the given system.
-int64_t CargoHold::Value(const System *system) const
-{
-	int64_t value = 0;
-	for(const auto &it : commodities)
-		value += static_cast<int64_t>(system->Trade(it.first)) * it.second;
-	// For outfits, assume they're fully depreciated, since that will always be
-	// the case unless the player bought into cargo for some reason.
-	for(const auto &it : outfits)
-		value += it.first->Cost() * it.second * Depreciation::Full();
-	return value;
-}
-
-
-
 // If anything you are carrying is illegal, return the maximum fine you can
 // be charged for any illegal outfits plus the sum of the fines for all
 // missions. If the returned value is negative, you are carrying something so
 // bad that it warrants a death sentence.
-int CargoHold::IllegalCargoFine(const Government *government) const
+pair<int, const Conversation *> CargoHold::IllegalCargoFine(const Government *government) const
 {
 	int totalFine = 0;
 	// Carrying an illegal outfit is only half as bad as having it equipped.
@@ -597,11 +601,12 @@ int CargoHold::IllegalCargoFine(const Government *government) const
 		if(!it.second)
 			continue;
 
+		Government::Atrocity atrocity = government->Condemns(it.first);
+		if(atrocity.isAtrocity)
+			return {-1, atrocity.customDeathSentence};
 		int fine = government->Fines(it.first);
-		if(government->Condemns(it.first))
-			return -1;
 		if(fine < 0)
-			return fine;
+			return {fine, nullptr};
 		totalFine = max(totalFine, fine / 2);
 	}
 
@@ -610,19 +615,27 @@ int CargoHold::IllegalCargoFine(const Government *government) const
 	// and avoid the bulk of the penalties when fined.
 	for(const auto &it : missionCargo)
 	{
-		int fine = it.first->IllegalCargoFine();
+		int fine = it.first->Fine();
 		if(fine < 0)
-			return fine;
-		if(!it.first->IsFailed())
+			return {-1 * !government->IgnoresUniversalAtrocities(), nullptr};
+		if(!it.first->IsFailed() && !government->IgnoresUniversalIllegals())
 			totalFine += fine;
 	}
 
+	return {totalFine, nullptr};
+}
+
+
+
+int CargoHold::IllegalPassengersFine(const Government *government) const
+{
+	int totalFine = 0;
 	for(const auto &it : passengers)
 	{
-		int fine = it.first->IllegalCargoFine();
+		int fine = it.first->Fine();
 		if(fine < 0)
-			return fine;
-		if(!it.first->IsFailed())
+			return -1 * !government->IgnoresUniversalAtrocities();
+		if(!it.first->IsFailed() && !government->IgnoresUniversalIllegals())
 			totalFine += fine;
 	}
 
@@ -643,7 +656,7 @@ int CargoHold::IllegalCargoAmount() const
 
 	// Find any illegal mission cargo.
 	for(const auto &it : missionCargo)
-		if(it.first->IllegalCargoFine())
+		if(it.first->Fine())
 			count += it.second;
 
 	return count;

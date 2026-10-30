@@ -13,12 +13,12 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef GOVERNMENT_H_
-#define GOVERNMENT_H_
+#pragma once
 
-#include "Color.h"
 #include "ExclusiveItem.h"
 #include "LocationFilter.h"
+#include "RaidFleet.h"
+#include "Swizzle.h"
 
 #include <limits>
 #include <map>
@@ -27,33 +27,34 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include <utility>
 #include <vector>
 
+class Confusion;
 class Conversation;
 class DataNode;
 class Fleet;
+class Outfit;
 class Phrase;
 class Planet;
 class PlayerInfo;
-class Outfit;
 class Ship;
 class System;
 
 
 
 // Class representing a government. Each ship belongs to some government, and
-// attacking that ship will provoke its ally governments and reduce your
+// attacking that ship will provoke its allied governments and reduce your
 // reputation with them, but increase your reputation with that ship's enemies.
 // The ships for each government are identified by drawing them with a different
 // color "swizzle." Some government's ships can also be easier or harder to
 // bribe than others.
 class Government {
 public:
-	class RaidFleet {
-		public:
-			RaidFleet(const Fleet *fleet, double minAttraction, double maxAttraction);
-			const Fleet *GetFleet() const;
-			double MinAttraction() const;
-			double MaxAttraction() const;
+	struct Atrocity {
+		// False if a global atrocity is ignored by this government.
+		bool isAtrocity = true;
+		const Conversation *customDeathSentence = nullptr;
+	};
 
+<<<<<<< HEAD
 			bool operator==(const RaidFleet &other) const
 			{
 				return fleet == other.fleet && minAttraction == other.minAttraction && maxAttraction == other.maxAttraction;
@@ -68,6 +69,22 @@ public:
 			double maxAttraction;
 
 		friend class GovernmentEditor;
+=======
+	enum class SpecialPenalty : int {
+		NONE = 0,
+		PROVOKE,
+		ATROCITY
+	};
+
+	class PenaltyEffect {
+	public:
+		PenaltyEffect(double reputationChange = 0., SpecialPenalty specialPenalty = SpecialPenalty::NONE)
+			: reputationChange(reputationChange), specialPenalty(specialPenalty)
+		{}
+
+		double reputationChange;
+		SpecialPenalty specialPenalty;
+>>>>>>> upstream/master
 	};
 
 
@@ -76,15 +93,23 @@ public:
 	Government();
 
 	// Load a government's definition from a file.
-	void Load(const DataNode &node);
+	void Load(const DataNode &node, const std::set<const System *> *visitedSystems,
+		const std::set<const Planet *> *visitedPlanets);
+	bool IsDefined() const;
 
 	// Get the display name of this government.
+<<<<<<< HEAD
 	const std::string &Name() const;
 	// Set / Get the name used for this government in the data files.
 	void SetName(const std::string &trueName);
+=======
+	const std::string &DisplayName() const;
+	// Set / Get the true name used for this government in the data files.
+	void SetTrueName(const std::string &trueName);
+>>>>>>> upstream/master
 	const std::string &TrueName() const;
 	// Get the color swizzle to use for ships of this government.
-	int GetSwizzle() const;
+	const Swizzle *GetSwizzle() const;
 	// Get the color to use for displaying this government on the map.
 	const Color &GetColor() const;
 
@@ -95,10 +120,14 @@ public:
 	// Get the amount that your reputation changes for the given offense against the given government.
 	// The given value should be a combination of one or more ShipEvent values.
 	// Returns 0 if the Government is null.
-	double PenaltyFor(int eventType, const Government *other) const;
+	PenaltyEffect PenaltyFor(int eventType, const Government *other) const;
 	// In order to successfully bribe this government you must pay them this
 	// fraction of your fleet's value. (Zero means they cannot be bribed.)
 	double GetBribeFraction() const;
+	// This government will never accept a bribe if the player's reputation
+	// with them is below this value, if it is negative. If the value is 0,
+	// bribes are accepted regardless of reputation.
+	double GetBribeThreshold() const;
 	// This government will fine you the given fraction of the maximum fine for
 	// carrying illegal cargo or outfits. Zero means they will not fine you.
 	double GetFineFraction() const;
@@ -114,10 +143,27 @@ public:
 	// Get a hail message (which depends on whether this is an enemy government
 	// and if the ship is disabled).
 	std::string GetHail(bool isDisabled) const;
+	// Get a hail message that the government responds with when accepting or rejecting a bribe.
+	std::string GetShipBribeAcceptanceHail() const;
+	std::string GetShipBribeRejectionHail() const;
+	std::string GetPlanetBribeAcceptanceHail() const;
+	std::string GetPlanetBribeRejectionHail() const;
+
+	// Get the messages that the government responds with when speaking about tribute.
+	const Phrase *TributeAlreadyPaying() const;
+	const Phrase *TributeUndefined() const;
+	const Phrase *TributeUnworthy() const;
+	const Phrase *TributeFleetLaunching() const;
+	const Phrase *TributeFleetUndefeated() const;
+	const Phrase *TributeSurrendered() const;
+
 	// Find out if this government speaks a different language.
 	const std::string &Language() const;
 	// Find out if this government should send custom hails even if the player does not know its language.
 	bool SendUntranslatedHails() const;
+
+	// Get the default confusion of ships belonging to this government.
+	const Confusion *GetConfusion() const;
 	// Pirate raids in this government's systems use these fleet definitions. If
 	// it is empty, there are no pirate raids.
 	// The second attribute denotes the minimal and maximal attraction required for the fleet to appear.
@@ -143,11 +189,16 @@ public:
 	void Bribe() const;
 	// Check to see if the player has done anything they should be fined for.
 	// Each government can only fine you once per day.
-	std::string Fine(PlayerInfo &player, int scan = 0, const Ship *target = nullptr, double security = 1.) const;
+	std::pair<const Conversation *, std::string> Fine(PlayerInfo &player, int scan = 0,
+		const Ship *target = nullptr, double security = 1.) const;
 	// Check to see if the items are condemnable (atrocities) or warrant a fine.
-	bool Condemns(const Outfit *outfit) const;
-	// Returns the fine for given outfit for this government.
+	Atrocity Condemns(const Outfit *outfit) const;
+	Atrocity Condemns(const Ship *ship) const;
+	bool IgnoresUniversalAtrocities() const;
+	// Returns the fine for given item for this government.
 	int Fines(const Outfit *outfit) const;
+	int Fines(const Ship *ship) const;
+	bool IgnoresUniversalIllegals() const;
 	// Check if given ship has illegal outfits or cargo.
 	bool FinesContents(const Ship *ship) const;
 
@@ -164,13 +215,24 @@ public:
 
 	bool IsProvokedOnScan() const;
 
+	// Determine if ships from this government can travel to the given system or planet.
+	bool IsRestrictedFrom(const System &system) const;
+	bool IsRestrictedFrom(const Planet &planet) const;
+
 
 private:
+<<<<<<< HEAD
 	std::string name;
+=======
+	unsigned id;
+	std::string trueName;
+>>>>>>> upstream/master
 	std::string displayName;
-	int swizzle = 0;
+	bool isDefined = false;
+	const Swizzle *swizzle = Swizzle::None();
 	ExclusiveItem<Color> color;
 
+<<<<<<< HEAD
 	struct GovSortyByName
 	{
 		bool operator()(const Government *lhs, const Government *rhs) const
@@ -181,34 +243,60 @@ private:
 	std::map<const Government *, double, GovSortyByName> attitudeToward;
 	std::set<const Government *> trusted;
 	std::map<const Government *, std::map<int, double>> customPenalties;
+=======
+	std::vector<double> attitudeToward;
+	double defaultAttitude = 0.;
+	std::set<const Government *> trusted;
+	std::map<unsigned, std::map<int, PenaltyEffect>> customPenalties;
+>>>>>>> upstream/master
 	double initialPlayerReputation = 0.;
 	double reputationMax = std::numeric_limits<double>::max();
 	double reputationMin = std::numeric_limits<double>::lowest();
-	std::map<int, double> penaltyFor;
-	std::map<const Outfit*, int> illegals;
-	std::map<const Outfit*, bool> atrocities;
+	std::map<int, PenaltyEffect> penaltyFor;
+	std::map<const Outfit *, int> illegalOutfits;
+	std::map<std::string, int> illegalShips;
+	bool ignoreUniversalIllegals = false;
+	std::map<const Outfit *, Atrocity> atrocityOutfits;
+	std::map<std::string, Atrocity> atrocityShips;
+	bool ignoreUniversalAtrocities = false;
 	double bribe = 0.;
+	double bribeThreshold = 0.;
 	double fine = 1.;
 	std::vector<LocationFilter> enforcementZones;
+	LocationFilter travelRestrictions;
 	const Conversation *deathSentence = nullptr;
 	const Phrase *friendlyHail = nullptr;
 	const Phrase *friendlyDisabledHail = nullptr;
 	const Phrase *hostileHail = nullptr;
 	const Phrase *hostileDisabledHail = nullptr;
+	const Phrase *shipBribeAcceptanceHail = nullptr;
+	const Phrase *shipBribeRejectionHail = nullptr;
+	const Phrase *planetBribeAcceptanceHail = nullptr;
+	const Phrase *planetBribeRejectionHail = nullptr;
+	const Phrase *tributeAlreadyPaying = nullptr;
+	const Phrase *tributeUndefined = nullptr;
+	const Phrase *tributeUnworthy = nullptr;
+	const Phrase *tributeFleetLaunching = nullptr;
+	const Phrase *tributeFleetUndefeated = nullptr;
+	const Phrase *tributeSurrendered = nullptr;
 	std::string language;
 	bool sendUntranslatedHails = false;
 	std::vector<RaidFleet> raidFleets;
 	double crewAttack = 1.;
 	double crewDefense = 2.;
 	bool provokedOnScan = false;
+<<<<<<< HEAD
 
 	friend class GovernmentEditor;
 	// If a government appears in this set, and the reputation with this government is affected by actions,
 	// and events performed against that government, use the penalties that government applies for the
 	// action instead of this governments own penalties.
 	std::set<const Government *> useForeignPenaltiesFor;
+=======
+	ExclusiveItem<Confusion> confusion;
+	// If a government appears in this set, and the reputation with this government is affected by actions,
+	// and events performed against that government, use the penalties that government applies for the
+	// action instead of this government's own penalties.
+	std::set<unsigned> useForeignPenaltiesFor;
+>>>>>>> upstream/master
 };
-
-
-
-#endif

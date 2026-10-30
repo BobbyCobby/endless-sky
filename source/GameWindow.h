@@ -13,8 +13,7 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef GAMEWINDOW_H_
-#define GAMEWINDOW_H_
+#pragma once
 
 #include "Preferences.h"
 #include <SDL2/SDL.h>
@@ -27,17 +26,22 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 class GameWindow {
 public:
 	static std::string SDLVersions();
+<<<<<<< HEAD
 	static bool Init(std::function<void(SDL_Window *, const SDL_GLContext &)> post = {});
+=======
+	static bool Init(bool headless);
+>>>>>>> upstream/master
 	static void Quit();
 
 	// Paint the next frame in the main window.
 	static void Step();
 
-	// Ensure the proper icon is set on the main window.
-	static void SetIcon();
-
 	// Handle resize events of the main window.
+<<<<<<< HEAD
 	static void AdjustViewport(int topBar = 0);
+=======
+	static void AdjustViewport(bool noResizeEvent = false);
+>>>>>>> upstream/master
 
 	// Attempt to set the game's VSync setting.
 	static bool SetVSync(Preferences::VSync state);
@@ -46,18 +50,23 @@ public:
 	static int Width();
 	static int Height();
 
+	// Last known drawable width & height.
+	static int DrawWidth();
+	static int DrawHeight();
+
+	static bool IsInFocus();
 	static bool IsMaximized();
 	static bool IsFullscreen();
 	static void ToggleFullscreen();
-
-	// Check if the initialized window system supports OpenGL texture_swizzle.
-	static bool HasSwizzle();
+	static void ToggleBlockScreenSaver();
 
 	// Print the error message in the terminal, error file, and message box.
 	// Checks for video system errors and records those as well.
-	static void ExitWithError(const std::string& message, bool doPopUp = true);
-};
+	static void ExitWithError(const std::string &message, bool doPopUp = true);
 
-
-
+#ifdef _WIN32
+	// Set attributes of the main window according to the current preferences.
+	static void UpdateTitleBarTheme();
+	static void UpdateWindowRounding();
 #endif
+};

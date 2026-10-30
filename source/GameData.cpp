@@ -15,21 +15,20 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "GameData.h"
 
-#include "Audio.h"
-#include "BatchShader.h"
+#include "audio/Audio.h"
+#include "shader/BatchShader.h"
 #include "CategoryList.h"
 #include "Color.h"
 #include "Command.h"
 #include "ConditionsStore.h"
 #include "Conversation.h"
-#include "DataFile.h"
 #include "DataNode.h"
 #include "DataWriter.h"
 #include "Effect.h"
 #include "Files.h"
-#include "FillShader.h"
+#include "shader/FillShader.h"
 #include "Fleet.h"
-#include "FogShader.h"
+#include "shader/FogShader.h"
 #include "text/FontSet.h"
 #include "FormationPattern.h"
 #include "Galaxy.h"
@@ -37,38 +36,56 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "GameEvent.h"
 #include "Government.h"
 #include "Hazard.h"
-#include "ImageSet.h"
+#include "image/ImageFileData.h"
+#include "image/ImageSet.h"
 #include "Interface.h"
-#include "LineShader.h"
-#include "MaskManager.h"
+#include "shader/LineShader.h"
+#include "image/MaskManager.h"
 #include "Minable.h"
 #include "Mission.h"
-#include "Music.h"
+#include "audio/Music.h"
 #include "News.h"
 #include "Outfit.h"
-#include "OutlineShader.h"
+#include "shader/OutlineShader.h"
 #include "Person.h"
 #include "Phrase.h"
 #include "Planet.h"
-#include "Plugins.h"
-#include "PointerShader.h"
+#include "Plugin.h"
+#include "PluginManager.h"
+#include "shader/PointerShader.h"
 #include "Politics.h"
-#include "Random.h"
-#include "RingShader.h"
+#include "RenderBuffer.h"
+#include "shader/RingShader.h"
 #include "Ship.h"
+<<<<<<< HEAD
 #include "Sprite.h"
 #include "SpriteSet.h"
 #include "SpriteShader.h"
 #include "StarField.h"
+=======
+#include "image/Sprite.h"
+#include "image/SpriteLoadManager.h"
+#include "shader/SpriteShader.h"
+#include "shader/StarField.h"
+>>>>>>> upstream/master
 #include "StartConditions.h"
+#include "StellarObjectSpriteData.h"
 #include "System.h"
 #include "TaskQueue.h"
+<<<<<<< HEAD
 #include "Test.h"
 #include "TestData.h"
+=======
+#include "test/Test.h"
+#include "test/TestData.h"
+>>>>>>> upstream/master
 #include "UniverseObjects.h"
 
 #include <algorithm>
-#include <iostream>
+#include <cassert>
+#include <filesystem>
+#include <queue>
+#include <ranges>
 #include <utility>
 #include <vector>
 
@@ -81,13 +98,24 @@ namespace {
 	Set<Planet> defaultPlanets;
 	Set<System> defaultSystems;
 	Set<Galaxy> defaultGalaxies;
-	Set<Sale<Ship>> defaultShipSales;
-	Set<Sale<Outfit>> defaultOutfitSales;
+	Set<Shop<Ship>> defaultShipSales;
+	Set<Shop<Outfit>> defaultOutfitSales;
 	Set<Wormhole> defaultWormholes;
+	Set<Person> defaultPersons;
 	TextReplacements defaultSubstitutions;
 
+<<<<<<< HEAD
 	map<string, string> plugins;
 	vector<string> sources;
+=======
+	const Gamerules *activeGamerules = nullptr;
+
+	Politics politics;
+
+	StarField background;
+
+	vector<filesystem::path> sources;
+>>>>>>> upstream/master
 
 	Politics politics;
 	StarField background;
@@ -97,16 +125,83 @@ namespace {
 	map<const System *, map<string, int>> purchases;
 
 	ConditionsStore globalConditions;
+<<<<<<< HEAD
+=======
+
+	void LoadPlugin(TaskQueue &queue, const filesystem::path &path)
+	{
+		const auto *plugin = PluginManager::Load(path);
+		if(!plugin)
+			return;
+
+		if(plugin->enabled)
+			sources.push_back(path);
+
+		// Load the icon for the plugin, if any.
+		auto icon = make_shared<ImageSet>(plugin->name);
+
+		// Try adding all the possible icon variants.
+		for(const string &extension : ImageBuffer::ImageExtensions())
+		{
+			filesystem::path iconPath = path / ("icon" + extension);
+			if(Files::Exists(iconPath))
+			{
+				icon->Add(iconPath);
+				break;
+			}
+		}
+		for(const string &extension : ImageBuffer::ImageExtensions())
+		{
+			filesystem::path iconPath = path / ("icon@2x" + extension);
+			if(Files::Exists(iconPath))
+			{
+				icon->Add(iconPath);
+				break;
+			}
+		}
+
+		if(!icon->IsEmpty())
+		{
+			icon->ValidateFrames();
+			SpriteLoadManager::LoadSprite(queue, icon);
+		}
+	}
+
+	const char *const FONT_14_NAME = "font/ubuntu14r.png";
+	const char *const FONT_18_NAME = "font/ubuntu18r.png";
+>>>>>>> upstream/master
 }
 
 
 
+<<<<<<< HEAD
 future<void> GameData::BeginLoad(int options)
+=======
+shared_future<void> GameData::BeginLoad(TaskQueue &queue, const PlayerInfo &player,
+		bool onlyLoadData, bool debugMode, bool preventUpload)
+>>>>>>> upstream/master
 {
-	// Initialize the list of "source" folders based on any active plugins.
-	LoadSources();
+	if(preventUpload)
+		SpriteLoadManager::PreventSpriteUpload();
+	SpriteLoadManager::FindDeferredFolders();
 
+	// Initialize the list of "source" folders based on any active plugins.
+	LoadSources(queue);
+
+<<<<<<< HEAD
 	return assets.Load(sources, options);
+=======
+	if(!onlyLoadData)
+	{
+		queue.Run([&queue] {
+			SpriteLoadManager::Init(queue, FindImages());
+			// Generate a catalog of music files.
+			Music::Init(sources);
+		});
+	}
+
+	return objects.Load(queue, sources, player, &globalConditions, debugMode);
+>>>>>>> upstream/master
 }
 
 
@@ -114,6 +209,7 @@ future<void> GameData::BeginLoad(int options)
 void GameData::FinishLoading()
 {
 	// Store the current state, to revert back to later.
+<<<<<<< HEAD
 	defaultFleets = assets.objects.fleets;
 	defaultGovernments = assets.objects.governments;
 	defaultPlanets = assets.objects.planets;
@@ -124,8 +220,24 @@ void GameData::FinishLoading()
 	defaultSubstitutions = assets.objects.substitutions;
 	defaultWormholes = assets.objects.wormholes;
 	playerGovernment = assets.objects.governments.Get("Escort");
+=======
+	defaultFleets = objects.fleets;
+	defaultGovernments = objects.governments;
+	defaultPlanets = objects.planets;
+	defaultSystems = objects.systems;
+	defaultGalaxies = objects.galaxies;
+	defaultShipSales = objects.shipSales;
+	defaultOutfitSales = objects.outfitSales;
+	defaultWormholes = objects.wormholes;
+	defaultPersons = objects.persons;
+	defaultSubstitutions = objects.substitutions;
+
+	activeGamerules = objects.gamerulesPresets.Get("Default");
+	playerGovernment = objects.governments.Get("Escort");
+>>>>>>> upstream/master
 
 	politics.Reset();
+	background.FinishLoading();
 }
 
 
@@ -137,14 +249,58 @@ void GameData::CheckReferences()
 
 
 
-void GameData::LoadShaders(bool useShaderSwizzle)
+void GameData::LoadSettings()
 {
-	FontSet::Add(Files::Images() + "font/ubuntu14r.png", 14);
-	FontSet::Add(Files::Images() + "font/ubuntu18r.png", 18);
-
 	// Load the key settings.
-	Command::LoadSettings(Files::Resources() + "keys.txt");
-	Command::LoadSettings(Files::Config() + "keys.txt");
+	Command::LoadSettings(Files::Resources() / "keys.txt");
+	Command::LoadSettings(Files::Config() / "keys.txt");
+}
+
+
+
+void GameData::LoadShaders()
+{
+	// The found shader files. The first element is the vertex shader,
+	// the second is the fragment shader.
+	map<string, pair<string, string>> loaded;
+	// The paths to standard fonts, possibly overridden by plugins.
+	filesystem::path font14Path = Files::Images() / FONT_14_NAME;
+	filesystem::path font18Path = Files::Images() / FONT_18_NAME;
+	for(const filesystem::path &source : sources)
+	{
+		filesystem::path base = source / "shaders";
+		if(Files::Exists(base))
+			for(filesystem::path shaderFile : Files::RecursiveList(base))
+			{
+				filesystem::path shader = shaderFile;
+#ifdef ES_GLES
+				// Allow specifying different shaders for GL and GLES.
+				// In this case, only the appropriate shader is loaded.
+				if(shaderFile.extension() == ".gles")
+					shader = shader.parent_path() / shader.stem();
+#else
+				if(shaderFile.extension() == ".gl")
+					shader = shader.parent_path() / shader.stem();
+#endif
+				string name = (shader.parent_path() / shader.stem()).lexically_relative(base).generic_string();
+				if(shader.extension() == ".vert")
+					loaded[name].first = shaderFile.string();
+				else if(shader.extension() == ".frag")
+					loaded[name].second = shaderFile.string();
+			}
+		filesystem::path fontCandidate = source / "images" / FONT_14_NAME;
+		if(Files::Exists(fontCandidate))
+			font14Path = fontCandidate;
+		fontCandidate = source / "images" / FONT_18_NAME;
+		if(Files::Exists(fontCandidate))
+			font18Path = fontCandidate;
+	}
+
+	// If there is both a fragment and a vertex shader available,
+	// it can be turned into a shader object.
+	for(const auto &[key, s] : loaded)
+		if(!s.first.empty() && !s.second.empty())
+			objects.shaders.Get(key)->Load(Files::Read(s.first).c_str(), Files::Read(s.second).c_str());
 
 	FillShader::Init();
 	FogShader::Init();
@@ -152,8 +308,12 @@ void GameData::LoadShaders(bool useShaderSwizzle)
 	OutlineShader::Init();
 	PointerShader::Init();
 	RingShader::Init();
-	SpriteShader::Init(useShaderSwizzle);
+	SpriteShader::Init();
 	BatchShader::Init();
+	RenderBuffer::Init();
+
+	FontSet::Add(font14Path, 14);
+	FontSet::Add(font18Path, 18);
 
 	background.Init(16384, 4096);
 }
@@ -162,7 +322,11 @@ void GameData::LoadShaders(bool useShaderSwizzle)
 
 double GameData::GetProgress()
 {
+<<<<<<< HEAD
 	return assets.GetProgress();
+=======
+	return min({SpriteLoadManager::Progress(), Audio::GetProgress(), objects.GetProgress()});
+>>>>>>> upstream/master
 }
 
 
@@ -174,6 +338,7 @@ bool GameData::IsLoaded()
 
 
 
+<<<<<<< HEAD
 // Begin loading a sprite that was previously deferred. Currently this is
 // done with all landscapes to speed up the program's startup.
 future<void> GameData::Preload(const Sprite *sprite)
@@ -185,6 +350,10 @@ future<void> GameData::Preload(const Sprite *sprite)
 
 // Get the list of resource sources (i.e. plugin folders).
 const std::vector<std::string> &GameData::Sources()
+=======
+// Get the list of resource sources (i.e. plugin folders).
+const vector<filesystem::path> &GameData::Sources()
+>>>>>>> upstream/master
 {
 	return sources;
 }
@@ -202,6 +371,7 @@ UniverseObjects &GameData::Objects()
 // Revert any changes that have been made to the universe.
 void GameData::Revert()
 {
+<<<<<<< HEAD
 	assets.objects.fleets.Revert(defaultFleets);
 	assets.objects.governments.Revert(defaultGovernments);
 	assets.objects.planets.Revert(defaultPlanets);
@@ -212,6 +382,22 @@ void GameData::Revert()
 	assets.objects.substitutions.Revert(defaultSubstitutions);
 	assets.objects.wormholes.Revert(defaultWormholes);
 	for(auto &it : assets.objects.persons)
+=======
+	objects.fleets.Revert(defaultFleets);
+	objects.governments.Revert(defaultGovernments);
+	objects.planets.Revert(defaultPlanets);
+	objects.systems.Revert(defaultSystems);
+	objects.galaxies.Revert(defaultGalaxies);
+	objects.shipSales.Revert(defaultShipSales);
+	objects.outfitSales.Revert(defaultOutfitSales);
+	objects.wormholes.Revert(defaultWormholes);
+	objects.persons.Revert(defaultPersons);
+	objects.substitutions.Revert(defaultSubstitutions);
+
+	activeGamerules = objects.gamerulesPresets.Get("Default");
+
+	for(auto &it : objects.persons)
+>>>>>>> upstream/master
 		it.second.Restore();
 
 	politics.Reset();
@@ -237,13 +423,14 @@ void GameData::ReadEconomy(const DataNode &node)
 	vector<string> headings;
 	for(const DataNode &child : node)
 	{
-		if(child.Token(0) == "purchases")
+		const string &key = child.Token(0);
+		if(key == "purchases")
 		{
 			for(const DataNode &grand : child)
 				if(grand.Size() >= 3 && grand.Value(2))
 					purchases[Systems().Get(grand.Token(0))][grand.Token(1)] += grand.Value(2);
 		}
-		else if(child.Token(0) == "system")
+		else if(key == "system")
 		{
 			headings.clear();
 			for(int index = 1; index < child.Size(); ++index)
@@ -251,7 +438,11 @@ void GameData::ReadEconomy(const DataNode &node)
 		}
 		else
 		{
+<<<<<<< HEAD
 			System &system = *assets.objects.systems.Get(child.Token(0));
+=======
+			System &system = *objects.systems.Get(key);
+>>>>>>> upstream/master
 
 			int index = 0;
 			for(const string &commodity : headings)
@@ -275,12 +466,12 @@ void GameData::WriteEconomy(DataWriter &out)
 			using Purchase = pair<const System *const, map<string, int>>;
 			WriteSorted(purchases,
 				[](const Purchase *lhs, const Purchase *rhs)
-					{ return lhs->first->Name() < rhs->first->Name(); },
+					{ return lhs->first->TrueName() < rhs->first->TrueName(); },
 				[&out](const Purchase &pit)
 				{
 					// Write purchases for all systems, even ones from removed plugins.
 					for(const auto &cit : pit.second)
-						out.Write(pit.first->Name(), cit.first, cit.second);
+						out.Write(pit.first->TrueName(), cit.first, cit.second);
 				});
 			out.EndChild();
 		}
@@ -296,7 +487,7 @@ void GameData::WriteEconomy(DataWriter &out)
 			if(!sit.second.IsValid() && !sit.second.HasTrade())
 				continue;
 
-			out.WriteToken(sit.second.Name());
+			out.WriteToken(sit.second.TrueName());
 			for(const auto &cit : GameData::Commodities())
 				out.WriteToken(static_cast<int>(sit.second.Supply(cit.name)));
 			out.Write();
@@ -355,9 +546,13 @@ void GameData::AddPurchase(const System &system, const string &commodity, int to
 
 
 // Apply the given change to the universe.
-void GameData::Change(const DataNode &node)
+void GameData::Change(const DataNode &node, PlayerInfo &player)
 {
+<<<<<<< HEAD
 	assets.objects.Change(node);
+=======
+	objects.Change(node, player);
+>>>>>>> upstream/master
 }
 
 
@@ -367,6 +562,13 @@ void GameData::Change(const DataNode &node)
 void GameData::UpdateSystems()
 {
 	assets.objects.UpdateSystems();
+}
+
+
+
+void GameData::RecomputeWormholeRequirements()
+{
+	objects.RecomputeWormholeRequirements();
 }
 
 
@@ -397,9 +599,32 @@ void GameData::DestroyPersons(vector<string> &names)
 
 
 
+void GameData::HandleEvent(const ShipEvent &event)
+{
+	for(Person &person : objects.persons | views::values)
+		if(person.Do(event))
+			break;
+}
+
+
+
 const Set<Color> &GameData::Colors()
 {
 	return assets.objects.colors;
+}
+
+
+
+const Set<Swizzle> &GameData::Swizzles()
+{
+	return objects.swizzles;
+}
+
+
+
+const Set<Confusion> &GameData::Confusions()
+{
+	return objects.confusions;
 }
 
 
@@ -467,6 +692,20 @@ const Set<Interface> &GameData::Interfaces()
 
 
 
+const Set<Message::Category> &GameData::MessageCategories()
+{
+	return objects.messageCategories;
+}
+
+
+
+const Set<Message> &GameData::Messages()
+{
+	return objects.messages;
+}
+
+
+
 const Set<Minable> &GameData::Minables()
 {
 	return assets.objects.minables;
@@ -495,7 +734,7 @@ const Set<Outfit> &GameData::Outfits()
 
 
 
-const Set<Sale<Outfit>> &GameData::Outfitters()
+const Set<Shop<Outfit>> &GameData::Outfitters()
 {
 	return assets.objects.outfitSales;
 }
@@ -519,6 +758,13 @@ const Set<Phrase> &GameData::Phrases()
 const Set<Planet> &GameData::Planets()
 {
 	return assets.objects.planets;
+}
+
+
+
+const Set<Shader> &GameData::Shaders()
+{
+	return objects.shaders;
 }
 
 
@@ -551,7 +797,7 @@ ConditionsStore &GameData::GlobalConditions()
 
 
 
-const Set<Sale<Ship>> &GameData::Shipyards()
+const Set<Shop<Ship>> &GameData::Shipyards()
 {
 	return assets.objects.shipSales;
 }
@@ -568,6 +814,20 @@ const Set<System> &GameData::Systems()
 const Set<Wormhole> &GameData::Wormholes()
 {
 	return assets.objects.wormholes;
+}
+
+
+
+const Set<Gamerules> &GameData::GamerulesPresets()
+{
+	return objects.gamerulesPresets;
+}
+
+
+
+const std::set<std::string> &GameData::UniverseWormholeRequirements()
+{
+	return objects.universeWormholeRequirements;
 }
 
 
@@ -607,6 +867,7 @@ const vector<Trade::Commodity> &GameData::SpecialCommodities()
 
 
 
+<<<<<<< HEAD
 // Custom messages to be shown when trying to land on certain stellar assets.objects.
 bool GameData::HasLandingMessage(const Sprite *sprite)
 {
@@ -637,6 +898,13 @@ double GameData::SolarWind(const Sprite *sprite)
 {
 	auto it = assets.objects.solarWind.find(sprite);
 	return (it == assets.objects.solarWind.end() ? 0. : it->second);
+=======
+const StellarObjectSpriteData &GameData::ObjectSpriteData(const Sprite *sprite)
+{
+	static const StellarObjectSpriteData EMPTY;
+	auto it = objects.objectSpriteData.find(sprite);
+	return (it == objects.objectSpriteData.end() ? EMPTY : it->second);
+>>>>>>> upstream/master
 }
 
 
@@ -670,6 +938,27 @@ const StarField &GameData::Background()
 
 
 
+void GameData::StepBackground(const Point &vel, double zoom)
+{
+	background.Step(vel, zoom);
+}
+
+
+
+const Point &GameData::GetBackgroundPosition()
+{
+	return background.Position();
+}
+
+
+
+void GameData::SetBackgroundPosition(const Point &position)
+{
+	background.SetPosition(position);
+}
+
+
+
 void GameData::SetHaze(const Sprite *sprite, bool allowAnimation)
 {
 	background.SetHaze(sprite, allowAnimation);
@@ -683,11 +972,19 @@ const string &GameData::Tooltip(const string &label)
 	auto it = assets.objects.tooltips.find(label);
 	// Special case: the "cost" and "sells for" labels include the percentage of
 	// the full price, so they will not match exactly.
+<<<<<<< HEAD
 	if(it == assets.objects.tooltips.end() && !label.compare(0, 4, "cost"))
 		it = assets.objects.tooltips.find("cost:");
 	if(it == assets.objects.tooltips.end() && !label.compare(0, 9, "sells for"))
 		it = assets.objects.tooltips.find("sells for:");
 	return (it == assets.objects.tooltips.end() ? EMPTY : it->second);
+=======
+	if(it == objects.tooltips.end() && label.starts_with("cost"))
+		it = objects.tooltips.find("cost:");
+	if(it == objects.tooltips.end() && label.starts_with("sells for"))
+		it = objects.tooltips.find("sells for:");
+	return (it == objects.tooltips.end() ? EMPTY : it->second);
+>>>>>>> upstream/master
 }
 
 
@@ -751,18 +1048,91 @@ GameAssets &GameData::Assets()
 
 const Gamerules &GameData::GetGamerules()
 {
+<<<<<<< HEAD
 	return assets.objects.gamerules;
+=======
+	if(!activeGamerules)
+		activeGamerules = objects.gamerulesPresets.Get("Default");
+
+	return *activeGamerules;
+>>>>>>> upstream/master
 }
 
 
 
-void GameData::LoadSources()
+void GameData::SetGamerules(const Gamerules *gamerules)
+{
+	activeGamerules = gamerules;
+}
+
+
+
+const Gamerules &GameData::DefaultGamerules()
+{
+	return *(objects.gamerulesPresets.Get("Default"));
+}
+
+
+
+void GameData::LoadSources(TaskQueue &queue)
 {
 	sources.clear();
 	sources.push_back(Files::Resources());
+<<<<<<< HEAD
 }
 
 
+=======
+
+	vector<filesystem::path> globalPlugins = Files::ListDirectories(Files::GlobalPlugins());
+	for(const auto &path : globalPlugins)
+		if(PluginManager::IsPlugin(path))
+			LoadPlugin(queue, path);
+	// Load unzipped plugins first to give them precedence, then load the zipped plugins.
+	globalPlugins = Files::List(Files::GlobalPlugins());
+	for(const auto &path : globalPlugins)
+		if(path.extension() == ".zip" && PluginManager::IsPlugin(path))
+			LoadPlugin(queue, path);
+
+	vector<filesystem::path> localPlugins = Files::ListDirectories(Files::UserPlugins());
+	for(const auto &path : localPlugins)
+		if(PluginManager::IsPlugin(path))
+			LoadPlugin(queue, path);
+	localPlugins = Files::List(Files::UserPlugins());
+	for(const auto &path : localPlugins)
+		if(path.extension() == ".zip" && PluginManager::IsPlugin(path))
+			LoadPlugin(queue, path);
+}
+
+
+
+map<string, shared_ptr<ImageSet>> GameData::FindImages()
+{
+	map<string, shared_ptr<ImageSet>> images;
+	for(const auto &source : sources)
+	{
+		// All names will only include the portion of the path that comes after
+		// this directory prefix.
+		filesystem::path directoryPath = source / "images";
+
+		vector<filesystem::path> imageFiles = Files::RecursiveList(directoryPath);
+		for(auto &path : imageFiles)
+			if(ImageSet::IsImage(path))
+			{
+				ImageFileData data(path, directoryPath);
+
+				shared_ptr<ImageSet> &imageSet = images[data.name];
+				if(!imageSet)
+					imageSet.reset(new ImageSet(data.name));
+				imageSet->Add(std::move(data));
+			}
+	}
+	return images;
+}
+
+
+
+>>>>>>> upstream/master
 // Thread-safe way to draw the menu background.
 void GameData::DrawMenuBackground(Panel *panel)
 {

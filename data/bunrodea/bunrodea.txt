@@ -63,6 +63,7 @@ fleet "Bunrodea Defense"
 	government "Bunrodea"
 	names "bunrodea"
 	personality
+		confusion "militia"
 		heroic
 	variant 6
 		"Tekkan" 3
@@ -106,7 +107,8 @@ fleet "Bunrodea Royal Guard"
 fleet "Bunrodea Royalty"
 	government "Bunrodea (Erabu)"
 	names "bunrodea (erabu)"
-	fighters "bunrodea"
+	fighters
+		names "bunrodea"
 	personality
 		timid vindictive unconstrained mute
 	variant 20

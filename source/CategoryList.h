@@ -13,11 +13,9 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef CATEGORY_LIST_H_
-#define CATEGORY_LIST_H_
+#pragma once
 
 #include <iterator>
-#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,7 +26,7 @@ class DataNode;
 
 // A CategoryList is a list of names that are associated to a Category of items (e.g. ships
 // or outfits). Categories within the list are sorted by the precedence of each Category.
-// Any conflicting precedencies are resolved by sorting the names of the Categories
+// Any conflicting precedences are resolved by sorting the names of the Categories
 // alphabetically.
 class CategoryList {
 public:
@@ -38,10 +36,10 @@ public:
 	// name.
 	class Category {
 	public:
-		Category(std::string name, int precedence) : name(name), precedence(precedence) {}
+		Category(const std::string &name, int precedence) : name(name), precedence(precedence) {}
 		const std::string &Name() const { return name; }
-		const bool operator<(Category other) const { return SortHelper(*this, other); }
-		const bool operator()(Category &a, Category &b) const { return SortHelper(a, b); }
+		const bool operator<(const Category &other) const { return SortHelper(*this, other); }
+		const bool operator()(const Category &a, const Category &b) const { return SortHelper(a, b); }
 
 	private:
 		static const bool SortHelper(const Category &a, const Category &b);
@@ -57,6 +55,7 @@ public:
 	CategoryList() = default;
 
 	void Load(const DataNode &node);
+	void Clear();
 
 	// Sort the CategoryList. Categories are sorted by precedence. If multiple Categories
 	// share the same precedence then they are sorted alphabetically.
@@ -75,10 +74,5 @@ public:
 
 private:
 	std::vector<Category> list;
-	std::map<const std::string, Category> byName;
 	int currentPrecedence = 0;
 };
-
-
-
-#endif

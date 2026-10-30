@@ -13,35 +13,48 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef PREFERENCES_PANEL_H_
-#define PREFERENCES_PANEL_H_
+#pragma once
 
 #include "Panel.h"
 
 #include "ClickZone.h"
 #include "Command.h"
 #include "Point.h"
+#include "ScrollVar.h"
+#include "Tooltip.h"
 
+#include <memory>
 #include <string>
 #include <vector>
+
+class PlayerInfo;
+class Plugin;
+class RenderBuffer;
 
 
 
 // UI panel for editing preferences, especially the key mappings.
 class PreferencesPanel : public Panel {
 public:
-	PreferencesPanel();
+	explicit PreferencesPanel(PlayerInfo &player);
+	virtual ~PreferencesPanel();
 
 	// Draw this panel.
 	virtual void Draw() override;
+
+	virtual void UpdateTooltipActivation() override;
+	virtual void UpdateTextDisplay() override;
 
 
 protected:
 	// Only override the ones you need; the default action is to return false.
 	virtual bool KeyDown(SDL_Keycode key, Uint16 mod, const Command &command, bool isNewPress) override;
-	virtual bool Click(int x, int y, int clicks) override;
+	virtual bool Click(int x, int y, MouseButton button, int clicks) override;
 	virtual bool Hover(int x, int y) override;
 	virtual bool Scroll(double dx, double dy) override;
+	virtual bool Drag(double dx, double dy) override;
+
+	virtual void Resize() override;
 
 	virtual void EndEditing() override;
 
@@ -50,32 +63,54 @@ private:
 	void DrawControls();
 	void DrawSettings();
 	void DrawPlugins();
+	void RenderPluginDescription(const std::string &pluginName);
+	void RenderPluginDescription(const Plugin &plugin);
+
+	void DrawTooltips();
 
 	void Exit();
 
+	void HandleSettingsString(const std::string &str, Point cursorPosition);
+
+	void HandleUp();
+	void HandleDown();
+	void HandleConfirm();
+
+	// Scroll the plugin list until the selected plugin is visible.
+	void ScrollSelectedPlugin();
+
 
 private:
-	int editing;
-	int selected;
-	int hover;
+	PlayerInfo &player;
+	// Determine if the player's mission deadlines need to be recached when
+	// this panel is closed due to the deadline blink preference changing.
+	bool recacheDeadlines = false;
+
+	int editing = -1;
+	int selected = 0;
+	int hover = -1;
 	int oldSelected;
 	int oldHover;
 	int latest;
-	Point hoverPoint;
 	// Which page of the preferences we're on.
 	char page = 'c';
-	std::string hoverPreference;
 
+	Point hoverPoint;
+	Tooltip tooltip;
+	std::string selectedItem;
+	std::string hoverItem;
+
+	int currentControlsPage = 0;
 	int currentSettingsPage = 0;
 
 	std::string selectedPlugin;
-	std::string hoverPlugin;
 
 	std::vector<ClickZone<Command>> zones;
 	std::vector<ClickZone<std::string>> prefZones;
 	std::vector<ClickZone<std::string>> pluginZones;
+
+	std::unique_ptr<RenderBuffer> pluginListClip;
+	std::unique_ptr<RenderBuffer> pluginDescriptionBuffer;
+	ScrollVar<double> pluginListScroll;
+	ScrollVar<double> pluginDescriptionScroll;
 };
-
-
-
-#endif

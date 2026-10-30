@@ -14,6 +14,7 @@
 ship "Arach Courier"
 	sprite "ship/arach courier"
 	thumbnail "thumbnail/arach courier"
+	"administrative cost" 1
 	attributes
 		category "Light Freighter"
 		licenses
@@ -23,9 +24,9 @@ ship "Arach Courier"
 		"hull" 2000
 		"required crew" 1
 		"bunks" 1
-		"mass" 100
-		"drag" 2.9
-		"heat dissipation" .65
+		"mass" 125
+		"drag" 3.2
+		"heat dissipation" .6
 		"fuel capacity" 300
 		"cargo space" 94
 		"outfit space" 148
@@ -73,6 +74,7 @@ ship "Arach Courier" "Arach Courier (Miner)"
 ship "Arach Freighter"
 	sprite "ship/arach freighter"
 	thumbnail "thumbnail/arach freighter"
+	"administrative cost" 3
 	attributes
 		category "Light Freighter"
 		licenses
@@ -82,9 +84,9 @@ ship "Arach Freighter"
 		"hull" 8500
 		"required crew" 3
 		"bunks" 10
-		"mass" 380
-		"drag" 10.6
-		"heat dissipation" .55
+		"mass" 672
+		"drag" 14.8
+		"heat dissipation" .4
 		"fuel capacity" 500
 		"cargo space" 372
 		"outfit space" 349
@@ -143,6 +145,7 @@ ship "Arach Freighter" "Arach Freighter (Miner)"
 ship "Arach Hulk"
 	sprite "ship/arach hulk"
 	thumbnail "thumbnail/arach hulk"
+	"administrative cost" 4
 	attributes
 		category "Heavy Freighter"
 		licenses
@@ -152,9 +155,9 @@ ship "Arach Hulk"
 		"hull" 13800
 		"required crew" 8
 		"bunks" 14
-		"mass" 670
-		"drag" 18.9
-		"heat dissipation" .50
+		"mass" 1325
+		"drag" 29.3
+		"heat dissipation" .33
 		"fuel capacity" 500
 		"cargo space" 688
 		"outfit space" 520
@@ -219,6 +222,7 @@ ship "Arach Hulk" "Arach Hulk (Miner)"
 ship "Arach Spindle"
 	sprite "ship/arach spindle"
 	thumbnail "thumbnail/arach spindle"
+	"administrative cost" 3
 	attributes
 		category "Heavy Freighter"
 		licenses
@@ -228,9 +232,9 @@ ship "Arach Spindle"
 		"hull" 9700
 		"required crew" 4
 		"bunks" 14
-		"mass" 340
-		"drag" 10.8
-		"heat dissipation" .55
+		"mass" 766
+		"drag" 16.7
+		"heat dissipation" .36
 		"fuel capacity" 500
 		"cargo space" 392
 		"outfit space" 434
@@ -291,9 +295,46 @@ ship "Arach Spindle" "Arach Spindle (Miner)"
 		"Small Steering Module"
 		"Hyperdrive"
 
+ship "Arach Spindle" "Arach Spindle (Plasma)"
+	outfits
+		"Hyperdrive"
+		"Outfits Expansion" 3
+		"Small Shield Module"
+		"Small Repair Module" 2
+		"Large Repair Module"
+		"Cooling Module" 5
+		"Small Thrust Module" 3
+		"Large Thrust Module" 2
+		"Small Steering Module"
+		"Small Battery Module"
+		"Large Battery Module"
+		"Large Steering Module" 2
+		"Fusion Reactor"
+		"Plasma Turret" 2
+
+ship "Arach Spindle" "Arach Spindle (Jump Drive)"
+	outfits
+		"Large Collector Module" 3
+		"Small Collector Module" 2
+		"Large Battery Module"
+		"Large Shield Module"
+		"Small Shield Module"
+		"Large Repair Module"
+		"Small Repair Module" 2
+		"Cooling Module" 2
+		"Fuel Module" 4
+		
+		"Large Thrust Module" 2
+		"Small Thrust Module" 3
+		"Large Steering Module" 2
+		"Small Steering Module"
+		"Jump Drive"
+
+
 ship "Arach Transport"
 	sprite "ship/arach transport"
 	thumbnail "thumbnail/arach transport"
+	"administrative cost" 1
 	attributes
 		category "Light Freighter"
 		licenses
@@ -303,9 +344,9 @@ ship "Arach Transport"
 		"hull" 4800
 		"required crew" 2
 		"bunks" 5
-		"mass" 280
-		"drag" 7.2
-		"heat dissipation" .60
+		"mass" 420
+		"drag" 9
+		"heat dissipation" .48
 		"fuel capacity" 400
 		"cargo space" 228
 		"outfit space" 281
@@ -361,6 +402,7 @@ ship "Arach Transport" "Arach Transport (Miner)"
 ship "Heliarch Breacher"
 	sprite "ship/heliarch breacher"
 	thumbnail "thumbnail/heliarch breacher"
+	"administrative cost" 5
 	attributes
 		category "Light Warship"
 		licenses
@@ -370,9 +412,9 @@ ship "Heliarch Breacher"
 		"hull" 21500
 		"required crew" 11
 		"bunks" 15
-		"mass" 200
-		"drag" 3.2
-		"heat dissipation" .77
+		"mass" 343
+		"drag" 4.0
+		"heat dissipation" .62
 		"ion protection" .1
 		"scramble protection" .1
 		"fuel capacity" 800
@@ -399,6 +441,7 @@ ship "Heliarch Breacher"
 		"Scanning Module"
 		"Enforcer Riot Staff" 8
 		"Enforcer Confrontation Gear" 6
+		"Guardian Turret"
 		
 		"Large Thrust Module" 2
 		"Small Steering Module"
@@ -450,6 +493,7 @@ ship "Heliarch Breacher" "Heliarch Breacher (Missile)"
 		"Scanning Module" 2
 		"Enforcer Riot Staff" 9
 		"Enforcer Confrontation Gear" 7
+		"Guardian Turret"
 		
 		"Large Thrust Module" 2
 		"Large Steering Module"
@@ -469,6 +513,7 @@ ship "Heliarch Breacher" "Heliarch Breacher (Scrappy)"
 		"Scanning Module"
 		"Enforcer Riot Staff" 8
 		"Enforcer Confrontation Gear" 8
+		"Guardian Turret"
 		
 		"Large Thrust Module"
 		"Small Thrust Module"
@@ -479,6 +524,7 @@ ship "Heliarch Breacher" "Heliarch Breacher (Scrappy)"
 ship "Heliarch Hunter"
 	sprite "ship/heliarch hunter"
 	thumbnail "thumbnail/heliarch hunter"
+	"administrative cost" 8
 	attributes
 		category "Medium Warship"
 		licenses
@@ -488,9 +534,9 @@ ship "Heliarch Hunter"
 		"hull" 45300
 		"required crew" 26
 		"bunks" 41
-		"mass" 420
-		"drag" 5.3
-		"heat dissipation" .71
+		"mass" 860
+		"drag" 7.7
+		"heat dissipation" .5
 		"ion protection" .2
 		"scramble protection" .2
 		"fuel capacity" 1500
@@ -517,6 +563,7 @@ ship "Heliarch Hunter"
 		"Scanning Module" 2
 		"Enforcer Riot Staff" 25
 		"Enforcer Confrontation Gear" 13
+		"Guardian Turret"
 		
 		"Large Thrust Module" 2
 		"Small Thrust Module"
@@ -555,6 +602,7 @@ ship "Heliarch Hunter" "Heliarch Hunter (Burst Fire)"
 		"Outfits Expansion"
 		"Enforcer Riot Staff" 12
 		"Enforcer Confrontation Gear" 35
+		"Guardian Turret"
 		
 		"Large Thrust Module" 2
 		"Small Thrust Module" 2
@@ -583,6 +631,7 @@ ship "Heliarch Hunter" "Heliarch Hunter (Interdicting)"
 		"Outfits Expansion"
 		"Enforcer Riot Staff" 26
 		"Enforcer Confrontation Gear" 14
+		"Guardian Turret" 4
 		
 		"Large Thrust Module" 2
 		"Small Thrust Module"
@@ -611,6 +660,7 @@ ship "Heliarch Hunter" "Heliarch Hunter (Ions)"
 		"Outfits Expansion"
 		"Enforcer Riot Staff" 28
 		"Enforcer Confrontation Gear" 16
+		"Guardian Turret"
 		
 		"Large Thrust Module" 2
 		"Small Thrust Module"
@@ -654,6 +704,7 @@ ship "Heliarch Hunter" "Heliarch Hunter (Scrappy)"
 		"Outfits Expansion"
 		"Enforcer Riot Staff" 26
 		"Enforcer Confrontation Gear" 18
+		"Guardian Turret"
 		
 		"Large Thrust Module" 2
 		"Small Thrust Module"
@@ -665,6 +716,7 @@ ship "Heliarch Hunter" "Heliarch Hunter (Scrappy)"
 ship "Heliarch Interdictor"
 	sprite "ship/heliarch interdictor"
 	thumbnail "thumbnail/heliarch interdictor"
+	"administrative cost" 8
 	attributes
 		category "Medium Warship"
 		licenses
@@ -674,9 +726,9 @@ ship "Heliarch Interdictor"
 		"hull" 54600
 		"required crew" 42
 		"bunks" 70
-		"mass" 520
-		"drag" 7.4
-		"heat dissipation" .70
+		"mass" 1052
+		"drag" 11.1
+		"heat dissipation" .47
 		"ion protection" .2
 		"scramble protection" .2
 		"fuel capacity" 800
@@ -704,6 +756,7 @@ ship "Heliarch Interdictor"
 		"Scanning Module" 3
 		"Enforcer Riot Staff" 28
 		"Enforcer Confrontation Gear" 30
+		"Guardian Turret" 2
 		
 		"Large Thrust Module" 2
 		"Large Steering Module" 2
@@ -740,6 +793,7 @@ ship "Heliarch Interdictor" "Heliarch Interdictor (Bombardment)"
 		"Scanning Module" 3
 		"Enforcer Riot Staff" 31
 		"Enforcer Confrontation Gear" 27
+		"Guardian Turret"
 		
 		"Large Thrust Module" 2
 		"Small Thrust Module"
@@ -804,6 +858,7 @@ ship "Heliarch Interdictor" "Heliarch Interdictor (Missile)"
 		"Outfits Expansion" 3
 		"Enforcer Riot Staff" 25
 		"Enforcer Confrontation Gear" 28
+		"Guardian Turret"
 
 		"Large Thrust Module" 3
 		"Small Thrust Module"
@@ -827,6 +882,7 @@ ship "Heliarch Interdictor" "Heliarch Interdictor (Scrappy)"
 		"Outfits Expansion" 2
 		"Enforcer Riot Staff" 29
 		"Enforcer Confrontation Gear" 29
+		"Guardian Turret"
 
 		"Large Thrust Module" 2
 		"Small Thrust Module"
@@ -838,6 +894,7 @@ ship "Heliarch Interdictor" "Heliarch Interdictor (Scrappy)"
 ship "Heliarch Judicator"
 	sprite "ship/heliarch judicator"
 	thumbnail "thumbnail/heliarch judicator"
+	"administrative cost" 7
 	attributes
 		category "Medium Warship"
 		licenses
@@ -847,9 +904,9 @@ ship "Heliarch Judicator"
 		"hull" 41900
 		"required crew" 31
 		"bunks" 110
-		"mass" 480
-		"drag" 7.9
-		"heat dissipation" .67
+		"mass" 982
+		"drag" 11.9
+		"heat dissipation" .45
 		"ion protection" .2
 		"scramble protection" .2
 		"fuel capacity" 900
@@ -876,6 +933,7 @@ ship "Heliarch Judicator"
 		"Scanning Module" 4
 		"Enforcer Riot Staff" 83
 		"Enforcer Confrontation Gear" 49
+		"Guardian Turret"
 		
 		"Small Thrust Module" 2
 		"Small Steering Module"
@@ -967,6 +1025,7 @@ ship "Heliarch Judicator" "Heliarch Judicator (Missile)"
 		"Outfits Expansion" 6
 		"Enforcer Riot Staff" 81
 		"Enforcer Confrontation Gear" 36
+		"Guardian Turret"
 		
 		"Large Thrust Module" 2
 		"Small Thrust Module" 3
@@ -989,6 +1048,7 @@ ship "Heliarch Judicator" "Heliarch Judicator (Repulsor)"
 		"Outfits Expansion" 3
 		"Enforcer Riot Staff" 87
 		"Enforcer Confrontation Gear" 42
+		"Guardian Turret" 2
 		
 		"Large Thrust Module"
 		"Small Thrust Module" 3
@@ -1011,6 +1071,7 @@ ship "Heliarch Judicator" "Heliarch Judicator (Scrappy)"
 		"Outfits Expansion"
 		"Enforcer Riot Staff" 83
 		"Enforcer Confrontation Gear" 33
+		"Guardian Turret"
 		
 		"Large Thrust Module"
 		"Small Thrust Module" 2
@@ -1022,6 +1083,7 @@ ship "Heliarch Judicator" "Heliarch Judicator (Scrappy)"
 ship "Heliarch Neutralizer"
 	sprite "ship/heliarch neutralizer"
 	thumbnail "thumbnail/heliarch neutralizer"
+	"administrative cost" 6
 	attributes
 		category "Light Warship"
 		licenses
@@ -1031,9 +1093,9 @@ ship "Heliarch Neutralizer"
 		"hull" 32800
 		"required crew" 17
 		"bunks" 24
-		"mass" 270
-		"drag" 4.1
-		"heat dissipation" .75
+		"mass" 429
+		"drag" 5.1
+		"heat dissipation" .6
 		"ion protection" .1
 		"scramble protection" .1
 		"fuel capacity" 1000
@@ -1057,6 +1119,7 @@ ship "Heliarch Neutralizer"
 		"Scanning Module" 2
 		"Enforcer Riot Staff" 9
 		"Enforcer Confrontation Gear" 11
+		"Guardian Turret"
 		
 		"Large Thrust Module"
 		"Small Thrust Module" 2
@@ -1114,6 +1177,7 @@ ship "Heliarch Neutralizer" "Heliarch Neutralizer (Nimble)"
 		"Scanning Module" 2
 		"Enforcer Riot Staff" 10
 		"Enforcer Confrontation Gear" 10
+		"Guardian Turret" 2
 		
 		"Large Thrust Module"
 		"Small Thrust Module"
@@ -1133,6 +1197,7 @@ ship "Heliarch Neutralizer" "Heliarch Neutralizer (Scrappy)"
 		"Scanning Module" 2
 		"Enforcer Riot Staff" 11
 		"Enforcer Confrontation Gear" 9
+		"Guardian Turret"
 		
 		"Large Thrust Module"
 		"Small Thrust Module" 2
@@ -1143,6 +1208,7 @@ ship "Heliarch Neutralizer" "Heliarch Neutralizer (Scrappy)"
 ship "Heliarch Punisher"
 	sprite "ship/heliarch punisher"
 	thumbnail "thumbnail/heliarch punisher"
+	"administrative cost" 11
 	attributes
 		category "Heavy Warship"
 		licenses
@@ -1152,9 +1218,9 @@ ship "Heliarch Punisher"
 		"hull" 85000
 		"required crew" 96
 		"bunks" 145
-		"mass" 780
-		"drag" 12.2
-		"heat dissipation" .60
+		"mass" 2030
+		"drag" 21.3
+		"heat dissipation" .35
 		"ion protection" .3
 		"scramble protection" .3
 		"fuel capacity" 600
@@ -1181,6 +1247,7 @@ ship "Heliarch Punisher"
 		"Scanning Module" 4
 		"Enforcer Riot Staff" 78
 		"Enforcer Confrontation Gear" 44
+		"Guardian Turret" 2
 		
 		"Large Thrust Module" 2
 		"Small Thrust Module" 2
@@ -1238,6 +1305,29 @@ ship "Heliarch Punisher" "Heliarch Punisher (Burst Fire)"
 	gun "Finisher Maegrolain"
 	gun "Finisher Maegrolain"
 
+ship "Heliarch Punisher" "Heliarch Punisher (Fuel)"
+	outfits
+		"Finisher Pod" 2
+		"Finisher Torpedo" 80
+		"Bombardment Turret" 4
+		
+		"Large Reactor Module" 2
+		"Large Battery Module"
+		"Overcharged Shield Module" 2
+		"Overclocked Repair Module" 2
+		"Cooling Module" 4
+		"Scanning Module" 4
+		"Fuel Module" 4
+		"Enforcer Riot Staff" 160
+		"Enforcer Confrontation Gear" 150
+		"Guardian Turret"
+	
+		"Large Thrust Module" 2
+		"Small Thrust Module" 2
+		"Large Steering Module" 2
+		"Small Steering Module" 2
+		"Jump Drive"
+
 ship "Heliarch Punisher" "Heliarch Punisher (Interdicting)"
 	outfits
 		"Bombardment Cannon" 4
@@ -1255,6 +1345,7 @@ ship "Heliarch Punisher" "Heliarch Punisher (Interdicting)"
 		"Scanning Module" 4
 		"Enforcer Riot Staff" 80
 		"Enforcer Confrontation Gear" 42
+		"Guardian Turret"
 		
 		"Large Thrust Module" 2
 		"Small Thrust Module" 3
@@ -1288,6 +1379,7 @@ ship "Heliarch Punisher" "Heliarch Punisher (Ions)"
 		"Outfits Expansion" 2
 		"Enforcer Riot Staff" 96
 		"Enforcer Confrontation Gear" 48
+		"Guardian Turret"
 
 		"Large Thrust Module" 3
 		"Large Steering Module" 2
@@ -1309,6 +1401,7 @@ ship "Heliarch Punisher" "Heliarch Punisher (Missile)"
 		"Outfits Expansion" 2
 		"Enforcer Riot Staff" 85
 		"Enforcer Confrontation Gear" 40
+		"Guardian Turret" 2
 		
 		"Large Thrust Module" 4
 		"Large Steering Module" 2
@@ -1334,6 +1427,7 @@ ship "Heliarch Punisher" "Heliarch Punisher (Pure Finishers)"
 		"Outfits Expansion" 4
 		"Enforcer Riot Staff" 71
 		"Enforcer Confrontation Gear" 40
+		"Guardian Turret"
 
 		"Large Thrust Module" 4
 		"Small Thrust Module"
@@ -1355,6 +1449,7 @@ ship "Heliarch Punisher" "Heliarch Punisher (Scrappy)"
 		"Outfits Expansion" 3
 		"Enforcer Riot Staff" 77
 		"Enforcer Confrontation Gear" 45
+		"Guardian Turret" 2
 		
 		"Large Thrust Module" 2
 		"Small Thrust Module"
@@ -1366,6 +1461,7 @@ ship "Heliarch Punisher" "Heliarch Punisher (Scrappy)"
 ship "Heliarch Pursuer"
 	sprite "ship/heliarch pursuer"
 	thumbnail "thumbnail/heliarch pursuer"
+	"administrative cost" 0
 	attributes
 		category "Fighter"
 		licenses
@@ -1425,6 +1521,7 @@ ship "Heliarch Pursuer" "Heliarch Pursuer (Scrappy)"
 ship "Heliarch Rover"
 	sprite "ship/heliarch rover"
 	thumbnail "thumbnail/heliarch rover"
+	"administrative cost" 0
 	attributes
 		category "Fighter"
 		licenses
@@ -1483,6 +1580,7 @@ ship "Heliarch Rover" "Heliarch Rover (Ions)"
 ship "Heliarch Stalker"
 	sprite "ship/heliarch stalker"
 	thumbnail "thumbnail/heliarch stalker"
+	"administrative cost" 0
 	attributes
 		category "Fighter"
 		licenses
@@ -1492,9 +1590,9 @@ ship "Heliarch Stalker"
 		"hull" 5200
 		"required crew" 1
 		"bunks" 2
-		"mass" 80
-		"drag" 2.1
-		"heat dissipation" 0.64
+		"mass" 101
+		"drag" 2.3
+		"heat dissipation" 0.59
 		"outfit space" 133
 		"weapon capacity" 43
 		"engine capacity" 16
@@ -1539,6 +1637,7 @@ ship "Heliarch Stalker" "Heliarch Stalker (Scrappy)"
 ship "Kimek Briar"
 	sprite "ship/kimek briar"
 	thumbnail "thumbnail/kimek briar"
+	"administrative cost" 1
 	attributes
 		category "Transport"
 		licenses
@@ -1548,9 +1647,9 @@ ship "Kimek Briar"
 		"hull" 1700
 		"required crew" 3
 		"bunks" 38
-		"mass" 180
-		"drag" 3.8
-		"heat dissipation" .75
+		"mass" 286
+		"drag" 4.8
+		"heat dissipation" .6
 		"fuel capacity" 700
 		"cargo space" 23
 		"outfit space" 245
@@ -1600,6 +1699,7 @@ ship "Kimek Briar" "Kimek Briar (Miner)"
 ship "Kimek Spire"
 	sprite "ship/kimek spire"
 	thumbnail "thumbnail/kimek spire"
+	"administrative cost" 5
 	attributes
 		category "Space Liner"
 		licenses
@@ -1609,9 +1709,9 @@ ship "Kimek Spire"
 		"hull" 4900
 		"required crew" 19
 		"bunks" 296
-		"mass" 570
-		"drag" 8.4
-		"heat dissipation" .60
+		"mass" 1152
+		"drag" 13
+		"heat dissipation" .39
 		"fuel capacity" 800
 		"cargo space" 70
 		"outfit space" 489
@@ -1672,6 +1772,7 @@ ship "Kimek Spire" "Kimek Spire (Miner)"
 ship "Kimek Thistle"
 	sprite "ship/kimek thistle"
 	thumbnail "thumbnail/kimek thistle"
+	"administrative cost" 3
 	attributes
 		category "Transport"
 		licenses
@@ -1681,9 +1782,9 @@ ship "Kimek Thistle"
 		"hull" 2800
 		"required crew" 7
 		"bunks" 78
-		"mass" 270
-		"drag" 5.8
-		"heat dissipation" .70
+		"mass" 506
+		"drag" 8.1
+		"heat dissipation" .5
 		"fuel capacity" 700
 		"cargo space" 32
 		"outfit space" 321
@@ -1738,9 +1839,26 @@ ship "Kimek Thistle" "Kimek Thistle (Miner)"
 		"Small Steering Module"
 		"Hyperdrive"
 
+ship "Kimek Thistle" "Kimek Thistle (Torpedoes)"
+	outfits
+		"Hyperdrive"
+		"Small Shield Module" 2
+		"Small Repair Module" 2
+		"Cooling Module" 2
+		"Small Thrust Module" 2
+		"Small Steering Module"
+		"Large Thrust Module"
+		"Small Battery Module"
+		"Large Steering Module"
+		"Heavy Anti-Missile Turret"
+		"Torpedo Launcher" 2
+		Torpedo 60
+		"Breeder Reactor"
+
 ship "Kimek Thorn"
 	sprite "ship/kimek thorn"
 	thumbnail "thumbnail/kimek thorn"
+	"administrative cost" 1
 	attributes
 		category "Transport"
 		licenses
@@ -1750,9 +1868,9 @@ ship "Kimek Thorn"
 		"hull" 800
 		"required crew" 1
 		"bunks" 10
-		"mass" 80
-		"drag" 1.8
-		"heat dissipation" .80
+		"mass" 90
+		"drag" 1.9
+		"heat dissipation" .77
 		"fuel capacity" 600
 		"cargo space" 13
 		"outfit space" 133
@@ -1800,6 +1918,7 @@ ship "Kimek Thorn" "Kimek Thorn (Miner)"
 ship "Saryd Runabout"
 	sprite "ship/saryd runabout"
 	thumbnail "thumbnail/saryd runabout"
+	"administrative cost" 1
 	attributes
 		category "Transport"
 		licenses
@@ -1809,9 +1928,9 @@ ship "Saryd Runabout"
 		"hull" 1400
 		"required crew" 2
 		"bunks" 14
-		"mass" 140
-		"drag" 2.8
-		"heat dissipation" .70
+		"mass" 190
+		"drag" 3.2
+		"heat dissipation" .61
 		"fuel capacity" 400
 		"cargo space" 46
 		"outfit space" 172
@@ -1857,6 +1976,7 @@ ship "Saryd Runabout" "Saryd Runabout (Miner)"
 ship "Saryd Sojourner"
 	sprite "ship/saryd sojourner"
 	thumbnail "thumbnail/saryd sojourner"
+	"administrative cost" 5
 	attributes
 		category "Utility"
 		licenses
@@ -1866,9 +1986,9 @@ ship "Saryd Sojourner"
 		"hull" 7700
 		"required crew" 17
 		"bunks" 101
-		"mass" 640
-		"drag" 12.9
-		"heat dissipation" .50
+		"mass" 1304
+		"drag" 20
+		"heat dissipation" .33
 		"fuel capacity" 800
 		"cargo space" 312
 		"outfit space" 568
@@ -1932,9 +2052,26 @@ ship "Saryd Sojourner" "Saryd Sojourner (Miner)"
 		"Small Steering Module"
 		"Hyperdrive"
 
+ship "Saryd Sojourner" "Saryd Sojourner (Bombardments)"
+	outfits
+		"Hyperdrive"
+		"Bombardment Turret" 3
+		"Ion Rain Gun" 2
+		"Large Reactor Module"
+		"Small Battery Module"
+		"Large Battery Module" 2
+		"Cooling Module" 3
+		"Small Thrust Module" 3
+		"Large Thrust Module" 2
+		"Small Steering Module" 2
+		"Large Steering Module" 2
+		"Overclocked Repair Module"
+		"Overcharged Shield Module"
+
 ship "Saryd Traveler"
 	sprite "ship/saryd traveler"
 	thumbnail "thumbnail/saryd traveler"
+	"administrative cost" 3
 	attributes
 		category "Utility"
 		licenses
@@ -1944,9 +2081,9 @@ ship "Saryd Traveler"
 		"hull" 4000
 		"required crew" 10
 		"bunks" 54
-		"mass" 350
-		"drag" 5.5
-		"heat dissipation" .60
+		"mass" 676
+		"drag" 7.7
+		"heat dissipation" .43
 		"fuel capacity" 600
 		"cargo space" 164
 		"outfit space" 466
@@ -2010,6 +2147,7 @@ ship "Saryd Traveler" "Saryd Traveler (Miner)"
 ship "Saryd Visitor"
 	sprite "ship/saryd visitor"
 	thumbnail "thumbnail/saryd visitor"
+	"administrative cost" 2
 	attributes
 		category "Transport"
 		licenses
@@ -2019,9 +2157,9 @@ ship "Saryd Visitor"
 		"hull" 2400
 		"required crew" 5
 		"bunks" 32
-		"mass" 270
-		"drag" 4.4
-		"heat dissipation" .65
+		"mass" 418
+		"drag" 5.5
+		"heat dissipation" .52
 		"fuel capacity" 400
 		"cargo space" 108
 		"outfit space" 320

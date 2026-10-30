@@ -13,8 +13,7 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef WEIGHTED_LIST_H_
-#define WEIGHTED_LIST_H_
+#pragma once
 
 #include "Random.h"
 
@@ -47,7 +46,7 @@ struct WeightedItem {
 // list is weighted with an integer. This list can be queried to randomly return
 // one object from the list where the probability of an object being returned is
 // the weight of the object over the sum of the weights of all objects in the list.
-template <class Type>
+template<class Type>
 class WeightedList {
 public:
 	using Item = WeightedItem<Type>;
@@ -56,9 +55,9 @@ public:
 
 
 public:
-	template <class T>
+	template<class T>
 	friend std::size_t erase(WeightedList<T> &list, const T &item);
-	template <class T, class UnaryPredicate>
+	template<class T, class UnaryPredicate>
 	friend std::size_t erase_if(WeightedList<T> &list, UnaryPredicate pred);
 	template <typename T, typename U>
 	friend bool operator==(const WeightedList<T> &lhs, const WeightedList<U> &rhs);
@@ -69,8 +68,17 @@ public:
 	std::size_t TotalWeight() const noexcept { return total; }
 
 	// Average the result of the given function by the choices' weights.
+<<<<<<< HEAD
 	template <class Callable>
 	auto Average(Callable c) const;
+=======
+	template<class Callable>
+	std::enable_if_t<
+		std::is_arithmetic_v<std::invoke_result_t<Callable &&, const Type &&>>,
+		// The return type of WeightedList::Average, if the above test passes:
+		std::invoke_result_t<Callable &&, const Type &&>
+	> Average(Callable c) const;
+>>>>>>> upstream/master
 	// Supplying a callable that does not return an arithmetic value will fail to compile.
 
 	iterator begin() noexcept { return items.begin(); }
@@ -85,8 +93,8 @@ public:
 	Type &back() noexcept { return items.back().item; }
 	const Type &back() const noexcept { return items.back().item; }
 
-	template <class ...Args>
-	Type &emplace_back(int weight, Args&&... args);
+	template<class ...Args>
+	Type &emplace_back(int weight, Args &&...args);
 
 	iterator eraseAt(iterator position) noexcept;
 	iterator erase(iterator first, iterator last) noexcept;
@@ -106,7 +114,7 @@ private:
 
 
 
-template <class T>
+template<class T>
 std::size_t erase(WeightedList<T> &list, const T &item)
 {
 	return erase_if(list, [&item](const T &t) noexcept -> bool { return item == t; });
@@ -114,7 +122,7 @@ std::size_t erase(WeightedList<T> &list, const T &item)
 
 
 
-template <class T, class UnaryPredicate>
+template<class T, class UnaryPredicate>
 std::size_t erase_if(WeightedList<T> &list, UnaryPredicate pred)
 {
 	std::size_t erased = 0;
@@ -143,6 +151,7 @@ std::size_t erase_if(WeightedList<T> &list, UnaryPredicate pred)
 
 
 
+<<<<<<< HEAD
 template <typename T, typename U>
 bool operator==(const WeightedList<T> &lhs, const WeightedList<U> &rhs)
 {
@@ -160,6 +169,9 @@ bool operator!=(const WeightedList<T> &lhs, const WeightedList<U> &rhs)
 
 
 template <class Type>
+=======
+template<class Type>
+>>>>>>> upstream/master
 const Type &WeightedList<Type>::Get() const
 {
 	if(empty())
@@ -174,25 +186,41 @@ const Type &WeightedList<Type>::Get() const
 
 
 
+<<<<<<< HEAD
 template <class Type>
 template <class Callable>
 auto WeightedList<Type>::Average(Callable fn) const
+=======
+template<class Type>
+template<class Callable>
+std::enable_if_t<
+	std::is_arithmetic_v<std::invoke_result_t<Callable &&, const Type &&>>,
+	std::invoke_result_t<Callable &&, const Type &&>
+> WeightedList<Type>::Average(Callable fn) const
+>>>>>>> upstream/master
 {
 	auto sum = std::invoke_result_t<Callable, const Type &>{};
 
+<<<<<<< HEAD
 	std::size_t tw = TotalWeight();
 	if (tw == 0) return sum;
 
 	for(unsigned index = 0; index < items.size(); ++index)
 		sum += std::invoke(fn, items[index].item) * items[index].weight;
 	return static_cast<decltype(sum)>(sum / tw);
+=======
+	auto sum = typename std::invoke_result_t<Callable, const Type &>{};
+	for(unsigned index = 0; index < choices.size(); ++index)
+		sum += fn(choices[index]) * weights[index];
+	return sum / tw;
+>>>>>>> upstream/master
 }
 
 
 
-template <class Type>
-template <class ...Args>
-Type &WeightedList<Type>::emplace_back(int weight, Args&&... args)
+template<class Type>
+template<class ...Args>
+Type &WeightedList<Type>::emplace_back(int weight, Args &&...args)
 {
 	// All weights must be >= 1.
 	if(weight < 1)
@@ -205,8 +233,13 @@ Type &WeightedList<Type>::emplace_back(int weight, Args&&... args)
 
 
 
+<<<<<<< HEAD
 template <class Type>
 auto WeightedList<Type>::eraseAt(iterator position) noexcept -> iterator
+=======
+template<class Type>
+typename std::vector<Type>::iterator WeightedList<Type>::eraseAt(typename std::vector<Type>::iterator position) noexcept
+>>>>>>> upstream/master
 {
 	total -= position->weight;
 	return items.erase(position);
@@ -214,8 +247,14 @@ auto WeightedList<Type>::eraseAt(iterator position) noexcept -> iterator
 
 
 
+<<<<<<< HEAD
 template <class Type>
 auto WeightedList<Type>::erase(iterator first, iterator last) noexcept -> iterator
+=======
+template<class Type>
+typename std::vector<Type>::iterator WeightedList<Type>::erase(typename std::vector<Type>::iterator first,
+	typename std::vector<Type>::iterator last) noexcept
+>>>>>>> upstream/master
 {
 	auto it = items.erase(first, last);
 	RecalculateWeight();
@@ -224,12 +263,8 @@ auto WeightedList<Type>::erase(iterator first, iterator last) noexcept -> iterat
 
 
 
-template <class Type>
+template<class Type>
 void WeightedList<Type>::RecalculateWeight()
 {
 	total = std::accumulate(items.begin(), items.end(), 0, [](int lhs, const auto &rhs) { return lhs + rhs.weight; });
 }
-
-
-
-#endif

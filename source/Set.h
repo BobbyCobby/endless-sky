@@ -13,8 +13,7 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef SET_H_
-#define SET_H_
+#pragma once
 
 #include <map>
 #include <string>
@@ -36,9 +35,13 @@ public:
 	Type *Find(const std::string &name);
 	const Type *Find(const std::string &name) const;
 
+<<<<<<< HEAD
 	bool Has(const std::string &name) const { return data.count(name); }
 	void Rename(const std::string &name, const std::string &newName) const;
 	void Erase(const std::string &name) const { data[name] = {}; }
+=======
+	bool Has(const std::string &name) const { return data.contains(name); }
+>>>>>>> upstream/master
 
 	typename std::map<std::string, Type>::iterator begin() { return data.begin(); }
 	typename std::map<std::string, Type>::const_iterator begin() const { return data.begin(); }
@@ -61,7 +64,7 @@ private:
 
 
 
-template <class Type>
+template<class Type>
 const Type *Set<Type>::Find(const std::string &name) const
 {
 	auto it = data.find(name);
@@ -70,6 +73,7 @@ const Type *Set<Type>::Find(const std::string &name) const
 
 
 
+<<<<<<< HEAD
 template <class Type>
 Type *Set<Type>::Find(const std::string &name)
 {
@@ -89,6 +93,9 @@ void Set<T>::Rename(const std::string &name, const std::string &newName) const
 
 
 template <class Type>
+=======
+template<class Type>
+>>>>>>> upstream/master
 void Set<Type>::Revert(const Set<Type> &other)
 {
 	auto it = data.begin();
@@ -111,6 +118,7 @@ void Set<Type>::Revert(const Set<Type> &other)
 		// reverting to has a name that is not also in this set.
 	}
 }
+<<<<<<< HEAD
 
 
 
@@ -139,3 +147,5 @@ void Set<Type>::RevertNoOverwrite(const Set<Type> &other)
 
 
 #endif
+=======
+>>>>>>> upstream/master

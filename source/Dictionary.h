@@ -13,8 +13,7 @@ You should have received a copy of the GNU General Public License along with
 this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef DICTIONARY_H_
-#define DICTIONARY_H_
+#pragma once
 
 #include <string>
 #include <utility>
@@ -26,18 +25,26 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 // that prioritizes fast lookup time at the expense of longer construction time
 // compared to an STL map. That makes it suitable for ship attributes, which are
 // changed much less frequently than they are queried.
+<<<<<<< HEAD
 using DictionaryBase = std::vector<std::pair<const char *, double>>;
 class Dictionary : private DictionaryBase {
+=======
+template<class Type>
+class Dictionary : private std::vector<std::pair<const char *, Type>> {
+>>>>>>> upstream/master
 public:
 	Dictionary() noexcept = default;
 	Dictionary(const DictionaryBase &base) noexcept : DictionaryBase(base) {}
 
 	// Access a key for modifying it:
-	double &operator[](const char *key);
-	double &operator[](const std::string &key);
+	Type &operator[](const char *key);
+	Type &operator[](const std::string &key);
 	// Get the value of a key, or 0 if it does not exist:
-	double Get(const char *key) const;
-	double Get(const std::string &key) const;
+	Type Get(const char *key) const;
+	Type Get(const std::string &key) const;
+	// Erase the given element.
+	void Erase(const char *key);
+	void Clear();
 
 	void Remove(const char *key);
 	void Update(const char *key, double diff);
@@ -45,11 +52,9 @@ public:
 	const DictionaryBase &AsBase() const { return *this; }
 
 	// Expose certain functions from the underlying vector:
-	using std::vector<std::pair<const char *, double>>::empty;
-	using std::vector<std::pair<const char *, double>>::begin;
-	using std::vector<std::pair<const char *, double>>::end;
+	using std::vector<std::pair<const char *, Type>>::empty;
+	using std::vector<std::pair<const char *, Type>>::begin;
+	using std::vector<std::pair<const char *, Type>>::end;
+	using typename std::vector<std::pair<const char *, Type>>::iterator;
+	using typename std::vector<std::pair<const char *, Type>>::const_iterator;
 };
-
-
-
-#endif

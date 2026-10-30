@@ -16,10 +16,14 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "MenuAnimationPanel.h"
 
 #include "Angle.h"
-#include "Audio.h"
+#include "audio/Audio.h"
 #include "Color.h"
+<<<<<<< HEAD
 #include "PointerShader.h"
 #include "SoundSet.h"
+=======
+#include "shader/PointerShader.h"
+>>>>>>> upstream/master
 #include "UI.h"
 
 
@@ -28,7 +32,11 @@ MenuAnimationPanel::MenuAnimationPanel()
 {
 	SetTrapAllEvents(false);
 
+<<<<<<< HEAD
 	Audio::Play("landing");
+=======
+	Audio::Play(Audio::Get("landing"), SoundCategory::UI);
+>>>>>>> upstream/master
 }
 
 
@@ -38,7 +46,7 @@ void MenuAnimationPanel::Step()
 	alpha -= .02f;
 	// Kill this panel if the animation is done.
 	if(alpha <= 0.f)
-		GetUI()->Pop(this);
+		GetUI().Pop(this);
 }
 
 
@@ -48,10 +56,12 @@ void MenuAnimationPanel::Draw()
 	// Draw the shrinking loading circle.
 	Angle da(6.);
 	Angle a(0.);
+	Color color(.5f * alpha, 0.f);
+	PointerShader::Bind();
 	for(int i = 0; i < 60; ++i)
 	{
-		Color color(.5f * alpha, 0.f);
-		PointerShader::Draw(Point(), a.Unit(), 8.f, 20.f, 140.f * alpha, color);
+		PointerShader::Add(Point(), a.Unit(), 8.f, 20.f, 140.f * alpha, color);
 		a += da;
 	}
+	PointerShader::Unbind();
 }

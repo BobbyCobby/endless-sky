@@ -15,18 +15,21 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "StartConditions.h"
 
+#include "Conversation.h"
 #include "DataNode.h"
-#include "DataWriter.h"
 #include "text/Format.h"
 #include "GameData.h"
 #include "Logger.h"
+#include "Phrase.h"
 #include "Planet.h"
+#include "PlayerInfo.h"
 #include "Ship.h"
-#include "Sprite.h"
-#include "SpriteSet.h"
+#include "image/Sprite.h"
+#include "image/SpriteSet.h"
 #include "System.h"
 
 #include <algorithm>
+#include <ranges>
 #include <sstream>
 
 using namespace std;
@@ -38,14 +41,16 @@ namespace {
 
 
 
-StartConditions::StartConditions(const DataNode &node)
+StartConditions::StartConditions(const DataNode &node, const ConditionsStore *globalConditions,
+		const ConditionsStore *playerConditions)
 {
-	Load(node);
+	Load(node, globalConditions, playerConditions);
 }
 
 
 
-void StartConditions::Load(const DataNode &node)
+void StartConditions::Load(const DataNode &node, const ConditionsStore *globalConditions,
+		const ConditionsStore *playerConditions)
 {
 	// When a plugin modifies an existing starting condition, default to
 	// clearing the previously-defined description text. The plugin may
@@ -79,17 +84,15 @@ void StartConditions::Load(const DataNode &node)
 		if(remove)
 		{
 			if(key == "name")
-				unlocked.name.clear();
+				unlocked.displayName.clear();
 			else if(key == "description")
 				unlocked.description.clear();
 			else if(key == "thumbnail")
 				unlocked.thumbnail = nullptr;
 			else if(key == "ships")
-				ships.clear();
+				ships.Clear();
 			else if(key == "ship" && hasValue)
-				ships.erase(remove_if(ships.begin(), ships.end(),
-					[&value](const Ship &s) noexcept -> bool { return s.ModelName() == value; }),
-					ships.end());
+				ships.RemoveModel(value);
 			else if(key == "conversation")
 				conversation = ExclusiveItem<Conversation>();
 			else if(key == "to" && hasValue)
@@ -104,25 +107,14 @@ void StartConditions::Load(const DataNode &node)
 					child.PrintTrace("Skipping unrecognized attribute:");
 			}
 			else if(key == "conditions")
-				conditions = ConditionSet();
+				conditions = ConditionAssignments();
 			else
 				child.PrintTrace("Skipping unsupported use of \"remove\":");
 		}
 		else if(key == "ship" && hasValue)
-		{
-			// TODO: support named stock ships.
-			// Assume that child nodes introduce a full ship definition. Even without child nodes,
-			// Ship::Load + Ship::FinishLoading will create the expected ship instance if there is
-			// a 3rd token (i.e. this will be treated as though it were a ship variant definition,
-			// without making the variant available to the rest of GameData).
-			if(child.HasChildren() || child.Size() >= add + 3)
-				ships.emplace_back(child);
-			// If there's only 2 tokens & there's no child nodes, the created instance would be ill-formed.
-			else
-				child.PrintTrace("Skipping unsupported use of a \"stock\" ship (a full definition is required):");
-		}
+			ships.Load(child, playerConditions);
 		else if(key == "conversation" && child.HasChildren() && !add)
-			conversation = ExclusiveItem<Conversation>(Conversation(child));
+			conversation = ExclusiveItem<Conversation>(Conversation(child, playerConditions));
 		else if(key == "conversation" && hasValue && !child.HasChildren())
 			conversation = ExclusiveItem<Conversation>(GameData::Conversations().Get(value));
 		else if(add)
@@ -132,11 +124,11 @@ void StartConditions::Load(const DataNode &node)
 		else if(key == "to" && hasValue)
 		{
 			if(value == "display")
-				toDisplay.Load(child);
+				toDisplay.Load(child, globalConditions);
 			else if(value == "reveal")
-				toReveal.Load(child);
+				toReveal.Load(child, globalConditions);
 			else if(value == "unlock")
-				toUnlock.Load(child);
+				toUnlock.Load(child, globalConditions);
 			else
 				child.PrintTrace("Skipping unrecognized attribute:");
 		}
@@ -150,14 +142,14 @@ void StartConditions::Load(const DataNode &node)
 				LoadState(child, StartState::REVEALED);
 		}
 		else
-			conditions.Add(child);
+			conditions.Add(child, playerConditions);
 	}
 
 	// The unlocked state must have at least some information.
 	if(unlocked.description.empty())
 		unlocked.description = "(No description provided.)";
-	if(unlocked.name.empty())
-		unlocked.name = "(Unnamed start)";
+	if(unlocked.displayName.empty())
+		unlocked.displayName = "(Unnamed start)";
 
 	// If the REVEALED or DISPLAYED states are missing information, fill them in with "???".
 	// Also use the UNLOCKED state thumbnail if the other states are missing one.
@@ -171,7 +163,7 @@ void StartConditions::Load(const DataNode &node)
 	else if(identifier.empty())
 	{
 		stringstream addr;
-		addr << unlocked.name << " " << this;
+		addr << unlocked.displayName << " " << this;
 		identifier = addr.str();
 	}
 }
@@ -181,25 +173,30 @@ void StartConditions::Load(const DataNode &node)
 // Finish loading the ship definitions.
 void StartConditions::FinishLoading()
 {
-	for(Ship &ship : ships)
-		ship.FinishLoading(true);
+	ships.FinishLoading();
 
 	// The UNLOCKED StartInfo should always display the correct information. Therefore, we get the
 	// planet and system names now. If we had gotten these during Load, the planet and system provided
 	// may now be invalid, meaning the CoreStartData would actually send the start to New Boston instead
 	// of what was displayed.
 	StartInfo &unlocked = infoByState[StartState::UNLOCKED];
-	unlocked.planet = GetPlanet().Name();
-	unlocked.system = GetSystem().Name();
-	unlocked.date = GetDate().ToString();
-	unlocked.credits = Format::Credits(GetAccounts().Credits());
-	unlocked.debt = Format::Credits(GetAccounts().TotalDebt());
+	unlocked.planet = GetPlanet().DisplayName();
+	unlocked.system = GetSystem().DisplayName();
+	unlocked.date = GetDate();
+	unlocked.credits = Format::AbbreviatedNumber(GetAccounts().Credits());
+	unlocked.debt = Format::AbbreviatedNumber(GetAccounts().TotalDebt());
 
-	string reason = GetConversation().Validate();
-	if(!GetConversation().IsValidIntro() || !reason.empty())
-		Logger::LogError("Warning: The start scenario \"" + Identifier() + "\" (named \""
-			+ unlocked.name + "\") has an invalid starting conversation."
-			+ (reason.empty() ? "" : "\n\t" + std::move(reason)));
+	if(!conversation)
+	{
+		Logger::Log("The start scenario \"" + Identifier() + "\" (named \""
+			+ unlocked.displayName + "\") does not have a starting conversation.", Logger::Level::WARNING);
+		return;
+	}
+	string reason = conversation->Validate();
+	if(!conversation->IsValidIntro() || !reason.empty())
+		Logger::Log("The start scenario \"" + Identifier() + "\" (named \""
+			+ unlocked.displayName + "\") has an invalid starting conversation."
+			+ (reason.empty() ? "" : "\n\t" + std::move(reason)), Logger::Level::WARNING);
 }
 
 
@@ -215,11 +212,11 @@ bool StartConditions::IsValid() const
 		return false;
 
 	// A start must reference a valid "intro" conversation, either stock or custom.
-	if(!GetConversation().IsValidIntro() || !GetConversation().Validate().empty())
+	if(!conversation || !conversation->IsValidIntro() || !conversation->Validate().empty())
 		return false;
 
 	// All ship models must be valid.
-	if(any_of(ships.begin(), ships.end(), [](const Ship &it) noexcept -> bool { return !it.IsValid(); }))
+	if(!ships.IsValid())
 		return false;
 
 	return true;
@@ -227,23 +224,35 @@ bool StartConditions::IsValid() const
 
 
 
-const ConditionSet &StartConditions::GetConditions() const noexcept
+const ConditionAssignments &StartConditions::GetConditions() const noexcept
 {
 	return conditions;
 }
 
 
 
-const vector<Ship> &StartConditions::Ships() const noexcept
+void StartConditions::InstantiateShips(const PlayerInfo &player, vector<shared_ptr<Ship>> &playerShips) const noexcept
 {
-	return ships;
+	map<string, string> subs;
+	player.AddPlayerSubstitutions(subs);
+	const Phrase *phrase = GameData::Phrases().Get("civilian");
+	auto nameFunc = [phrase](const shared_ptr<Ship> &) -> string { return phrase->Get(); };
+	ships.Instantiate(playerShips, nameFunc, &subs);
+	for(const shared_ptr<Ship> &ship : playerShips)
+	{
+		ship->SetSystem(system);
+		ship->SetPlanet(planet);
+		ship->SetIsSpecial();
+		ship->SetIsYours();
+		ship->SetGovernment(GameData::PlayerGovernment());
+	}
 }
 
 
 
-const Conversation &StartConditions::GetConversation() const
+const Conversation *StartConditions::GetConversation() const
 {
-	return *conversation;
+	return conversation.Ptr();
 }
 
 
@@ -261,7 +270,7 @@ const Sprite *StartConditions::GetThumbnail() const noexcept
 const string &StartConditions::GetDisplayName() const noexcept
 {
 	auto it = infoByState.find(state);
-	return it == infoByState.end() ? ILLEGAL : it->second.name;
+	return it == infoByState.end() ? ILLEGAL : it->second.displayName;
 }
 
 
@@ -293,7 +302,11 @@ const string &StartConditions::GetSystemName() const noexcept
 const string &StartConditions::GetDateString() const noexcept
 {
 	auto it = infoByState.find(state);
-	return it == infoByState.end() ? ILLEGAL : it->second.date;
+	if(it == infoByState.end())
+		return ILLEGAL;
+	if(it->second.date)
+		return it->second.date.ToString();
+	return it->second.dateString;
 }
 
 
@@ -314,20 +327,20 @@ const string &StartConditions::GetDebt() const noexcept
 
 
 
-bool StartConditions::Visible(const ConditionsStore &conditionsStore) const
+bool StartConditions::Visible() const
 {
-	return toDisplay.Test(conditionsStore);
+	return toDisplay.Test();
 }
 
 
 
-void StartConditions::SetState(const ConditionsStore &conditionsStore)
+void StartConditions::SetState()
 {
-	if(toDisplay.Test(conditionsStore))
+	if(toDisplay.Test())
 	{
-		if(toReveal.Test(conditionsStore))
+		if(toReveal.Test())
 		{
-			if(toUnlock.Test(conditionsStore))
+			if(toUnlock.Test())
 				state = StartState::UNLOCKED;
 			else
 				state = StartState::REVEALED;
@@ -366,7 +379,7 @@ bool StartConditions::LoadStateChild(const DataNode &child, StartInfo &info, boo
 	const string &value = child.Token(hasValue ? valueIndex : 0);
 
 	if(key == "name" && hasValue)
-		info.name = value;
+		info.displayName = value;
 	else if(key == "description" && hasValue)
 	{
 		if(clearDescription)
@@ -383,11 +396,21 @@ bool StartConditions::LoadStateChild(const DataNode &child, StartInfo &info, boo
 	else if(key == "planet" && hasValue)
 		info.planet = value;
 	else if(key == "date" && hasValue)
-		info.date = value;
+		if(child.Size() >= valueIndex + 3)
+			info.date = Date(child.Value(valueIndex), child.Value(valueIndex + 1), child.Value(valueIndex + 2));
+		else
+			info.dateString = value;
+	// Format credits and debt where applicable.
 	else if(key == "credits" && hasValue)
-		info.credits = value;
+		if(child.IsNumber(value))
+			info.credits = Format::AbbreviatedNumber(child.Value(value));
+		else
+			info.credits = value;
 	else if(key == "debt" && hasValue)
-		info.debt = value;
+		if(child.IsNumber(value))
+			info.debt = Format::AbbreviatedNumber(child.Value(value));
+		else
+			info.debt = value;
 	else
 		return false;
 	return true;
@@ -400,16 +423,16 @@ void StartConditions::FillState(StartState fillState, const Sprite *thumbnail)
 	StartInfo &fill = infoByState[fillState];
 	if(!fill.thumbnail)
 		fill.thumbnail = thumbnail;
-	if(fill.name.empty())
-		fill.name = "???";
+	if(fill.displayName.empty())
+		fill.displayName = "???";
 	if(fill.description.empty())
 		fill.description = "???";
 	if(fill.system.empty())
 		fill.system = "???";
 	if(fill.planet.empty())
 		fill.planet = "???";
-	if(fill.date.empty())
-		fill.date = "???";
+	if(fill.dateString.empty() && !fill.date)
+		fill.dateString = "???";
 	if(fill.credits.empty())
 		fill.credits = "???";
 	if(fill.debt.empty())

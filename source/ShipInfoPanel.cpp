@@ -15,11 +15,12 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "ShipInfoPanel.h"
 
-#include "text/alignment.hpp"
+#include "text/Alignment.h"
+#include "audio/Audio.h"
 #include "CategoryList.h"
-#include "CategoryTypes.h"
+#include "CategoryType.h"
 #include "Command.h"
-#include "Dialog.h"
+#include "DialogPanel.h"
 #include "text/DisplayText.h"
 #include "text/Font.h"
 #include "text/FontSet.h"
@@ -27,22 +28,25 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "GameData.h"
 #include "Information.h"
 #include "Interface.h"
-#include "LineShader.h"
+#include "shader/LineShader.h"
 #include "LogbookPanel.h"
 #include "Messages.h"
 #include "MissionPanel.h"
-#include "OutlineShader.h"
+#include "shader/OutlineShader.h"
 #include "PlayerInfo.h"
 #include "PlayerInfoPanel.h"
 #include "Rectangle.h"
 #include "Ship.h"
-#include "Sprite.h"
-#include "SpriteShader.h"
+#include "ShipNameDialogPanel.h"
+#include "image/Sprite.h"
+#include "shader/SpriteShader.h"
 #include "text/Table.h"
-#include "text/truncate.hpp"
+#include "text/Truncate.h"
 #include "UI.h"
 
 #include <algorithm>
+#include <cmath>
+#include <ranges>
 
 using namespace std;
 
@@ -51,15 +55,20 @@ namespace {
 	constexpr int COLUMN_WIDTH = static_cast<int>(WIDTH) - 20;
 }
 
+
+
 ShipInfoPanel::ShipInfoPanel(PlayerInfo &player)
 	: ShipInfoPanel(player, InfoPanelState(player))
 {
 }
 
+
+
 ShipInfoPanel::ShipInfoPanel(PlayerInfo &player, InfoPanelState state)
 	: player(player), panelState(std::move(state))
 {
 	shipIt = this->panelState.Ships().begin();
+	Audio::Pause();
 	SetInterruptible(false);
 
 	// If a valid ship index was given, show that ship.
@@ -74,6 +83,13 @@ ShipInfoPanel::ShipInfoPanel(PlayerInfo &player, InfoPanelState state)
 	}
 
 	UpdateInfo();
+}
+
+
+
+ShipInfoPanel::~ShipInfoPanel()
+{
+	Audio::Resume();
 }
 
 
@@ -101,11 +117,12 @@ void ShipInfoPanel::Draw()
 		interfaceInfo.SetCondition((*shipIt)->IsParked() ? "show unpark" : "show park");
 		interfaceInfo.SetCondition("show disown");
 	}
-	else if(!panelState.CanEdit())
+	else if(!panelState.CanEdit() && shipIt != panelState.Ships().end() && !shipIt->get()->IsDestroyed())
 	{
-		interfaceInfo.SetCondition("show dump");
+		interfaceInfo.SetCondition("show dump/jettison button");
+		interfaceInfo.SetCondition(selectedOutfit ? "show jettison" : "show dump");
 		if(CanDump())
-			interfaceInfo.SetCondition("enable dump");
+			interfaceInfo.SetCondition("enable dump/jettison");
 	}
 	if(player.Ships().size() > 1)
 		interfaceInfo.SetCondition("five buttons");
@@ -139,7 +156,9 @@ bool ShipInfoPanel::KeyDown(SDL_Keycode key, Uint16 mod, const Command &command,
 	bool control = (mod & (KMOD_CTRL | KMOD_GUI));
 	bool shift = (mod & KMOD_SHIFT);
 	if(key == 'd' || key == SDLK_ESCAPE || (key == 'w' && control))
-		GetUI()->Pop(this);
+		GetUI().Pop(this);
+	else if(command.Has(Command::HELP))
+		DoHelp("ship info", true);
 	else if(!player.Ships().empty() && ((key == 'p' && !shift) || key == SDLK_LEFT || key == SDLK_UP))
 	{
 		if(shipIt == panelState.Ships().begin())
@@ -156,11 +175,13 @@ bool ShipInfoPanel::KeyDown(SDL_Keycode key, Uint16 mod, const Command &command,
 	}
 	else if(key == 'i' || command.Has(Command::INFO) || (control && key == SDLK_TAB))
 	{
-		GetUI()->Pop(this);
-		GetUI()->Push(new PlayerInfoPanel(player, std::move(panelState)));
+		GetUI().Pop(this);
+		GetUI().Push(new PlayerInfoPanel(player, std::move(panelState)));
 	}
-	else if(key == 'R' || (key == 'r' && shift))
-		GetUI()->Push(new Dialog(this, &ShipInfoPanel::Rename, "Change this ship's name?", (*shipIt)->Name()));
+	else if(key == 'r')
+		GetUI().Push(ShipNameDialogPanel::Create(
+			DialogPanel::FunctionButton(this, "Rename", 'r', &ShipInfoPanel::Rename),
+			"Change this ship's name?", (*shipIt)->GivenName()));
 	else if(panelState.CanEdit() && (key == 'P' || (key == 'p' && shift) || key == 'k'))
 	{
 		if(shipIt->get() != player.Flagship() || (*shipIt)->IsParked())
@@ -169,53 +190,110 @@ bool ShipInfoPanel::KeyDown(SDL_Keycode key, Uint16 mod, const Command &command,
 	else if(panelState.CanEdit() && key == 'D')
 	{
 		if(shipIt->get() != player.Flagship())
-			GetUI()->Push(new Dialog(this, &ShipInfoPanel::Disown, "Are you sure you want to disown \""
-				+ shipIt->get()->Name()
-				+ "\"? Disowning a ship rather than selling it means you will not get any money for it."));
+		{
+			map<const Outfit*, int> uniqueOutfits;
+			auto AddToUniques = [&uniqueOutfits] (const map<const Outfit *, int> &outfits)
+			{
+				for(const auto &[outfit, count] : outfits)
+					if(outfit->GetPrecise("unique"))
+						uniqueOutfits[outfit] += count;
+			};
+			AddToUniques(shipIt->get()->Outfits());
+			AddToUniques(shipIt->get()->Cargo().Outfits());
+
+			string message = "Are you sure you want to disown \""
+				+ shipIt->get()->GivenName()
+				+ "\"? Disowning a ship rather than selling it means you will not get any money for it.";
+			if(!uniqueOutfits.empty())
+			{
+				const int uniquesSize = uniqueOutfits.size();
+				const int detailedOutfitSize = (uniquesSize > 20 ? 19 : uniquesSize);
+				message += "\nThe following unique items carried by the ship will be lost:";
+				auto it = uniqueOutfits.begin();
+				for(int i = 0; i < detailedOutfitSize; ++i)
+				{
+					message += "\n" + to_string(it->second) + " "
+						+ (it->second == 1 ? it->first->DisplayName() : it->first->PluralName());
+					++it;
+				}
+				if(it != uniqueOutfits.end())
+				{
+					int otherUniquesCount = 0;
+					for( ; it != uniqueOutfits.end(); ++it)
+						otherUniquesCount += it->second;
+					message += "\nand " + to_string(otherUniquesCount) + " other unique outfits";
+				}
+			}
+
+			GetUI().Push(DialogPanel::CallFunctionIfOk(this, &ShipInfoPanel::Disown, message));
+		}
 	}
-	else if(key == 'c' && CanDump())
+	else if((key == 'c' || key == 'j') && CanDump())
 	{
 		int commodities = (*shipIt)->Cargo().CommoditiesSize();
 		int amount = (*shipIt)->Cargo().Get(selectedCommodity);
 		int plunderAmount = (*shipIt)->Cargo().Get(selectedPlunder);
+		int outfitAmount = (*shipIt)->OutfitCount(selectedOutfit);
+
+		auto AddUniqueMessage = [](const string &initial, const Outfit *outfit) -> string {
+			if(outfit->GetPrecise("unique"))
+				return initial + " This outfit is unique and you may not be able to regain it after jettisoning it.";
+			return initial;
+		};
+
 		if(amount)
 		{
-			GetUI()->Push(new Dialog(this, &ShipInfoPanel::DumpCommodities,
+			GetUI().Push(DialogPanel::RequestPositiveInteger(this, &ShipInfoPanel::DumpCommodities,
 				"How many tons of " + Format::LowerCase(selectedCommodity)
 					+ " do you want to jettison?", amount));
 		}
 		else if(plunderAmount > 0 && selectedPlunder->Get("installable") < 0.)
 		{
-			GetUI()->Push(new Dialog(this, &ShipInfoPanel::DumpPlunder,
+			GetUI().Push(DialogPanel::RequestPositiveInteger(this, &ShipInfoPanel::DumpPlunder,
 				"How many tons of " + Format::LowerCase(selectedPlunder->DisplayName())
 					+ " do you want to jettison?", plunderAmount));
 		}
 		else if(plunderAmount == 1)
 		{
-			GetUI()->Push(new Dialog(this, &ShipInfoPanel::Dump,
-				"Are you sure you want to jettison a " + selectedPlunder->DisplayName() + "?"));
+			GetUI().Push(DialogPanel::CallFunctionIfOk(this, &ShipInfoPanel::Dump,
+				AddUniqueMessage("Are you sure you want to jettison a " + selectedPlunder->DisplayName() + "?",
+				selectedPlunder)));
 		}
 		else if(plunderAmount > 1)
 		{
-			GetUI()->Push(new Dialog(this, &ShipInfoPanel::DumpPlunder,
-				"How many " + selectedPlunder->PluralName() + " do you want to jettison?",
-				plunderAmount));
+			GetUI().Push(DialogPanel::RequestPositiveInteger(this, &ShipInfoPanel::DumpPlunder,
+				AddUniqueMessage("How many " + selectedPlunder->PluralName() + " do you want to jettison?",
+				selectedPlunder), plunderAmount));
+		}
+		else if(outfitAmount == 1)
+		{
+			GetUI().Push(DialogPanel::CallFunctionIfOk(this, &ShipInfoPanel::Dump,
+				AddUniqueMessage("Are you sure you want to jettison a " + selectedOutfit->DisplayName() + "?",
+				selectedOutfit)));
+		}
+		else if(outfitAmount > 1)
+		{
+			GetUI().Push(DialogPanel::RequestPositiveInteger(this, &ShipInfoPanel::DumpInstalled,
+				AddUniqueMessage("How many " + selectedOutfit->PluralName() + " do you want to jettison?",
+				selectedOutfit), plunderAmount));
 		}
 		else if(commodities)
 		{
-			GetUI()->Push(new Dialog(this, &ShipInfoPanel::Dump,
+			GetUI().Push(DialogPanel::CallFunctionIfOk(this, &ShipInfoPanel::Dump,
 				"Are you sure you want to jettison all of this ship's regular cargo?"));
 		}
 		else
 		{
-			GetUI()->Push(new Dialog(this, &ShipInfoPanel::Dump,
+			GetUI().Push(DialogPanel::CallFunctionIfOk(this, &ShipInfoPanel::Dump,
 				"Are you sure you want to jettison all of this ship's cargo?"));
 		}
 	}
+	else if(!panelState.CanEdit() && (key == 'c' || key == 'j') && selectedOutfit && !selectedOutfit->Get("can jettison"))
+		GetUI().Push(DialogPanel::Info("This outfit cannot be jettisoned while it is installed."));
 	else if(command.Has(Command::MAP) || key == 'm')
-		GetUI()->Push(new MissionPanel(player));
+		GetUI().Push(new MissionPanel(player));
 	else if(key == 'l' && player.HasLogs())
-		GetUI()->Push(new LogbookPanel(player));
+		GetUI().Push(new LogbookPanel(player));
 	else
 		return false;
 
@@ -224,17 +302,20 @@ bool ShipInfoPanel::KeyDown(SDL_Keycode key, Uint16 mod, const Command &command,
 
 
 
-bool ShipInfoPanel::Click(int x, int y, int /* clicks */)
+bool ShipInfoPanel::Click(int x, int y, MouseButton button, int /* clicks */)
 {
+	if(button != MouseButton::LEFT)
+		return false;
 	if(shipIt == panelState.Ships().end())
 		return true;
 
 	draggingIndex = -1;
-	if(panelState.CanEdit() && hoverIndex >= 0 && (**shipIt).GetSystem() == player.GetSystem() && !(**shipIt).IsDisabled())
+	if(panelState.CanEdit() && hoverIndex >= 0 && (*shipIt)->GetSystem() == player.GetSystem() && !(*shipIt)->IsDisabled())
 		draggingIndex = hoverIndex;
 
 	selectedCommodity.clear();
 	selectedPlunder = nullptr;
+	selectedOutfit = nullptr;
 	Point point(x, y);
 	for(const auto &zone : commodityZones)
 		if(zone.Contains(point))
@@ -242,6 +323,9 @@ bool ShipInfoPanel::Click(int x, int y, int /* clicks */)
 	for(const auto &zone : plunderZones)
 		if(zone.Contains(point))
 			selectedPlunder = zone.Value();
+	for(const auto &zone : outfitZones)
+		if(zone.Contains(point))
+			selectedOutfit = zone.Value();
 
 	return true;
 }
@@ -264,10 +348,13 @@ bool ShipInfoPanel::Drag(double dx, double dy)
 
 
 
-bool ShipInfoPanel::Release(int /* x */, int /* y */)
+bool ShipInfoPanel::Release(int /* x */, int /* y */, MouseButton button)
 {
+	if(button != MouseButton::LEFT)
+		return false;
+
 	if(draggingIndex >= 0 && hoverIndex >= 0 && hoverIndex != draggingIndex)
-		(**shipIt).GetArmament().Swap(hoverIndex, draggingIndex);
+		(*shipIt)->GetArmament().Swap(hoverIndex, draggingIndex);
 
 	draggingIndex = -1;
 	return true;
@@ -286,7 +373,10 @@ void ShipInfoPanel::UpdateInfo()
 	const Ship &ship = **shipIt;
 	info.Update(ship, player);
 	if(player.Flagship() && ship.GetSystem() == player.GetSystem() && &ship != player.Flagship())
+	{
 		player.Flagship()->SetTargetShip(*shipIt);
+		player.SelectEscort(shipIt->get(), false);
+	}
 
 	outfits.clear();
 	for(const auto &it : ship.Outfits())
@@ -302,6 +392,7 @@ void ShipInfoPanel::ClearZones()
 	zones.clear();
 	commodityZones.clear();
 	plunderZones.clear();
+	outfitZones.clear();
 }
 
 
@@ -313,8 +404,9 @@ void ShipInfoPanel::DrawShipStats(const Rectangle &bounds)
 		return;
 
 	// Colors to draw with.
-	Color dim = *GameData::Colors().Get("medium");
-	Color bright = *GameData::Colors().Get("bright");
+	const Color &dim = *GameData::Colors().Get("medium");
+	const Color &bright = *GameData::Colors().Get("bright");
+	const Color &backColor = *GameData::Colors().Get("faint");
 	const Ship &ship = **shipIt;
 
 	// Two columns of opposite alignment are used to simulate a single visual column.
@@ -324,7 +416,9 @@ void ShipInfoPanel::DrawShipStats(const Rectangle &bounds)
 	table.SetUnderline(0, COLUMN_WIDTH);
 	table.DrawAt(bounds.TopLeft() + Point(10., 8.));
 
-	table.DrawTruncatedPair("ship:", dim, ship.Name(), bright, Truncate::MIDDLE, true);
+	if(table.GetRowBounds().Contains(hoverPoint))
+		table.DrawHighlight(backColor);
+	table.DrawTruncatedPair("ship:", dim, ship.GivenName(), bright, Truncate::MIDDLE, true);
 
 	info.DrawAttributes(table.GetRowBounds().TopLeft() - Point(10., 10.));
 }
@@ -338,8 +432,9 @@ void ShipInfoPanel::DrawOutfits(const Rectangle &bounds, Rectangle &cargoBounds)
 		return;
 
 	// Colors to draw with.
-	Color dim = *GameData::Colors().Get("medium");
-	Color bright = *GameData::Colors().Get("bright");
+	const Color &dim = *GameData::Colors().Get("medium");
+	const Color &bright = *GameData::Colors().Get("bright");
+	const Color &backColor = *GameData::Colors().Get("faint");
 	const Ship &ship = **shipIt;
 
 	// Two columns of opposite alignment are used to simulate a single visual column.
@@ -354,11 +449,19 @@ void ShipInfoPanel::DrawOutfits(const Rectangle &bounds, Rectangle &cargoBounds)
 	for(const auto &cat : GameData::GetCategory(CategoryType::OUTFIT))
 	{
 		const string &category = cat.Name();
+		if(category.empty())
+			continue;
 		auto it = outfits.find(category);
 		if(it == outfits.end())
 			continue;
 
-		// Skip to the next column if there is not space for this category label
+		auto validOutfits = ranges::filter_view(it->second,
+			[](const Outfit *outfit){ return outfit->IsDefined() && !outfit->DisplayName().empty(); });
+
+		if(validOutfits.empty())
+			continue;
+
+		// Skip to the next column if there is no space for this category label
 		// plus at least one outfit.
 		if(table.GetRowBounds().Bottom() + 40. > bounds.Bottom())
 		{
@@ -371,7 +474,7 @@ void ShipInfoPanel::DrawOutfits(const Rectangle &bounds, Rectangle &cargoBounds)
 		// Draw the category label.
 		table.Draw(category, bright);
 		table.Advance();
-		for(const Outfit *outfit : it->second)
+		for(const Outfit *outfit : validOutfits)
 		{
 			// Check if we've gone below the bottom of the bounds.
 			if(table.GetRowBounds().Bottom() > bounds.Bottom())
@@ -383,6 +486,10 @@ void ShipInfoPanel::DrawOutfits(const Rectangle &bounds, Rectangle &cargoBounds)
 				table.Draw(category, bright);
 				table.Advance();
 			}
+
+			outfitZones.emplace_back(table.GetCenterPoint(), table.GetRowSize(), outfit);
+			if(outfit == selectedOutfit || outfit == hoverOutfit)
+				table.DrawHighlight(backColor);
 
 			// Draw the outfit name and count.
 			table.DrawTruncatedPair(outfit->DisplayName(), dim,
@@ -407,8 +514,8 @@ void ShipInfoPanel::DrawOutfits(const Rectangle &bounds, Rectangle &cargoBounds)
 void ShipInfoPanel::DrawWeapons(const Rectangle &bounds)
 {
 	// Colors to draw with.
-	Color dim = *GameData::Colors().Get("medium");
-	Color bright = *GameData::Colors().Get("bright");
+	const Color &dim = *GameData::Colors().Get("medium");
+	const Color &bright = *GameData::Colors().Get("bright");
 	const Font &font = FontSet::Get(14);
 	const Ship &ship = **shipIt;
 
@@ -440,7 +547,7 @@ void ShipInfoPanel::DrawWeapons(const Rectangle &bounds)
 	// Draw the ship, using the black silhouette swizzle.
 	if(sprite)
 	{
-		SpriteShader::Draw(sprite, bounds.Center(), scale, 28);
+		SpriteShader::Draw(sprite, bounds.Center(), scale, GameData::Swizzles().Get("28"));
 		OutlineShader::Draw(sprite, bounds.Center(), scale * Point(sprite->Width(), sprite->Height()), Color(.5f));
 	}
 
@@ -458,8 +565,8 @@ void ShipInfoPanel::DrawWeapons(const Rectangle &bounds)
 
 	int index = 0;
 	const double centerX = bounds.Center().X();
-	const double labelCenter[2] = {-.5 * LABEL_WIDTH - LABEL_DX, LABEL_DX + .5 * LABEL_WIDTH};
-	const double fromX[2] = {-LABEL_DX + LABEL_PAD, LABEL_DX - LABEL_PAD};
+	const double labelCenter[2] = {centerX - .5 * LABEL_WIDTH - LABEL_DX, centerX + LABEL_DX + .5 * LABEL_WIDTH};
+	const double fromX[2] = { centerX - LABEL_DX + LABEL_PAD, centerX + LABEL_DX - LABEL_PAD};
 	static const double LINE_HEIGHT = 20.;
 	static const double TEXT_OFF = .5 * (LINE_HEIGHT - font.Height());
 	static const Point LINE_SIZE(LABEL_WIDTH, LINE_HEIGHT);
@@ -486,10 +593,13 @@ void ShipInfoPanel::DrawWeapons(const Rectangle &bounds)
 		zones.emplace_back(zoneCenter, LINE_SIZE, index);
 
 		// Determine what color to use for the line.
-		float high = (index == hoverIndex ? .8f : .5f);
-		Color color(high, .75f * high, 0.f, 1.f);
+		Color color;
 		if(isTurret)
-			color = Color(0.f, .75f * high, high, 1.f);
+			color = *GameData::Colors().Get(isHover ? "player info hardpoint turret hover"
+			: "player info hardpoint turret");
+		else
+			color = *GameData::Colors().Get(isHover ? "player info hardpoint gun hover"
+			: "player info hardpoint gun");
 
 		// Draw the line.
 		Point from(fromX[isRight], zoneCenter.Y());
@@ -525,13 +635,14 @@ void ShipInfoPanel::DrawWeapons(const Rectangle &bounds)
 
 void ShipInfoPanel::DrawCargo(const Rectangle &bounds)
 {
-	Color dim = *GameData::Colors().Get("medium");
-	Color bright = *GameData::Colors().Get("bright");
-	Color backColor = *GameData::Colors().Get("faint");
+	const Color &dim = *GameData::Colors().Get("medium");
+	const Color &bright = *GameData::Colors().Get("bright");
+	const Color &backColor = *GameData::Colors().Get("faint");
 	const Ship &ship = **shipIt;
 
-	// Cargo list.
-	const CargoHold &cargo = (player.Cargo().Used() ? player.Cargo() : ship.Cargo());
+	// Cargo list: show pooled cargo instead if the ship to display is landed together with the flagship.
+	const bool showPooled = ship.GetPlanet() == player.GetPlanet() && player.Cargo().Used();
+	const CargoHold &cargo = (showPooled ? player.Cargo() : ship.Cargo());
 	Table table;
 	table.AddColumn(0, {COLUMN_WIDTH, Alignment::LEFT});
 	table.AddColumn(COLUMN_WIDTH, {COLUMN_WIDTH, Alignment::RIGHT});
@@ -554,7 +665,7 @@ void ShipInfoPanel::DrawCargo(const Rectangle &bounds)
 				continue;
 
 			commodityZones.emplace_back(table.GetCenterPoint(), table.GetRowSize(), it.first);
-			if(it.first == selectedCommodity)
+			if(it.first == selectedCommodity || it.first == hoverCommodity)
 				table.DrawHighlight(backColor);
 
 			table.Draw(it.first, dim);
@@ -577,7 +688,7 @@ void ShipInfoPanel::DrawCargo(const Rectangle &bounds)
 				continue;
 
 			plunderZones.emplace_back(table.GetCenterPoint(), table.GetRowSize(), it.first);
-			if(it.first == selectedPlunder)
+			if(it.first == selectedPlunder || it.first == hoverPlunder)
 				table.DrawHighlight(backColor);
 
 			// For outfits, show how many of them you have and their total mass.
@@ -628,10 +739,10 @@ void ShipInfoPanel::DrawLine(const Point &from, const Point &to, const Color &co
 	Color black(0.f, 1.f);
 	Point mid(to.X(), from.Y());
 
-	LineShader::Draw(from, mid, 3.5f, black);
-	LineShader::Draw(mid, to, 3.5f, black);
-	LineShader::Draw(from, mid, 1.5f, color);
-	LineShader::Draw(mid, to, 1.5f, color);
+	LineShader::Draw(from, mid, 2.f, black);
+	LineShader::Draw(mid, to, 2.f, black);
+	LineShader::Draw(from, mid, 1.f, color);
+	LineShader::Draw(mid, to, 1.f, color);
 }
 
 
@@ -644,7 +755,10 @@ bool ShipInfoPanel::Hover(const Point &point)
 	hoverPoint = point;
 
 	hoverIndex = -1;
-	const vector<Hardpoint> &weapons = (**shipIt).Weapons();
+	hoverCommodity = "";
+	hoverPlunder = nullptr;
+	hoverOutfit = nullptr;
+	const vector<Hardpoint> &weapons = (*shipIt)->Weapons();
 	bool dragIsTurret = (draggingIndex >= 0 && weapons[draggingIndex].IsTurret());
 	for(const auto &zone : zones)
 	{
@@ -652,29 +766,42 @@ bool ShipInfoPanel::Hover(const Point &point)
 		if(zone.Contains(hoverPoint) && (draggingIndex == -1 || isTurret == dragIsTurret))
 			hoverIndex = zone.Value();
 	}
+	for(const auto &zone : commodityZones)
+		if(zone.Contains(hoverPoint))
+			hoverCommodity = zone.Value();
+	for(const auto &zone : plunderZones)
+		if(zone.Contains(hoverPoint))
+			hoverPlunder = zone.Value();
+	for(const auto &zone : outfitZones)
+		if(zone.Contains(hoverPoint))
+			hoverOutfit = zone.Value();
 
 	return true;
 }
 
 
 
-void ShipInfoPanel::Rename(const string &name)
+bool ShipInfoPanel::Rename(const string &name)
 {
 	if(shipIt != panelState.Ships().end() && !name.empty())
 	{
 		player.RenameShip(shipIt->get(), name);
 		UpdateInfo();
 	}
+	// Close dialog
+	return true;
 }
 
 
 
 bool ShipInfoPanel::CanDump() const
 {
-	if(panelState.CanEdit() || shipIt == panelState.Ships().end())
+	if(panelState.CanEdit() || shipIt == panelState.Ships().end() || shipIt->get()->IsDestroyed())
 		return false;
 
 	CargoHold &cargo = (*shipIt)->Cargo();
+	if(selectedOutfit)
+		return selectedOutfit->Get("can jettison");
 	return (selectedPlunder && cargo.Get(selectedPlunder) > 0) || cargo.CommoditiesSize() || cargo.OutfitsSize();
 }
 
@@ -689,6 +816,7 @@ void ShipInfoPanel::Dump()
 	int commodities = (*shipIt)->Cargo().CommoditiesSize();
 	int amount = cargo.Get(selectedCommodity);
 	int plunderAmount = cargo.Get(selectedPlunder);
+	int outfitAmount = (*shipIt)->OutfitCount(selectedOutfit);
 	int64_t loss = 0;
 	if(amount)
 	{
@@ -701,6 +829,13 @@ void ShipInfoPanel::Dump()
 	{
 		loss += plunderAmount * selectedPlunder->Cost();
 		(*shipIt)->Jettison(selectedPlunder, plunderAmount);
+	}
+	else if(outfitAmount > 0)
+	{
+		(*shipIt)->JettisonInstalled(selectedOutfit, outfitAmount);
+		Messages::Add({"You jettisoned " + to_string(outfitAmount) + " "
+				+ (outfitAmount == 1 ? selectedOutfit->DisplayName() : selectedOutfit->PluralName()),
+			GameData::MessageCategories().Get("normal")});
 	}
 	else if(commodities)
 	{
@@ -722,11 +857,12 @@ void ShipInfoPanel::Dump()
 	}
 	selectedCommodity.clear();
 	selectedPlunder = nullptr;
+	selectedOutfit = nullptr;
 
-	info.Update(**shipIt, player);
+	UpdateInfo();
 	if(loss)
-		Messages::Add("You jettisoned " + Format::CreditString(loss) + " worth of cargo."
-			, Messages::Importance::High);
+		Messages::Add({"You jettisoned " + Format::CreditString(loss) + " worth of cargo.",
+			GameData::MessageCategories().Get("normal")});
 }
 
 
@@ -739,11 +875,11 @@ void ShipInfoPanel::DumpPlunder(int count)
 	{
 		loss += count * selectedPlunder->Cost();
 		(*shipIt)->Jettison(selectedPlunder, count);
-		info.Update(**shipIt, player);
+		UpdateInfo();
 
 		if(loss)
-			Messages::Add("You jettisoned " + Format::CreditString(loss) + " worth of cargo."
-				, Messages::Importance::High);
+			Messages::Add({"You jettisoned " + Format::CreditString(loss) + " worth of cargo.",
+				GameData::MessageCategories().Get("normal")});
 	}
 }
 
@@ -759,11 +895,27 @@ void ShipInfoPanel::DumpCommodities(int count)
 		loss += basis;
 		player.AdjustBasis(selectedCommodity, -basis);
 		(*shipIt)->Jettison(selectedCommodity, count);
-		info.Update(**shipIt, player);
+		UpdateInfo();
 
 		if(loss)
-			Messages::Add("You jettisoned " + Format::CreditString(loss) + " worth of cargo."
-				, Messages::Importance::High);
+			Messages::Add({"You jettisoned " + Format::CreditString(loss) + " worth of cargo.",
+				GameData::MessageCategories().Get("normal")});
+	}
+}
+
+
+
+void ShipInfoPanel::DumpInstalled(int count)
+{
+	count = min(count, (*shipIt)->OutfitCount(selectedOutfit));
+	if(count > 0)
+	{
+		(*shipIt)->JettisonInstalled(selectedOutfit, count);
+		UpdateInfo();
+
+		Messages::Add({"You jettisoned " + to_string(count) + " "
+				+ (count == 1 ? selectedOutfit->DisplayName() : selectedOutfit->PluralName()),
+			GameData::MessageCategories().Get("normal")});
 	}
 }
 

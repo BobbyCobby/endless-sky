@@ -43,18 +43,22 @@ void CategoryList::Load(const DataNode &node)
 			currentPrecedence = child.Value(1);
 		Category cat(child.Token(0), currentPrecedence++);
 
-		// If a given category name already exists, its prescedence will be updated.
+		// If a given category name already exists, its precedence will be updated.
 		auto it = find_if(list.begin(), list.end(),
 			[&cat](const Category &c) noexcept -> bool { return cat.name == c.name; });
 		if(it != list.end())
 			it->precedence = cat.precedence;
 		else
-		{
 			list.push_back(cat);
-			byName.insert(pair<const string, Category>(cat.name, cat));
-		}
-
 	}
+}
+
+
+
+void CategoryList::Clear()
+{
+	list.clear();
+	currentPrecedence = 0;
 }
 
 
@@ -80,8 +84,9 @@ bool CategoryList::Contains(const string &name) const
 
 const CategoryList::Category CategoryList::GetCategory(const string &name) const
 {
-	auto it = byName.find(name);
-	if(it != byName.end())
-		return it->second;
+	const auto it = find_if(list.begin(), list.end(),
+		[&name](const Category &c) noexcept -> bool { return name == c.name; });
+	if(it != list.end())
+		return *it;
 	return Category("", numeric_limits<int>::max());
 }
