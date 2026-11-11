@@ -445,11 +445,8 @@ public:
 	double MaxHeat() const override;
 	// Calculate the multiplier for cooling efficiency.
 	double CoolingEfficiency() const;
-	// Calculate the drag on this ship. The drag can be no greater than the mass.
+	// Get this ship's drag value, capped at its mass. It sets the AI's reference speed.
 	double Drag() const;
-	// Calculate the drag force that this ship experiences. The drag force is the drag
-	// divided by the mass, up to a value of 1.
-	double DragForce() const;
 
 	// How much this ship counts toward the player's fleet capacity.
 	int FleetCost() const;
@@ -463,7 +460,8 @@ public:
 	// Check if this is a ship that can be used as a flagship.
 	bool CanBeFlagship() const;
 
-	// Get this ship's movement characteristics.
+	// Get this ship's movement characteristics. Maximum velocities are AI reference speeds;
+	// ships can exceed them because there is no passive drag.
 	double Mass() const override;
 	double InertialMass() const;
 	double TurnRate() const;

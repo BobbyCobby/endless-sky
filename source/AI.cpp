@@ -2651,8 +2651,8 @@ bool AI::MoveTo(const Ship &ship, Command &command, const Point &targetPosition,
 	if(!isClose || (!isFacing && !shouldReverse))
 		command.SetTurn(TurnToward(ship, tv));
 
-	// Drag is not applied when not thrusting, so stop thrusting when close to max speed
-	// to save energy. Work with a slightly lower maximum velocity to avoid border cases.
+	// Treat maximum velocity as an AI speed target and leave a small margin to avoid
+	// border cases. Stopping thrusting near this target also saves energy.
 	// In order for a ship to use their afterburner, they must also have the forward
 	// command active. Therefore, if this ship should use its afterburner, use the
 	// max velocity with afterburner thrust included.
@@ -2664,7 +2664,12 @@ bool AI::MoveTo(const Ship &ship, Command &command, const Point &targetPosition,
 		// cruise-speed or when we need to do course corrections.
 		bool movingTowardsTarget = (velocity.Unit().Dot(dp.Unit()) > .95);
 		if(!hasCruiseSpeed || !movingTowardsTarget || velocity.Length() < cruiseSpeed)
+		{
 			command |= Command::FORWARD;
+			if(!hasCruiseSpeed && !targetVelocity && velocity.Dot(angle.Unit()) < 0.
+					&& speed < ship.Acceleration())
+				command |= Command::STOP;
+		}
 	}
 	else if(shouldReverse)
 	{
@@ -2909,11 +2914,8 @@ void AI::KeepStation(const Ship &ship, Command &command, const Body &target)
 		command.SetTurn(targetAngle);
 
 	// Determine whether to apply thrust.
-	Point drag = ship.Velocity() * ship.DragForce();
 	if(ship.ReverseThrust())
 	{
-		// Don't take drag into account when reverse thrusting, because this
-		// estimate of how it will be applied can be quite inaccurate.
 		Point a = (unit * (-ship.ReverseThrust() / mass)).Unit();
 		double direction = positionWeight * positionDelta.Dot(a) / POSITION_DEADBAND
 			+ velocityWeight * velocityDelta.Dot(a) / VELOCITY_DEADBAND;
@@ -2923,7 +2925,7 @@ void AI::KeepStation(const Ship &ship, Command &command, const Body &target)
 			return;
 		}
 	}
-	Point a = (unit * accel - drag).Unit();
+	Point a = (unit * accel).Unit();
 	double direction = positionWeight * positionDelta.Dot(a) / POSITION_DEADBAND
 		+ velocityWeight * velocityDelta.Dot(a) / VELOCITY_DEADBAND;
 	if(direction > THRUST_DEADBAND)
