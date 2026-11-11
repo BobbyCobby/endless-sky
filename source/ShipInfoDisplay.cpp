@@ -278,31 +278,12 @@ void ShipInfoDisplay::UpdateAttributes(const Ship &ship, const PlayerInfo &playe
 	double mainThrust = thrust ? thrust : afterburnerThrust;
 	double allThrust = thrust + afterburnerThrust;
 	double reverseThrust = attributes.Get("reverse thrust");
-	double drag = ship.Drag();
 	attributeLabels.push_back(string());
 	attributeValues.push_back(string());
 	attributesHeight += 10;
 	attributeLabels.push_back(isGeneric ? "movement (full - no cargo):" : "movement:");
 	attributeValues.push_back(string());
 	attributesHeight += 20;
-	attributeLabels.push_back("max speed:");
-	attributeValues.push_back(Format::Number(60. * mainThrust / drag));
-	attributesHeight += 20;
-	if(scrollingPanel)
-	{
-		if(thrust && afterburnerThrust)
-		{
-			attributeLabels.push_back("    w/ afterburner:");
-			attributeValues.push_back(Format::Number(60. * allThrust / drag));
-			attributesHeight += 20;
-		}
-		if(reverseThrust)
-		{
-			attributeLabels.push_back("    reversed:");
-			attributeValues.push_back(Format::Number(60. * reverseThrust / drag));
-			attributesHeight += 20;
-		}
-	}
 
 	// Movement stats are influenced by inertia reduction.
 	double reduction = 1. + attributes.Get("inertia reduction");
