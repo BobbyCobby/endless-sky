@@ -68,10 +68,12 @@ jobs:
       - name: Package Application
         run: ./utils/build_appimage.sh build/release
       - name: Upload artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.OUTPUT }}
           path: ${{ env.OUTPUT }}
+          if-no-files-found: warn
 
   cd_windows_x64:
     name: Windows
@@ -122,10 +124,12 @@ jobs:
           cmake --install build/release
           7z a ${{ env.OUTPUT }} "./install/release/*"
       - name: Upload artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.OUTPUT }}
           path: ${{ env.OUTPUT }}
+          if-no-files-found: warn
 
   cd_macos_x64:
     name: MacOS
@@ -174,10 +178,12 @@ jobs:
           cmake --install build/release
           7z a ${{ env.OUTPUT }} "./install/release/*"
       - name: Upload artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.OUTPUT }}
           path: ${{ env.OUTPUT }}
+          if-no-files-found: warn
 
   cd_upload_artifacts_to_release:
     name: Upload
