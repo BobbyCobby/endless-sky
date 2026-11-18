@@ -705,11 +705,13 @@ test "Land"
 	status partial
 	description "Helper for landing."
 	sequence
+		debug "Starting landing autopilot"
 		input
 			command land
 		label "landing"
 		branch "landing"
 			"flagship landed" == 0
+		debug "Landing autopilot completed"
 
 
 
@@ -717,12 +719,17 @@ test "Trigger Ruin Spaceport Mission"
 	status partial
 	description "Launch, land, and go to the spaceport to trigger any potential missions."
 	sequence
+		debug "Ruin mission: departing"
 		call "Depart"
+		debug "Ruin mission: setting navigation destination"
 		navigate
 			"travel destination" Ruin
+		debug "Ruin mission: navigating"
 		call "Land"
+		debug "Ruin mission: landed"
 		input
 			key p
+		debug "Ruin mission: opened spaceport"
 
 
 test "Trigger Prime Spaceport Mission"

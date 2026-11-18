@@ -3727,17 +3727,6 @@ int Ship::FleetCost() const
 
 
 
-// Calculate the drag force that this ship experiences. The drag force is the drag
-// divided by the mass, up to a value of 1.
-double Ship::DragForce() const
-{
-	double drag = cache.drag / cache.dragReduction;
-	double mass = InertialMass();
-	return drag >= mass ? 1. : drag / mass;
-}
-
-
-
 int Ship::RequiredCrew() const
 {
 	// Mandatory crew cannot be replaced by automation.
@@ -5615,20 +5604,16 @@ void Ship::StepPilot()
 
 
 
-// This ship is not landing or entering hyperspace. So, move it. If it is
-// disabled, all it can do is slow down to a stop.
+// This ship is not landing or entering hyperspace. So, move it.
 void Ship::DoMovement(bool &isUsingAfterburner)
 {
 	isUsingAfterburner = false;
 
 	double mass = InertialMass();
-	double dragForce = DragForce();
 	double slowMultiplier = 1. / (1. + levels.slowness * .05);
+	Point externalAcceleration = acceleration;
 
-	// Ships that can't move due to being disabled or a lack of energy should drift to a stop.
-	if(isDisabled || NeedsEnergy())
-		velocity *= 1. - dragForce;
-	else if(!pilotError)
+	if(!isDisabled && !NeedsEnergy() && !pilotError)
 	{
 		if(commands.Turn())
 		{
@@ -5661,8 +5646,8 @@ void Ship::DoMovement(bool &isUsingAfterburner)
 			thrustCommand *= AvailableResources().FractionalUsage(thrustCost);
 			if(thrustCommand)
 			{
-				// If a reverse thrust is commanded and the capability does not
-				// exist, ignore it (do not even slow under drag).
+				// If a reverse thrust is commanded but the capability does not exist,
+				// ignore it.
 				isThrusting = (thrustCommand > 0.);
 				isReversing = !isThrusting && cache.reverseThrust;
 				thrust = isThrusting ? cache.thrust : cache.reverseThrust;
@@ -5693,33 +5678,21 @@ void Ship::DoMovement(bool &isUsingAfterburner)
 	if(acceleration)
 	{
 		acceleration *= slowMultiplier;
-		// Acceleration multiplier needs to modify effective drag, otherwise it changes top speeds.
-		Point dragAcceleration = acceleration - velocity * dragForce * cache.accelerationMult;
-		// Make sure dragAcceleration has nonzero length, to avoid divide by zero.
-		if(dragAcceleration)
+		if(commands.Has(Command::STOP))
 		{
-			// What direction will the net acceleration be if this drag is applied?
-			// If the net acceleration will be opposite the thrust, do not apply drag.
-			dragAcceleration *= .5 * (acceleration.Unit().Dot(dragAcceleration.Unit()) + 1.);
-
-			// A ship can only "cheat" to stop if it is moving slow enough that
-			// it could stop completely this frame. This is to avoid overshooting
-			// when trying to stop and ending up headed in the other direction.
-			if(commands.Has(Command::STOP))
+			Point thrustAcceleration = acceleration - externalAcceleration * slowMultiplier;
+			if(thrustAcceleration)
 			{
-				// How much acceleration would it take to come to a stop in the
-				// direction normal to the ship's current facing? This is only
-				// possible if the acceleration plus drag vector is in the
-				// opposite direction from the velocity vector when both are
-				// projected onto the current facing vector, and the acceleration
-				// vector is the larger of the two.
-				double vNormal = velocity.Dot(angle.Unit());
-				double aNormal = dragAcceleration.Dot(angle.Unit());
-				if((aNormal > 0.) != (vNormal > 0.) && fabs(aNormal) > fabs(vNormal))
-					dragAcceleration = -vNormal * angle.Unit();
+				Point velocityAfterExternalAcceleration = velocity + externalAcceleration * slowMultiplier;
+				double speedToCancel = -velocityAfterExternalAcceleration.Dot(thrustAcceleration.Unit());
+				if(speedToCancel <= 0.)
+					thrustAcceleration = Point();
+				else if(speedToCancel < thrustAcceleration.Length())
+					thrustAcceleration *= speedToCancel / thrustAcceleration.Length();
+				acceleration = externalAcceleration * slowMultiplier + thrustAcceleration;
 			}
-			velocity += dragAcceleration;
 		}
+		velocity += acceleration;
 		acceleration = Point();
 	}
 }
