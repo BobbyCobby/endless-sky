@@ -31,6 +31,7 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 #include "Hasher.h"
 #include "JumpType.h"
 #include "image/Mask.h"
+#include "Logger.h"
 #include "Messages.h"
 #include "Minable.h"
 #include "pi.h"
@@ -2609,6 +2610,13 @@ bool AI::MoveToPlanet(const Ship &ship, Command &command, double cruiseSpeed)
 		return false;
 
 	const Point &target = ship.GetTargetStellar()->Position();
+	static unsigned int frame = 0;
+	if(ship.IsYours() && ++frame % 300 == 0)
+		Logger::Log("Landing trace: distance=" + to_string(target.Distance(ship.Position()))
+			+ " speed=" + to_string(ship.Velocity().Length())
+			+ " acceleration=" + to_string(ship.Acceleration())
+			+ " needs-energy=" + to_string(ship.NeedsEnergy())
+			+ " disabled=" + to_string(ship.IsDisabled()), Logger::Level::INFO);
 	return MoveTo(ship, command, target, Point(), ship.GetTargetStellar()->Radius(), 1., cruiseSpeed);
 }
 
